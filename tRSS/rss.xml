@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+    xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Tracker</title>
+        <link>https://tracker.com</link>
+        <description>Tracker RSS Feed</description>
+        <language>en-us</language>
+        <copyright>Copyright Tracker</copyright>
+        <image>
+            <title>Tracker</title>
+            <url>https://tracker.com/logo.gif</url>
+            <link>https://tracker.com</link>
+            <width>16</width>
+            <height>16</height>
+            <description>RSS</description>
+        </image>
+        <xhtml:meta
+            xmlns:xhtml="http://www.w3.org/1999/xhtml" name="robots" content="noindex, nofollow" />
+            <item>
+                <guid isPermaLink="false">3</guid>
+                <title>Show1 S01E01 720p HDTV x264-BADENCODES</title>
+                <pubDate>Fri, 16 Jan 2015 09:55:17 +0000</pubDate>
+                <link>https://tracker.com/download.php?id=3&amp;passkey=123&amp;source=rss</link>
+                <description></description>
+            </item>
+            <item>
+                <guid isPermaLink="false">2</guid>
+                <title>Show2 S23E226 720p HDTV x264-GOODENCODES</title>
+                <pubDate>Fri, 16 Jan 2015 09:51:07 +0000</pubDate>
+                <link>https://tracker.com/download.php?id=2&amp;passkey=123&amp;source=rss</link>
+                <description></description>
+            </item>
+            <item>
+                <guid isPermaLink="false">1</guid>
+                <title>Show3 S03E10 1080p WEB-DL DD5.1 H.264-RANDO</title>
+                <pubDate>Fri, 16 Jan 2015 09:24:34 +0000</pubDate>
+                <link>https://tracker.com/download.php?id=1&amp;passkey=123&amp;source=rss</link>
+                <description></description>
+            </item>
+        </channel>
+    </rss>
