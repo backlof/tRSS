@@ -1,12 +1,4 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Alexander
- * Date: 07.02.2015
- * Time: 14:25
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-using System;
+﻿using System;
 
 namespace tRSS.Utilities
 {
