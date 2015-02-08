@@ -1,6 +1,6 @@
-<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1233" measuredH="695" mockupW="909" mockupH="654">
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1233" measuredH="664" mockupW="909" mockupH="623">
   <controls>
-    <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="324" y="41" w="605" h="654" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="324" y="41" w="605" h="623" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Torrent%20Feeds</text>
       </controlProperties>
@@ -83,19 +83,19 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="27" controlTypeID="com.balsamiq.mockups::Label" x="336" y="671" w="283" h="-1" measuredW="283" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::Label" x="333" y="643" w="283" h="-1" measuredW="283" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Last%20update%2018%3A58%20and%20other%20system%20information</text>
       </controlProperties>
     </control>
-    <control controlID="28" controlTypeID="com.balsamiq.mockups::HSplitter" x="493" y="153" w="-1" h="494" measuredW="11" measuredH="100" zOrder="7" locked="false" isInGroup="-1"/>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::HSplitter" x="493" y="153" w="-1" h="477" measuredW="11" measuredH="100" zOrder="7" locked="false" isInGroup="-1"/>
     <control controlID="29" controlTypeID="com.balsamiq.mockups::VSplitter" x="339" y="335" w="568" h="-1" measuredW="100" measuredH="11" zOrder="8" locked="false" isInGroup="-1"/>
-    <control controlID="30" controlTypeID="com.balsamiq.mockups::TextInput" x="545" y="395" w="336" h="-1" measuredW="76" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="30" controlTypeID="com.balsamiq.mockups::TextInput" x="545" y="395" w="150" h="-1" measuredW="76" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <text>The.Show*</text>
       </controlProperties>
     </control>
-    <control controlID="31" controlTypeID="com.balsamiq.mockups::Label" x="554" y="371" w="-1" h="-1" measuredW="30" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="31" controlTypeID="com.balsamiq.mockups::Label" x="554" y="371" w="30" h="-1" measuredW="30" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Filter</text>
       </controlProperties>
@@ -110,7 +110,7 @@
         <text>Exclude</text>
       </controlProperties>
     </control>
-    <control controlID="40" controlTypeID="__group__" x="545" y="568" w="235" h="64" measuredW="235" measuredH="64" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="40" controlTypeID="__group__" x="545" y="551" w="235" h="64" measuredW="235" measuredH="64" zOrder="14" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="7" w="235" h="57" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="40">
           <controlProperties>
@@ -154,9 +154,9 @@
         <text>Include</text>
       </controlProperties>
     </control>
-    <control controlID="46" controlTypeID="com.balsamiq.mockups::FieldSet" x="519" y="353" w="388" h="294" measuredW="200" measuredH="170" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::FieldSet" x="519" y="353" w="388" h="277" measuredW="200" measuredH="170" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Something%20something</text>
+        <text>Item%20Three</text>
       </controlProperties>
     </control>
     <control controlID="56" controlTypeID="com.balsamiq.mockups::TitleWindow" x="867" y="50" w="366" h="242" measuredW="450" measuredH="400" zOrder="17" locked="false" isInGroup="-1">
@@ -192,6 +192,16 @@
     <control controlID="65" controlTypeID="com.balsamiq.mockups::Button" x="1154" y="223" w="-1" h="-1" measuredW="64" measuredH="27" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Cancel</text>
+      </controlProperties>
+    </control>
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::ComboBox" x="710" y="396" w="171" h="-1" measuredW="85" measuredH="24" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Item%20Two</text>
+      </controlProperties>
+    </control>
+    <control controlID="67" controlTypeID="com.balsamiq.mockups::Label" x="717" y="371" w="-1" h="-1" measuredW="30" measuredH="21" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Feed</text>
       </controlProperties>
     </control>
   </controls>
