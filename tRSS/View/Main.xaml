@@ -1,18 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
 	x:Class="tRSS.Main" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
 	Title="tRSS"
 	Width="595"
 	Height="579">
 	<Grid>
-		<TextBlock Text="Feeds" />
-		<ListBox SelectionMode="Single" ItemsSource="{Binding Path=Data.Feeds}">
-			<ListBox.ItemTemplate>
-				<DataTemplate>
-					<TextBlock Text="{Binding Path=Title}" />
-				</DataTemplate>
-			</ListBox.ItemTemplate>
-		</ListBox>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>		
+		<StackPanel Orientation="Horizontal" Grid.Row="0">
+			<GroupBox Header="Update">
+				<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
+			</GroupBox>
+			<GroupBox Header="Location">
+				<StackPanel>
+					<TextBox Text="{Binding Path=Data.TorrentDropLocation}" />
+				</StackPanel>
+			</GroupBox>
+		</StackPanel>
+		<Grid Grid.Row="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+		</Grid>
+		<StackPanel Grid.Row="0" Grid.Column="0">
+			<TextBlock Text="Feeds" />
+			<ListBox SelectionMode="Single" ItemsSource="{Binding Path=Data.Feeds}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Path=Title}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+		<GridSplitter VerticalAlignment="Stretch" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="5" />
+		<DataGrid Grid.Row="0" Grid.Column="2"
+			CanUserAddRows="False"
+			AutoGenerateColumns="False"
+			ColumnWidth="Auto"
+			IsReadOnly="True"
+			ItemsSource="{Binding Path=Data.Test.Items}">
+			<DataGrid.Columns>
+				<DataGridTextColumn
+					Header="Title"
+					Binding="{Binding Path=Title}" />
+				<DataGridTextColumn
+					Header="Date"
+					Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
+			</DataGrid.Columns>
+		</DataGrid>
 		<!--<DataGrid
 			CanUserAddRows="False"
 			AutoGenerateColumns="False"

@@ -17,8 +17,6 @@ namespace tRSS.ViewModel
 		{
 			Data = new Library();
 			onPropertyChanged("Data");
-			
-			System.Diagnostics.Debug.WriteLine(Data.ToString());
 		}
 	}
 }

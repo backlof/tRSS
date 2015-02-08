@@ -27,6 +27,6 @@ namespace tRSS
 			
 			VM = new MainViewModel();
 			DataContext = VM;
-		}
+		}	
 	}
 }

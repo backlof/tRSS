@@ -17,6 +17,7 @@ namespace tRSS.Model
 			Test = new Feed();
 			onPropertyChanged("Test");
 			
+			// HACK Testing
 			Feeds.Add(new Feed());		
 			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
 		}
@@ -72,17 +73,12 @@ namespace tRSS.Model
 			}
 			set
 			{
-				if(value < 1){ UpdateInMinutes = 1; }
-				else
-				{
-					_UpdateInMinutes = value;
-					onPropertyChanged("UpdateInMinutes");
-				}
+				_UpdateInMinutes = value;
+				onPropertyChanged("UpdateInMinutes");
 			}
 		}
 		
-		// TODO: 
-		private string _TorrentDropLocation = AppDomain.CurrentDomain.BaseDirectory;
+		private string _TorrentDropLocation = AppDomain.CurrentDomain.BaseDirectory; // HACK Might work as application
 		public string TorrentDropLocation
 		{
 			get
@@ -95,12 +91,11 @@ namespace tRSS.Model
 				onPropertyChanged("TorrentDropLocation");
 			}
 		}
-				
+		
 		public override string ToString()
 		{
-			return String.Format("[Library Test={0}, Feeds={1}, Filters={2}, UpdateInMinutes={3}, TorrentDropLocation={4}]", _Test, String.Join(Environment.NewLine, Feeds), String.Join(Environment.NewLine, Filters), _UpdateInMinutes, _TorrentDropLocation);
+			return String.Format("[Library UpdateInMinutes={0}, TorrentDropLocation={1}]", _UpdateInMinutes, _TorrentDropLocation);
 		}
-
 		
 		// ==========================================
 		//   MAKE BUSINESS LOGIC FUNCTIONALITY HERE

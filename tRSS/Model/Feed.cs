@@ -18,7 +18,7 @@ namespace tRSS.Model
 			Update();
 		}
 		
-		// Temporary testing constructor
+		// HACK Temporary testing constructor
 		public Feed(string title, string url)
 		{
 			Title = title;
@@ -82,15 +82,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		public override string ToString()
-		{
-			return String.Format("[Channel URL={0}, Title={1}, Description={2}, Items={3}]", URL, Title, Description, String.Join(Environment.NewLine, Items));
-		}
-
-		
 		public void Update()
 		{
-			// TODO: Check URL before updating
+			// UNDONE Check URL before updating
 			
 			XmlDocument feed = new XmlDocument();
 			feed.Load("rss.xml"); //temporary offline testing
@@ -112,6 +106,11 @@ namespace tRSS.Model
 				Items.Add(new FeedItem(item));
 			}
 			onPropertyChanged("Items");
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("[Feed URL={0}, Title={1}, Description={2}]", _URL, _Title, _Description);
 		}
 	}
 }
