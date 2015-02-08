@@ -20,6 +20,11 @@ namespace tRSS.Model
 			// HACK Testing
 			Feeds.Add(new Feed());		
 			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
+			
+			Filter f = new Filter();
+			_Filters.Add(f);
+			f.Active = true;
+			f.Title = "HeyooO";
 		}
 		
 		private Feed _Test;

@@ -12,10 +12,12 @@ namespace tRSS.ViewModel
 	public class MainViewModel : INotifyBase
 	{
 		public Library Data { get; set; }
+		public ViewSettings View { get; set; }
 		
 		public MainViewModel()
 		{
 			Data = new Library();
+			View = new ViewSettings();
 			onPropertyChanged("Data");
 		}
 	}

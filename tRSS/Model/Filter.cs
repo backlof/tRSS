@@ -12,37 +12,100 @@ namespace tRSS.Model
 	/// </summary>
 	public class Filter : INotifyBase
 	{
-		private string _Title;		
-		public string Title
-		{
-			get { return _Title; }
-			set { _Title = value; onPropertyChanged("Title"); }
-		}
-		
 		private const string SEPARATOR = ";";
 		
-		public string Include { get; set; }
-		private string IncludeRegex 
-		{ 
+		private string _Title;
+		public string Title
+		{
 			get
 			{
+				return _Title;
+			}
+			set
+			{
+				_Title = value;
+				onPropertyChanged("Title");
+			}
+		}
+		
+		private bool _Active;
+		public bool Active
+		{
+			get
+			{
+				return _Active;
+			}
+			set
+			{
+				_Active = value;
+				onPropertyChanged("Active");
+			}
+		}
+		
+		private Feed _SelectedFeed;
+		public Feed SelectedFeed
+		{
+			get
+			{
+				return _SelectedFeed;
+			}
+			set
+			{
+				_SelectedFeed = value;
+				onPropertyChanged("SelectedFeed");
+			}
+		}
+		
+		private string _TitleFilter;
+		public string TitleFilter
+		{
+			get
+			{
+				return _TitleFilter;
+			}
+			set
+			{
+				_TitleFilter = value;
+				onPropertyChanged("Filter");
+			}
+		}
+		
+		public string TitleFilterRegex
+		{
+			get
+			{
+				// UNDONE Implement a simple filter for torrent titles
 				StringBuilder sb = new StringBuilder();
 				sb.Append("^");
-				foreach (char letter in Include)
+				foreach (char letter in TitleFilter)
 				{
 					if(letter.Equals('.'))
 					{
 						sb.Append(@"\s");
 					}
-					else{ sb.Append(letter); }
+					else{ sb.Append(letter); } // FIXME Not sure if this is correct way to Regex word blocks
 				}
 				return @sb.ToString();
-				
 			}
 		}
 		
-		private List<string> _Exclude = new List<string>();		
-		public string Exclude {
+		private List<string> _Include;
+		public string Include
+		{
+			get
+			{
+				return string.Join(SEPARATOR, _Include.ToArray());
+			}
+			set
+			{
+				_Include = new List<string>(value.Split(SEPARATOR[0]));
+				onPropertyChanged("Include");
+			}
+		}
+		
+		private List<string> _Exclude = new List<string>();
+		public string Exclude
+		{
 			get 
 			{
 				return string.Join(SEPARATOR, _Exclude.ToArray());
@@ -54,11 +117,47 @@ namespace tRSS.Model
 			}
 		}
 		
+		private bool _FilterEpisode = false;
+		public bool FilterEpisode
+		{
+			get
+			{
+				return _FilterEpisode;
+			}
+			set
+			{
+				_FilterEpisode = value;
+				onPropertyChanged("FilterEpisode");
+			}
+		}
 		
-		public bool FilterEpisode = false;
+		private int _Season = 1;
+		public int Season
+		{
+			get
+			{
+				return _Season;
+			}
+			set
+			{
+				_Season = value;
+				onPropertyChanged("Season");
+			}
+		}
 		
-		public int Season = 1;
-		public int Episode = 1;
+		private int _Episode = 1;
+		public int Episode
+		{
+			get
+			{
+				return _Episode;
+			}
+			set
+			{
+				_Episode = value;
+				onPropertyChanged("Episode");
+			}
+		}
 		
 		private static bool IsTV(string title)
 		{

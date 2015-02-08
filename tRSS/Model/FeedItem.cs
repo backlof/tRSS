@@ -27,7 +27,7 @@ namespace tRSS.Model
 			{
 				return _GUID;
 			}
-			private set
+			set
 			{
 				_GUID = value;
 				onPropertyChanged("GUID");
@@ -41,7 +41,7 @@ namespace tRSS.Model
 			{
 				return _Title;
 			}
-			private set
+			set
 			{
 				_Title = value;
 				onPropertyChanged("Title");
@@ -55,7 +55,7 @@ namespace tRSS.Model
 			{
 				return _TorrentLocation;
 			}
-			private set
+			set
 			{
 				_TorrentLocation = value;
 				onPropertyChanged("TorrentLocation");
@@ -69,7 +69,7 @@ namespace tRSS.Model
 			{
 				return _Published;
 			}
-			private set
+			set
 			{
 				_Published = value;
 				onPropertyChanged("Published");
