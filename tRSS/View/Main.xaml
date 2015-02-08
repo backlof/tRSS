@@ -5,12 +5,14 @@
 	Width="595"
 	Height="579">
 	<Grid>
-		<!--<ListBox ItemsSource="{Binding Path=Data.Feeds}">
-			<ListBoxItem>
-				<TextBlock Text="{Binding Path=Title}" />
-			</ListBoxItem>
-		</ListBox>-->
-		<TextBlock Text="{Binding Path=Data.UpdateInMinutes}" />
+		<TextBlock Text="Feeds" />
+		<ListBox SelectionMode="Single" ItemsSource="{Binding Path=Data.Feeds}">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Path=Title}" />
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
 		<!--<DataGrid
 			CanUserAddRows="False"
 			AutoGenerateColumns="False"

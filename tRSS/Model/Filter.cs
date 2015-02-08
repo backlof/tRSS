@@ -70,5 +70,11 @@ namespace tRSS.Model
 			Regex regExp = new Regex(@"S(?<season>\d{1,2})E(?<episode>\d{1,2})", RegexOptions.IgnoreCase);
 			return regExp.Match(statement);
 		}
+		
+		public override string ToString()
+		{
+			return String.Format("[Filter Title={0}, Exclude={1}, FilterEpisode={2}, Season={3}, Episode={4}, Include={5}]", _Title, _Exclude, FilterEpisode, Season, Episode, Include);
+		}
+
 	}
 }

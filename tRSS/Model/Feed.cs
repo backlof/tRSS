@@ -13,9 +13,15 @@ namespace tRSS.Model
 	/// 
 	public class Feed : INotifyBase
 	{
-		public Feed(string url)
+		public Feed()
 		{
-			//test constructor
+			Update();
+		}
+		
+		// Temporary testing constructor
+		public Feed(string title, string url)
+		{
+			Title = title;
 			URL = url;
 			Update();
 		}
@@ -72,36 +78,40 @@ namespace tRSS.Model
 			private set
 			{
 				_Items = value;
-				onPropertyChanged("Items");
+				//onPropertyChanged("Items");
 			}
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[Channel URL={0}, Title={1}, Description={2}, Items={3}]", URL, Title, Description, string.Join(Environment.NewLine, Items));
+			return String.Format("[Channel URL={0}, Title={1}, Description={2}, Items={3}]", URL, Title, Description, String.Join(Environment.NewLine, Items));
 		}
 
 		
 		public void Update()
-		{			
-			if(!string.IsNullOrEmpty(URL))
+		{
+			// TODO: Check URL before updating
+			
+			XmlDocument feed = new XmlDocument();
+			feed.Load("rss.xml"); //temporary offline testing
+			
+			XmlNode channel = feed.SelectSingleNode("rss/channel");
+			XmlNodeList items = feed.SelectNodes("rss/channel/item");
+			
+			// Temporary
+			if(String.IsNullOrEmpty(Title))
 			{
-				XmlDocument feed = new XmlDocument();
-				feed.Load("rss.xml"); //temporary offline testing
-				
-				XmlNode channel = feed.SelectSingleNode("rss/channel");
-				XmlNodeList items = feed.SelectNodes("rss/channel/item");
-				
 				Title = channel.SelectSingleNode("title").InnerText;
-				Description = channel.SelectSingleNode("description").InnerText;
-				
-				Items = new List<FeedItem>();
-				foreach (XmlNode item in items)
-				{
-					Items.Add(new FeedItem(item));
-				}
-				onPropertyChanged("Entries");
 			}
+			
+			Description = channel.SelectSingleNode("description").InnerText;
+			
+			Items = new List<FeedItem>();
+			foreach (XmlNode item in items)
+			{
+				Items.Add(new FeedItem(item));
+			}
+			onPropertyChanged("Items");
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using tRSS.Utilities;
 
 namespace tRSS.Model
@@ -13,8 +14,11 @@ namespace tRSS.Model
 	{
 		public Library()
 		{
-			Test = new Feed("testing");
+			Test = new Feed();
 			onPropertyChanged("Test");
+			
+			Feeds.Add(new Feed());		
+			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
 		}
 		
 		private Feed _Test;
@@ -77,7 +81,8 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _TorrentDropLocation;
+		// TODO: 
+		private string _TorrentDropLocation = AppDomain.CurrentDomain.BaseDirectory;
 		public string TorrentDropLocation
 		{
 			get
@@ -90,6 +95,12 @@ namespace tRSS.Model
 				onPropertyChanged("TorrentDropLocation");
 			}
 		}
+				
+		public override string ToString()
+		{
+			return String.Format("[Library Test={0}, Feeds={1}, Filters={2}, UpdateInMinutes={3}, TorrentDropLocation={4}]", _Test, String.Join(Environment.NewLine, Feeds), String.Join(Environment.NewLine, Filters), _UpdateInMinutes, _TorrentDropLocation);
+		}
+
 		
 		// ==========================================
 		//   MAKE BUSINESS LOGIC FUNCTIONALITY HERE

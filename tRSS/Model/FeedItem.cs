@@ -14,27 +14,71 @@ namespace tRSS.Model
 		public FeedItem(XmlNode item)
 		{
 			Title = item.SelectSingleNode("title").InnerText;
-			Link = item.SelectSingleNode("link").InnerText;
+			TorrentLocation = item.SelectSingleNode("link").InnerText;
 			GUID = Convert.ToInt32(item.SelectSingleNode("guid").InnerText);
 			// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
 			Published = DateTime.Parse(item.SelectSingleNode("pubDate").InnerText);
 		}
 		
-		public int GUID { get; private set; }
-		
-		private string _Title;		
-		public string Title {
-			get { return _Title; }
-			private set { _Title = value; onPropertyChanged("Title"); }
+		private int _GUID;
+		public int GUID
+		{
+			get
+			{
+				return _GUID;
+			}
+			private set
+			{
+				_GUID = value;
+				onPropertyChanged("GUID");
+			}
 		}
 		
-		public string Link { get; private set; }
+		private string _Title;
+		public string Title
+		{
+			get
+			{
+				return _Title;
+			}
+			private set
+			{
+				_Title = value;
+				onPropertyChanged("Title");
+			}
+		}
 		
-		public DateTime Published { get; private set; }
+		private string _TorrentLocation;
+		public string TorrentLocation
+		{
+			get
+			{
+				return _TorrentLocation;
+			}
+			private set
+			{
+				_TorrentLocation = value;
+				onPropertyChanged("TorrentLocation");
+			}
+		}
+		
+		private DateTime _Published;
+		public DateTime Published
+		{
+			get
+			{
+				return _Published;
+			}
+			private set
+			{
+				_Published = value;
+				onPropertyChanged("Published");
+			}
+		}
 		
 		public override string ToString()
 		{
-			return string.Format("[Item GUID={0}, Title={1}, Link={2}, Published={3}]", GUID, Title, Link, Published);
+			return String.Format("[Item GUID={0}, Title={1}, Link={2}, Published={3}]", GUID, Title, TorrentLocation, Published);
 		}
 	}
 }
