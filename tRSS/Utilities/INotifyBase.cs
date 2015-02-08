@@ -8,7 +8,7 @@ namespace tRSS.Utilities
 	/// </summary>
 	public abstract class INotifyBase : INotifyPropertyChanged
 	{
-		 public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
         protected internal void onPropertyChanged(string propertyName)
         {

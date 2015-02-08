@@ -1,14 +1,30 @@
-<Window x:Class="tRSS.Main"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	Title="tRSS" Height="300" Width="300"
-	>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="tRSS.Main" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="tRSS"
+	Width="595"
+	Height="579">
 	<Grid>
-		<DataGrid CanUserAddRows="False" AutoGenerateColumns="False" ColumnWidth="Auto" IsReadOnly="True" ItemsSource="{Binding Path=Data.Test.Items}">
+		<!--<ListBox ItemsSource="{Binding Path=Data.Feeds}">
+			<ListBoxItem>
+				<TextBlock Text="{Binding Path=Title}" />
+			</ListBoxItem>
+		</ListBox>-->
+		<TextBlock Text="{Binding Path=Data.UpdateInMinutes}" />
+		<!--<DataGrid
+			CanUserAddRows="False"
+			AutoGenerateColumns="False"
+			ColumnWidth="Auto"
+			IsReadOnly="True"
+			ItemsSource="{Binding Path=Data.Test.Items}">
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
-				<DataGridTextColumn Header="Date" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
+				<DataGridTextColumn
+					Header="Title"
+					Binding="{Binding Path=Title}" />
+				<DataGridTextColumn
+					Header="Date"
+					Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
 			</DataGrid.Columns>
-		</DataGrid>
+		</DataGrid>-->
 	</Grid>
 </Window>

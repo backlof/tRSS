@@ -1,64 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
-using tRSS.Model;
 using tRSS.Utilities;
 
 namespace tRSS.Model
 {
 	/// <summary>
-	/// Description of Channel.
+	/// Description of Entry.
 	/// </summary>
 	/// 
-	public class Feed : INotifyBase
+	public class FeedItem : INotifyBase
 	{
-		public Feed(string url)
+		public FeedItem(XmlNode item)
 		{
-			//test constructor
-			URL = url;
-			Update();
+			Title = item.SelectSingleNode("title").InnerText;
+			Link = item.SelectSingleNode("link").InnerText;
+			GUID = Convert.ToInt32(item.SelectSingleNode("guid").InnerText);
+			// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
+			Published = DateTime.Parse(item.SelectSingleNode("pubDate").InnerText);
 		}
 		
-		public string URL { get; set; }
+		public int GUID { get; private set; }
 		
-		public string Title { get; private set; }
-		
-		public string Description { get; private set; }
-		
-		
-		List<FeedItem> _Items = new List<FeedItem>();
-		public List<FeedItem> Items {
-			get { return _Items; }
-			private set { _Items = value; onPropertyChanged("Items"); }
+		private string _Title;		
+		public string Title {
+			get { return _Title; }
+			private set { _Title = value; onPropertyChanged("Title"); }
 		}
+		
+		public string Link { get; private set; }
+		
+		public DateTime Published { get; private set; }
 		
 		public override string ToString()
 		{
-			return string.Format("[Channel URL={0}, Title={1}, Description={2}, Items={3}]", URL, Title, Description, string.Join(Environment.NewLine, Items));
-		}
-
-		
-		public void Update()
-		{			
-			if(!string.IsNullOrEmpty(URL))
-			{
-				XmlDocument feed = new XmlDocument();
-				feed.Load("rss.xml"); //temporary offline testing
-				
-				XmlNode channel = feed.SelectSingleNode("rss/channel");
-				XmlNodeList items = feed.SelectNodes("rss/channel/item");
-				
-				Title = channel.SelectSingleNode("title").InnerText;
-				Description = channel.SelectSingleNode("description").InnerText;
-				
-				Items = new List<FeedItem>();
-				foreach (XmlNode item in items)
-				{
-					Items.Add(new FeedItem(item));
-				}
-				onPropertyChanged("Entries");
-			}
+			return string.Format("[Item GUID={0}, Title={1}, Link={2}, Published={3}]", GUID, Title, Link, Published);
 		}
 	}
 }

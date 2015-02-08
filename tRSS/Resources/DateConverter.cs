@@ -16,7 +16,7 @@ namespace tRSS.Resources
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{			
 			DateTime date = (DateTime)value;
-			return date.ToString("g", CultureInfo.CurrentCulture);
+			return date.ToString(_format, CultureInfo.CurrentCulture);
 		}
 		
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
