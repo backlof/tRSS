@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="929" measuredH="695" mockupW="605" mockupH="654">
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1233" measuredH="695" mockupW="909" mockupH="654">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="324" y="41" w="605" h="654" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -157,6 +157,41 @@
     <control controlID="46" controlTypeID="com.balsamiq.mockups::FieldSet" x="519" y="353" w="388" h="294" measuredW="200" measuredH="170" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Something%20something</text>
+      </controlProperties>
+    </control>
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::TitleWindow" x="867" y="50" w="366" h="242" measuredW="450" measuredH="400" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20and%20edit%20feed%20window</text>
+      </controlProperties>
+    </control>
+    <control controlID="60" controlTypeID="com.balsamiq.mockups::TextInput" x="882" y="112" w="336" h="-1" measuredW="72" measuredH="27" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Item%20Four</text>
+      </controlProperties>
+    </control>
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="891" y="88" w="-1" h="-1" measuredW="26" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Title</text>
+      </controlProperties>
+    </control>
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::TextInput" x="882" y="181" w="336" h="-1" measuredW="72" measuredH="27" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Item%20Four</text>
+      </controlProperties>
+    </control>
+    <control controlID="63" controlTypeID="com.balsamiq.mockups::Label" x="891" y="157" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="21" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>RSS%20Feed%20URL</text>
+      </controlProperties>
+    </control>
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::Button" x="1094" y="223" w="-1" h="-1" measuredW="52" measuredH="27" zOrder="22" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Save</text>
+      </controlProperties>
+    </control>
+    <control controlID="65" controlTypeID="com.balsamiq.mockups::Button" x="1154" y="223" w="-1" h="-1" measuredW="64" measuredH="27" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cancel</text>
       </controlProperties>
     </control>
   </controls>
