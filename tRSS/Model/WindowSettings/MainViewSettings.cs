@@ -13,10 +13,10 @@ namespace tRSS.Model.WindowSettings
 		{
 			Resizable = ResizeMode.CanResize;
 			State = WindowState.Normal;
-			Width = 620;
-			MinWidth = 0; //620;
-			Height = 650;
-			MinHeight = 0; //650;
+			Width = 0;
+			MinWidth = 630; //620;
+			Height = 800;
+			MinHeight = 660; //650;
 		}
 		
 		private int _MinWidth;

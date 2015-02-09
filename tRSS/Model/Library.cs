@@ -17,18 +17,16 @@ namespace tRSS.Model
 			Test = new Feed();
 			onPropertyChanged("Test");
 			
-			// HACK Testing
+			// HACK Testing	
 			
-			for (int i = 0; i < 20; i++)
-			{
-				Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
-			}
+			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
+			Feeds.Add(new Feed("Movies", "https://tracker.com"));
+			Feeds.Add(new Feed("Music", "https://tracker.com"));
 						
 			for (int i = 0; i < 20; i++)
 			{
 				Filter f = new Filter();
 				Filters.Add(f);
-				f.Active = true;
 				f.Title = "Guardians of the Galaxy #" + i;
 			}
 		}
@@ -72,6 +70,64 @@ namespace tRSS.Model
 			{
 				_Filters = value;
 				onPropertyChanged("Filters");
+			}
+		}
+		
+		private Feed _SelectedFeed;
+		public Feed SelectedFeed
+		{
+			get
+			{
+				return _SelectedFeed;
+			}
+			set
+			{
+				_SelectedFeed = value;
+				onPropertyChanged("SelectedFeed");
+			}
+		}
+		
+		private Filter _SelectedFilter;
+		public Filter SelectedFilter
+		{
+			get
+			{
+				return _SelectedFilter;
+			}
+			set
+			{
+				_SelectedFilter = value;
+				onPropertyChanged("SelectedFilter");
+			}
+		}
+		
+		private int _SelectedFeedIndex;
+		public int SelectedFeedIndex
+		{
+			get
+			{
+				return _SelectedFeedIndex;
+			}
+			set
+			{
+				_SelectedFeedIndex = value;
+				System.Diagnostics.Debug.WriteLine(SelectedFeedIndex);
+				onPropertyChanged("SelectedFeedIndex");
+			}
+		}
+		
+		private int _SelectedFilterIndex;
+		public int SelectedFilterIndex
+		{
+			get
+			{
+				return _SelectedFilterIndex;
+			}
+			set
+			{
+				_SelectedFilterIndex = value;
+				System.Diagnostics.Debug.WriteLine(SelectedFilterIndex);
+				onPropertyChanged("SelectedFilterIndex");
 			}
 		}
 		

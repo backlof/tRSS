@@ -16,7 +16,7 @@ namespace tRSS
 		{
 			//throw new NotImplementedException();
 			
-			// TODO Save user properties
+			// UNDONE Needed?
 		}
 	}
 }

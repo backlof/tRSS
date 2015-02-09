@@ -28,31 +28,46 @@ namespace tRSS.Model
 			}
 		}
 		
-		private bool _Active;
-		public bool Active
+		
+		private bool _IsActive = false;
+		public bool IsActive
 		{
 			get
 			{
-				return _Active;
+				return _IsActive;
 			}
 			set
 			{
-				_Active = value;
-				onPropertyChanged("Active");
+				_IsActive = value;
+				onPropertyChanged("IsActive");
 			}
 		}
 		
-		private Feed _SelectedFeed;
-		public Feed SelectedFeed
+		private bool _IgnoreCaps;
+		public bool IgnoreCaps
 		{
 			get
 			{
-				return _SelectedFeed;
+				return _IgnoreCaps;
 			}
 			set
 			{
-				_SelectedFeed = value;
-				onPropertyChanged("SelectedFeed");
+				_IgnoreCaps = value;
+				onPropertyChanged("IgnoreCaps");
+			}
+		}
+		
+		private Feed _SearchInFeed;
+		public Feed SearchInFeed
+		{
+			get
+			{
+				return _SearchInFeed;
+			}
+			set
+			{
+				_SearchInFeed = value;
+				onPropertyChanged("SearchInFeed");
 			}
 		}
 		
@@ -66,7 +81,7 @@ namespace tRSS.Model
 			set
 			{
 				_TitleFilter = value;
-				onPropertyChanged("Filter");
+				onPropertyChanged("TitleFilter");
 			}
 		}
 		
@@ -89,7 +104,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private List<string> _Include;
+		private List<string> _Include = new List<string>();
 		public string Include
 		{
 			get

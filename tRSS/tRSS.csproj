@@ -87,7 +87,6 @@
     <Compile Include="Model\Filter.cs" />
     <Compile Include="Model\FeedItem.cs" />
     <Compile Include="Model\Library.cs" />
-    <Compile Include="Model\ViewSettings.cs" />
     <Compile Include="Model\WindowSettings\IWindowSettings.cs" />
     <Compile Include="Model\WindowSettings\MainViewSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
