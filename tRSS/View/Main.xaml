@@ -1,16 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Window
-	x:Class="tRSS.Main" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+	x:Class="tRSS.Main" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
 	Title="tRSS.View"
 	MinHeight="{Binding Path=View.MinHeight}"
 	MinWidth="{Binding Path=View.MinWidth}"
-	Height="{Binding Path=View.WindowHeight, Mode=TwoWay}"
-	Width="{Binding Path=View.WindowWidth, Mode=TwoWay}">
+	Height="{Binding Path=View.Height, Mode=TwoWay}"
+	Width="{Binding Path=View.Width, Mode=TwoWay}">
 	<DockPanel>
 		<StatusBar DockPanel.Dock="Bottom">
 			<StatusBarItem>
-				<TextBlock Text="{Binding Path=View.Stats}" />
+				<TextBlock Text="{Binding Path=View.Print}" />
+			</StatusBarItem>
+		</StatusBar>
+		<StackPanel Orientation="Horizontal" Margin="10" DockPanel.Dock="Top" VerticalAlignment="Top">
+			<GroupBox Header="Location" Padding="8">
+				<StackPanel Orientation="Horizontal">
+					<TextBox Width="300" Text="{Binding Path=Data.TorrentDropLocation}" VerticalContentAlignment="Center" />
+					<Button Content="Browse" />
+				</StackPanel>
+			</GroupBox>
+			<GroupBox Header="Update every" Padding="8">
+				<StackPanel Orientation="Horizontal">
+					<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
+					<Label Content="minute(s)" />
+				</StackPanel>
+			</GroupBox>
+		</StackPanel>
+		
+		
+		
+		<Grid Margin="0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="355" />
+			</Grid.RowDefinitions>
+			
+			<Grid Grid.Row="0" Grid.Column="0"  Margin="10,0,0,0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				
+				<Label Grid.Row="0" Content="Feeds" FontWeight="Bold" />
+				<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" ItemsSource="{Binding Path=Data.Feeds}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Title}" />
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Grid>
+			
+			<Grid Grid.Row="1" Grid.Column="0" Margin="10,0,0,0">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					
+					<Label Grid.Row="0" Content="Filters" FontWeight="Bold" />
+					<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" ItemsSource="{Binding Path=Data.Filters}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=Title}" />
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</Grid>
+			
+			<DataGrid Grid.Row="0" Grid.Column="1" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.Test.Items}">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
+					<DataGridTextColumn Header="Date" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
+				</DataGrid.Columns>
+			</DataGrid>
+			
+			<GroupBox Grid.Row="1" Grid.Column="1" Padding="8" Margin="14,16,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+				<GroupBox.Header>
+					<CheckBox Content="The Show" />
+				</GroupBox.Header>
+				<StackPanel Width="400">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<StackPanel Grid.Row="0">
+							<Label Content="Filter" Margin="0,4,0,0" />
+							<TextBox Text="The.Show*" />
+							<Label Content="Feed" Margin="0,4,0,0" />
+							<ComboBox>TV Shows</ComboBox>
+						</StackPanel>
+						<GroupBox Header="Caps" Grid.Column="1" VerticalAlignment="Center" Padding="8" Margin="10,10,10,10">
+							<CheckBox Content="Ignore" />
+						</GroupBox>
+					</Grid>
+					<Label Content="Include" Margin="0,4,0,0" />
+					<TextBox Text="GOODENCODE;BLURAY" />
+					<Label Content="Exclude" Margin="0,4,0,0" />
+					<TextBox Text="BADENCODE;WEB-DL;HDTV;1080i" />
+					<GroupBox Padding="8" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Left">
+						<GroupBox.Header>
+							<CheckBox x:Name="TVCheckBox" Content="TV Show" Margin="0,12,0,0" />
+						</GroupBox.Header>
+						<StackPanel IsEnabled="{Binding ElementName=TVCheckBox, Path=IsChecked}" Orientation="Horizontal">
+							<Label Content="Season" />
+							<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" />
+							<Label Content="Episode" />
+							<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" />
+						</StackPanel>
+					</GroupBox>
+				</StackPanel>
+			</GroupBox>
+			
+			
+			
+			<!--
+			<Border Background="Aquamarine" Grid.Row="0" Grid.Column="0"></Border>
+			<Border Background="Bisque" Grid.Row="1" Grid.Column="0"></Border>
+			
+			
+			<Border Background="Brown" Grid.Row="0" Grid.Column="1"></Border>
+			<Border Background="DarkGray" Grid.Row="1" Grid.Column="1"></Border>
+			-->
+		
+		
+		</Grid>
+	</DockPanel>
+	
+	<!--
+	<DockPanel>
+		<StatusBar
+			DockPanel.Dock="Bottom">
+			<StatusBarItem>
+				<TextBlock
+					Text="{Binding Path=View.Print}" />
 			</StatusBarItem>
 		</StatusBar>
 		<Grid>
@@ -27,9 +156,9 @@
 				</GroupBox>
 				<GroupBox Header="Update every" Padding="8">
 					<StackPanel Orientation="Horizontal">
-						<wpfTool:IntegerUpDown Width="80" Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
+						<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
 						<Label Content="minute(s)" />
-					</StackPanel>	
+					</StackPanel>
 				</GroupBox>
 			</StackPanel>
 			<Grid Grid.Row="1">
@@ -38,32 +167,28 @@
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition MinWidth="{Binding Path=View.LeftColumnMinWidth}" />
+					<ColumnDefinition MinWidth="100" Width="{Binding Path=View.ColumnWidth, Mode=TwoWay}" />
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
-				
-				<StackPanel Grid.Row="0" Grid.Column="0" Margin="10">
+				<StackPanel Margin="10,0,0,0" Grid.Row="0" Grid.Column="0">
 					<Label Content="Feeds" FontWeight="Bold" />
-					<ListBox SelectionMode="Single" BorderThickness="0" ItemsSource="{Binding Path=Data.Feeds}">
-						<ListBox.ItemTemplate>
+					<ListBox SelectionMode="Single" BorderThickness="0" ItemsSource="{Binding Path=Data.Feeds}"> <ListBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Path=Title}" />
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 					</ListBox>
 				</StackPanel>
-				
 				<DataGrid Grid.Row="0" Grid.Column="2" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.Test.Items}">
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
 						<DataGridTextColumn Header="Date" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
 					</DataGrid.Columns>
 				</DataGrid>
-				
-				<StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
+				<StackPanel Grid.Row="1" Grid.Column="0" Margin="10,0,0,0">
 					<Label Content="Filters" FontWeight="Bold" />
-					<ListBox SelectionMode="Single" BorderThickness="0" ItemsSource="{Binding Path=Data.Filters}">
+					<ListBox SelectionMode="Single" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding Path=Data.Filters}"> 
 						<ListBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Path=Title}" />
@@ -71,39 +196,34 @@
 						</ListBox.ItemTemplate>
 					</ListBox>
 				</StackPanel>
-				
-				<StackPanel Grid.Row="1" Grid.Column="2" Margin="10">
-					<GroupBox Header="Item Three" Padding="8">
-						<Grid >
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							
-							<Label Content="Filter" Grid.Column="0" Grid.Row="0" />
-							<Label Content="Feed" Grid.Column="1" Grid.Row="0" />
-							
-							<TextBox Text="asdasdasd" Grid.Column="0" Grid.Row="1" />
-							<ComboBox Grid.Column="1" Grid.Row="1" ></ComboBox>
-							
-							<Label Content="Include" Grid.Column="0" Grid.Row="2" />
-							<TextBox Text="asdasdasd" Grid.ColumnSpan="2" Grid.Row="3" />
-							
-							<Label Content="Exclude" Grid.Column="0" Grid.Row="4" />
-							<TextBox Text="asdasdasd" Grid.ColumnSpan="2" Grid.Row="5" />
-						
-							<GroupBox Padding="8" Grid.Row="6" Grid.ColumnSpan="2">
+				<StackPanel Grid.Row="1" Grid.Column="2" Margin="10" HorizontalAlignment="Left">
+					<GroupBox Padding="8">
+						<GroupBox.Header>
+							<CheckBox Content="The Show" />
+						</GroupBox.Header>
+						<StackPanel Width="400">
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
+								<StackPanel Grid.Row="0">
+									<Label Content="Filter" Margin="0,4,0,0" />
+									<TextBox Text="The.Show*" />
+									<Label Content="Feed" Margin="0,4,0,0" />
+									<ComboBox>TV Shows</ComboBox>
+								</StackPanel>
+								<GroupBox Header="Caps" Grid.Column="1" VerticalAlignment="Center" Padding="8" Margin="10,10,10,10">
+									<CheckBox Content="Ignore" />
+								</GroupBox>
+							</Grid>
+							<Label Content="Include" Margin="0,4,0,0" />
+							<TextBox Text="GOODENCODE;BLURAY" />
+							<Label Content="Exclude" Margin="0,4,0,0" />
+							<TextBox Text="BADENCODE;WEB-DL;HDTV;1080i" />
+							<GroupBox Padding="8" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Left">
 								<GroupBox.Header>
-									<CheckBox x:Name="TVCheckBox" Content="TV Show" />
+									<CheckBox x:Name="TVCheckBox" Content="TV Show" Margin="0,12,0,0" />
 								</GroupBox.Header>
 								<StackPanel IsEnabled="{Binding ElementName=TVCheckBox, Path=IsChecked}" Orientation="Horizontal">
 									<Label Content="Season" />
@@ -112,14 +232,12 @@
 									<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" />
 								</StackPanel>
 							</GroupBox>
-						</Grid>
+						</StackPanel>
 					</GroupBox>
 				</StackPanel>
-				
-				
-				<GridSplitter HorizontalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3" Width="1" />
-				<!--<GridSplitter HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3" Height="1" />-->
+				<GridSplitter HorizontalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3" Width="2" />
+				<GridSplitter HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3" Height="1" />
 			</Grid>
 		</Grid>
-	</DockPanel>
+	</DockPanel>-->
 </Window>

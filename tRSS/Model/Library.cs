@@ -18,13 +18,19 @@ namespace tRSS.Model
 			onPropertyChanged("Test");
 			
 			// HACK Testing
-			Feeds.Add(new Feed());		
-			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
 			
-			Filter f = new Filter();
-			_Filters.Add(f);
-			f.Active = true;
-			f.Title = "HeyooO";
+			for (int i = 0; i < 20; i++)
+			{
+				Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
+			}
+						
+			for (int i = 0; i < 20; i++)
+			{
+				Filter f = new Filter();
+				Filters.Add(f);
+				f.Active = true;
+				f.Title = "Guardians of the Galaxy #" + i;
+			}
 		}
 		
 		private Feed _Test;

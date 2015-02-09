@@ -11,5 +11,12 @@ namespace tRSS
 	/// </summary>
 	public partial class App : Application
 	{
+		
+		void Application_Exit(object sender, ExitEventArgs e)
+		{
+			//throw new NotImplementedException();
+			
+			// TODO Save user properties
+		}
 	}
 }

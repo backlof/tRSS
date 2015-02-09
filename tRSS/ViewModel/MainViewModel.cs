@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using tRSS.Model;
+using tRSS.Model.WindowSettings;
 using tRSS.Utilities;
 
 namespace tRSS.ViewModel
@@ -12,7 +13,8 @@ namespace tRSS.ViewModel
 	public class MainViewModel : INotifyBase
 	{
 		public Library Data { get; set; }
-		public ViewSettings View { get; set; }
+		public MainViewSettings View { get; set; }
+		
 		
 		// TODO Add IsActive in filter
 		// TODO Make filter part of grid into a stackpanel instead of grid, only the upper row is grid 2 columns
@@ -23,7 +25,7 @@ namespace tRSS.ViewModel
 		public MainViewModel()
 		{
 			Data = new Library();
-			View = new ViewSettings();
+			View = new MainViewSettings();
 			onPropertyChanged("Data");
 		}
 	}

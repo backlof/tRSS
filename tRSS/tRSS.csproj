@@ -38,6 +38,7 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -87,11 +88,13 @@
     <Compile Include="Model\FeedItem.cs" />
     <Compile Include="Model\Library.cs" />
     <Compile Include="Model\ViewSettings.cs" />
+    <Compile Include="Model\WindowSettings\IWindowSettings.cs" />
+    <Compile Include="Model\WindowSettings\MainViewSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\WPFAssemblyInfo.cs" />
-    <Compile Include="Resources\DateConverter.cs" />
+    <Compile Include="Utilities\DateConverter.cs" />
     <Compile Include="Utilities\INotifyBase.cs" />
-    <Compile Include="Utilities\Path.cs" />
+    <Compile Include="Utilities\Paths.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="View\Main.xaml.cs">
       <SubType>Code</SubType>
@@ -108,6 +111,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model" />
+    <Folder Include="Data" />
+    <Folder Include="Model\WindowSettings" />
     <Folder Include="Resources" />
     <Folder Include="Utilities" />
     <Folder Include="View" />
