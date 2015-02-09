@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ClassDiagram Zoom="1" MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="tRSS.App" Collapsed="True">
+    <Position X="0.5" Y="9.9" Width="1.78443" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="True" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Resources.DateConverter" Collapsed="True">
+    <Position X="0.5" Y="11.3" Width="1.52984" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="True" />
+      <Compartment Name="Fields" Collapsed="True" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Utilities.Path" Collapsed="True">
+    <Position X="0.5" Y="13.2" Width="2.198288" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="True" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.View.Window1" Collapsed="True">
+    <Position X="0.5" Y="14.7" Width="1.78443" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="True" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Model.Feed" Collapsed="False">
+    <Position X="0.5" Y="2.2" Width="1.7" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Utilities.INotifyBase" Collapsed="False">
+    <Position X="0.5" Y="0.5" Width="3.1" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="True" />
+      <Compartment Name="Events" Collapsed="True" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Model.Library" Collapsed="False">
+    <Position X="11.9" Y="2.2" Width="2" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.ViewModel.MainViewModel" Collapsed="False">
+    <Position X="9.3" Y="2.2" Width="2.2" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Model.ViewSettings" Collapsed="False">
+    <Position X="7.1" Y="2.2" Width="1.9" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Model.Filter" Collapsed="False">
+    <Position X="4.6" Y="2.2" Width="2" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Model.FeedItem" Collapsed="False">
+    <Position X="2.5" Y="2.2" Width="1.7" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="tRSS.Main" Collapsed="False">
+    <Position X="0.6" Y="5.8" Width="1.8" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+</ClassDiagram>

@@ -117,6 +117,7 @@
     <Content Include="rss.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="tRSS.cd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
