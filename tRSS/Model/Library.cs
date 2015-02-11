@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows.Input;
 using tRSS.Utilities;
@@ -19,12 +20,23 @@ namespace tRSS.Model
 			onPropertyChanged("Test");
 			
 			// HACK Testing
-			
-			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
+			Feed tvShows = new Feed("TV Shows", "https://tracker.com");
+			Feeds.Add(tvShows);
 			Feeds.Add(new Feed("Movies", "https://tracker.com"));
 			Feeds.Add(new Feed("Music", "https://tracker.com"));
 			
-			Filters.Add(new Filter("The Walking Dead"));
+			
+			Filter walkingDead = new Filter("The Walking Dead");
+			walkingDead.IsActive = true;
+			walkingDead.TitleFilter = "The.Walking.Dead*";
+			walkingDead.IgnoreCaps = true;
+			walkingDead.Include = "1080p;720p";
+			walkingDead.Exclude = "WEB-DL;HDTV;1080i;DIMENSION;MPEG;";
+			walkingDead.SearchInFeed = tvShows;
+			walkingDead.FilterEpisode = true;
+			walkingDead.Season = 5;
+			walkingDead.Episode = 10;
+			Filters.Add(walkingDead);
 			Filters.Add(new Filter("Family Guy"));
 			Filters.Add(new Filter("South Park"));
 			Filters.Add(new Filter("Tiny House Nation"));
@@ -44,10 +56,10 @@ namespace tRSS.Model
 				_Test = value;
 				onPropertyChanged("Test");
 			}
-		}
+		}	
 		
-		private List<Feed> _Feeds = new List<Feed>();
-		public List<Feed> Feeds
+		private ObservableCollection<Feed> _Feeds = new ObservableCollection<Feed>();
+		public ObservableCollection<Feed> Feeds
 		{
 			get
 			{
@@ -56,12 +68,11 @@ namespace tRSS.Model
 			set
 			{
 				_Feeds = value;
-				onPropertyChanged("Feeds");
 			}
 		}
 		
-		private List<Filter> _Filters = new List<Filter>();
-		public List<Filter> Filters
+		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
+		public ObservableCollection<Filter> Filters
 		{
 			get
 			{
@@ -70,7 +81,6 @@ namespace tRSS.Model
 			set
 			{
 				_Filters = value;
-				onPropertyChanged("Filters");
 			}
 		}
 		
@@ -178,19 +188,7 @@ namespace tRSS.Model
 		
 		public void ExecuteDeleteFeed(object parameter)
 		{
-			// FIXME ListBox doesn't update
-			int nextIndex = SelectedFeedIndex - 1;
-			if (SelectedFeedIndex == 0){
-				nextIndex = 0;
-			}
-			Feeds.RemoveAt(SelectedFeedIndex);
-			SelectedFeedIndex = nextIndex;
-			onPropertyChanged("Feeds");
-			
-			foreach (Feed f in Feeds)
-			{
-				System.Diagnostics.Debug.WriteLine(f.ToString());
-			}
+			Feeds.Remove(SelectedFeed);
 		}
 		
 		public bool CanDeleteFeed(object parameter)
@@ -208,9 +206,7 @@ namespace tRSS.Model
 		
 		public void ExecuteDeleteFilter(object parameter)
 		{
-			// FIXME ListBox doesn't update
-			Filters.RemoveAt(SelectedFilterIndex);
-			onPropertyChanged("Filters");
+			Filters.Remove(SelectedFilter);
 		}
 		
 		public bool CanDeleteFilter(object parameter)
@@ -230,9 +226,9 @@ namespace tRSS.Model
 		
 		public void ExecuteNewFeed(object parameter)
 		{
-			// UNDONE Needs new page or extra field to add
-			Feeds.Add(new Feed());
-			onPropertyChanged("Feeds");
+			Feed f = new Feed();
+			Feeds.Add(f);
+			SelectedFeed = f;
 		}
 		
 		public bool CanNewFeed(object parameter)
@@ -253,9 +249,18 @@ namespace tRSS.Model
 		public void ExecuteNewFilter(object parameter)
 		{
 			Filter f = new Filter();
+			
+			f.TitleFilter = SelectedFilter.TitleFilter;
+			f.SearchInFeed = SelectedFilter.SearchInFeed;
+			f.IgnoreCaps = SelectedFilter.IgnoreCaps;
+			f.Include = SelectedFilter.Include;
+			f.Exclude = SelectedFilter.Exclude;
+			f.FilterEpisode = SelectedFilter.FilterEpisode;
+			f.Season = SelectedFilter.Season;
+			f.Episode = SelectedFilter.Episode;
+			
 			Filters.Add(f);
 			SelectedFilter = f;
-			onPropertyChanged("Filters");
 		}
 		
 		public bool CanNewFilter(object parameter)

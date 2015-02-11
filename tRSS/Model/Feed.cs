@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.Serialization;
 using tRSS.Model;
@@ -68,17 +69,16 @@ namespace tRSS.Model
 			}
 		}
 		
-		private List<FeedItem> _Items = new List<FeedItem>();
-		public List<FeedItem> Items
+		private ObservableCollection<FeedItem> _Items = new ObservableCollection<FeedItem>();
+		public ObservableCollection<FeedItem> Items
 		{
 			get
 			{
 				return _Items;
 			}
-			private set
+			set
 			{
 				_Items = value;
-				//onPropertyChanged("Items");
 			}
 		}
 		
@@ -100,7 +100,7 @@ namespace tRSS.Model
 			
 			Description = channel.SelectSingleNode("description").InnerText;
 			
-			Items = new List<FeedItem>();
+			Items = new ObservableCollection<FeedItem>();
 			foreach (XmlNode item in items)
 			{
 				Items.Add(new FeedItem(item));

@@ -76,6 +76,34 @@ namespace tRSS.Model
 			}
 		}
 		
+		private bool _Filtered = false;
+		public bool Filtered
+		{
+			get
+			{
+				return _Filtered;
+			}
+			set
+			{
+				_Filtered = value;
+				onPropertyChanged("Filtered");
+			}
+		}
+		
+		private bool _Downloaded = false;
+		public bool Downloaded
+		{
+			get
+			{
+				return _Downloaded;
+			}
+			set
+			{
+				_Downloaded = value;
+				onPropertyChanged("Downloaded");
+			}
+		}
+		
 		public override string ToString()
 		{
 			return String.Format("[Item GUID={0}, Title={1}, Link={2}, Published={3}]", GUID, Title, TorrentLocation, Published);
