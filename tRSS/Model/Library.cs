@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Windows.Input;
 using tRSS.Utilities;
 
 namespace tRSS.Model
@@ -17,19 +18,19 @@ namespace tRSS.Model
 			Test = new Feed();
 			onPropertyChanged("Test");
 			
-			// HACK Testing	
+			// HACK Testing
 			
 			Feeds.Add(new Feed("TV Shows", "https://tracker.com"));
 			Feeds.Add(new Feed("Movies", "https://tracker.com"));
 			Feeds.Add(new Feed("Music", "https://tracker.com"));
-						
-			for (int i = 0; i < 20; i++)
-			{
-				Filter f = new Filter();
-				Filters.Add(f);
-				f.Title = "Guardians of the Galaxy #" + i;
-			}
+			
+			Filters.Add(new Filter("The Walking Dead"));
+			Filters.Add(new Filter("Family Guy"));
+			Filters.Add(new Filter("South Park"));
+			Filters.Add(new Filter("Tiny House Nation"));
 		}
+		
+		# region Properties
 		
 		private Feed _Test;
 		public Feed Test
@@ -111,7 +112,6 @@ namespace tRSS.Model
 			set
 			{
 				_SelectedFeedIndex = value;
-				System.Diagnostics.Debug.WriteLine(SelectedFeedIndex);
 				onPropertyChanged("SelectedFeedIndex");
 			}
 		}
@@ -126,7 +126,6 @@ namespace tRSS.Model
 			set
 			{
 				_SelectedFilterIndex = value;
-				System.Diagnostics.Debug.WriteLine(SelectedFilterIndex);
 				onPropertyChanged("SelectedFilterIndex");
 			}
 		}
@@ -159,10 +158,115 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		# endregion
+		
 		public override string ToString()
 		{
 			return String.Format("[Library UpdateInMinutes={0}, TorrentDropLocation={1}]", _UpdateInMinutes, _TorrentDropLocation);
 		}
+		
+		# region Commands
+		
+		public ICommand DeleteFeed
+		{
+			get
+			{
+				return new RelayCommand(ExecuteDeleteFeed, CanDeleteFeed);
+			}
+		}
+		
+		public void ExecuteDeleteFeed(object parameter)
+		{
+			// FIXME ListBox doesn't update
+			int nextIndex = SelectedFeedIndex - 1;
+			if (SelectedFeedIndex == 0){
+				nextIndex = 0;
+			}
+			Feeds.RemoveAt(SelectedFeedIndex);
+			SelectedFeedIndex = nextIndex;
+			onPropertyChanged("Feeds");
+			
+			foreach (Feed f in Feeds)
+			{
+				System.Diagnostics.Debug.WriteLine(f.ToString());
+			}
+		}
+		
+		public bool CanDeleteFeed(object parameter)
+		{
+			return Feeds.Count > 1;
+		}
+		
+		public ICommand DeleteFilter
+		{
+			get
+			{
+				return new RelayCommand(ExecuteDeleteFilter, CanDeleteFilter);
+			}
+		}
+		
+		public void ExecuteDeleteFilter(object parameter)
+		{
+			// FIXME ListBox doesn't update
+			Filters.RemoveAt(SelectedFilterIndex);
+			onPropertyChanged("Filters");
+		}
+		
+		public bool CanDeleteFilter(object parameter)
+		{
+			return Filters.Count > 1;
+		}
+		
+		// --------- NEW FEED ----------------
+		
+		public ICommand NewFeed
+		{
+			get
+			{
+				return new RelayCommand(ExecuteNewFeed, CanNewFeed);
+			}
+		}
+		
+		public void ExecuteNewFeed(object parameter)
+		{
+			// UNDONE Needs new page or extra field to add
+			Feeds.Add(new Feed());
+			onPropertyChanged("Feeds");
+		}
+		
+		public bool CanNewFeed(object parameter)
+		{
+			return true;
+		}
+		
+		// --------- NEW FILTER ----------------
+		
+		public ICommand NewFilter
+		{
+			get
+			{
+				return new RelayCommand(ExecuteNewFilter, CanNewFilter);
+			}
+		}
+		
+		public void ExecuteNewFilter(object parameter)
+		{
+			Filter f = new Filter();
+			Filters.Add(f);
+			SelectedFilter = f;
+			onPropertyChanged("Filters");
+		}
+		
+		public bool CanNewFilter(object parameter)
+		{
+			return true;
+		}
+		
+		
+		
+		
+		# endregion
 		
 		// ==========================================
 		//   MAKE BUSINESS LOGIC FUNCTIONALITY HERE

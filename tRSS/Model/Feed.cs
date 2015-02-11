@@ -40,7 +40,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _Title;
+		private string _Title = "New Feed";
 		public string Title
 		{
 			get
@@ -112,5 +112,6 @@ namespace tRSS.Model
 		{
 			return String.Format("[Feed URL={0}, Title={1}, Description={2}]", _URL, _Title, _Description);
 		}
+		
 	}
 }

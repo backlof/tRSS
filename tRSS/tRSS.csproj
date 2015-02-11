@@ -46,6 +46,7 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -94,6 +95,7 @@
     <Compile Include="Utilities\DateConverter.cs" />
     <Compile Include="Utilities\INotifyBase.cs" />
     <Compile Include="Utilities\Paths.cs" />
+    <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="View\Main.xaml.cs">
       <SubType>Code</SubType>

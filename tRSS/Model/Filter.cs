@@ -12,9 +12,16 @@ namespace tRSS.Model
 	/// </summary>
 	public class Filter : INotifyBase
 	{
+		public Filter(string title)
+		{
+			Title = title;
+		}
+		
+		public Filter(){}
+		
 		private const string SEPARATOR = ";";
 		
-		private string _Title;
+		private string _Title = "New Filter";
 		public string Title
 		{
 			get

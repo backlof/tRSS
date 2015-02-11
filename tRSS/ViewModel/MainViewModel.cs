@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Windows;
+using System.Windows.Input;
 using tRSS.Model;
 using tRSS.Model.WindowSettings;
 using tRSS.Utilities;
@@ -15,7 +17,7 @@ namespace tRSS.ViewModel
 		public Library Data { get; set; }
 		public MainViewSettings View { get; set; }
 		
-		// TODO DataContractSerialization for XML (References are kept)
+		// TODO DataContractSerialization for XML (referanser kan spesifiseres)
 		
 		public MainViewModel()
 		{
@@ -24,6 +26,6 @@ namespace tRSS.ViewModel
 			onPropertyChanged("Data");
 		}
 		
-		
+		public ICommand DoubleClick { get; set; }
 	}
 }
