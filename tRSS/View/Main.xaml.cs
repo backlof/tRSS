@@ -32,13 +32,11 @@ namespace tRSS
 		# region Helpers for renaming in ListBox
 		
 		private TextBox ActiveTextBox;
-		private TextBox InFocusTextBox;
 		private bool HasFocused = false;
 		
 		private void EnableEditing()
 		{
 			HasFocused = true;
-			ActiveTextBox = InFocusTextBox;
 			ActiveTextBox.Visibility = Visibility.Visible;
 		}
 		
@@ -50,12 +48,13 @@ namespace tRSS
 		
 		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			InFocusTextBox = (TextBox)((Grid)((TextBlock)sender).Parent).Children[1];
-			
 			if(HasFocused)
 			{
 				DisableEditing();
 			}
+			
+			ActiveTextBox = (TextBox)((Grid)((TextBlock)sender).Parent).Children[1];
+			
 			if(e.ClickCount == 2)
 			{
 				EnableEditing();
@@ -80,7 +79,7 @@ namespace tRSS
 		
 		void Window_KeyDown(object sender, KeyEventArgs e)
 		{
-			if(!HasFocused && InFocusTextBox != null && e.Key == Key.F2)
+			if(!HasFocused && ActiveTextBox != null && e.Key == Key.F2)
 			{
 				EnableEditing();
 			}
