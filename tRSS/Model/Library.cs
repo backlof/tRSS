@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using System.Windows.Input;
+using System.Xml;
 using tRSS.Utilities;
+using System.Runtime.Serialization;
 
 namespace tRSS.Model
 {
@@ -12,6 +15,8 @@ namespace tRSS.Model
 	/// Executes business logic so that ViewModels don't have to
 	/// Example: Updates
 	/// </summary>
+	
+	[DataContract()]
 	public class Library : INotifyBase
 	{
 		public Library()
@@ -42,9 +47,12 @@ namespace tRSS.Model
 			Filters.Add(new Filter("Tiny House Nation"));
 		}
 		
+		public const string FILENAME = "Library";
+		
 		# region Properties
 		
 		private Feed _Test;
+		[IgnoreDataMember()]
 		public Feed Test
 		{
 			get
@@ -56,9 +64,10 @@ namespace tRSS.Model
 				_Test = value;
 				onPropertyChanged("Test");
 			}
-		}	
+		}
 		
 		private ObservableCollection<Feed> _Feeds = new ObservableCollection<Feed>();
+		[DataMember()]
 		public ObservableCollection<Feed> Feeds
 		{
 			get
@@ -72,6 +81,7 @@ namespace tRSS.Model
 		}
 		
 		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
+		[DataMember()]
 		public ObservableCollection<Filter> Filters
 		{
 			get
@@ -85,6 +95,7 @@ namespace tRSS.Model
 		}
 		
 		private Feed _SelectedFeed;
+		[IgnoreDataMember()]
 		public Feed SelectedFeed
 		{
 			get
@@ -98,21 +109,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		private Filter _SelectedFilter;
-		public Filter SelectedFilter
-		{
-			get
-			{
-				return _SelectedFilter;
-			}
-			set
-			{
-				_SelectedFilter = value;
-				onPropertyChanged("SelectedFilter");
-			}
-		}
 		
 		private int _SelectedFeedIndex;
+		[IgnoreDataMember()]
 		public int SelectedFeedIndex
 		{
 			get
@@ -127,6 +126,7 @@ namespace tRSS.Model
 		}
 		
 		private int _SelectedFilterIndex;
+		[IgnoreDataMember()]
 		public int SelectedFilterIndex
 		{
 			get
@@ -140,7 +140,23 @@ namespace tRSS.Model
 			}
 		}
 		
+		private Filter _SelectedFilter;
+		[IgnoreDataMember()]
+		public Filter SelectedFilter
+		{
+			get
+			{
+				return _SelectedFilter;
+			}
+			set
+			{
+				_SelectedFilter = value;
+				onPropertyChanged("SelectedFilter");
+			}
+		}
+		
 		private int _UpdateInMinutes = 5;
+		[DataMember()]
 		public int UpdateInMinutes
 		{
 			get
@@ -155,6 +171,7 @@ namespace tRSS.Model
 		}
 		
 		private string _TorrentDropLocation = AppDomain.CurrentDomain.BaseDirectory; // HACK Might work as application
+		[DataMember()]
 		public string TorrentDropLocation
 		{
 			get
@@ -178,6 +195,8 @@ namespace tRSS.Model
 		
 		# region Commands
 		
+		// --------- DELETE FEED ----------------
+		
 		public ICommand DeleteFeed
 		{
 			get
@@ -195,6 +214,8 @@ namespace tRSS.Model
 		{
 			return Feeds.Count > 1;
 		}
+		
+		// --------- DELETE FILTER ----------------
 		
 		public ICommand DeleteFilter
 		{
@@ -268,7 +289,36 @@ namespace tRSS.Model
 			return true;
 		}
 		
+		// --------- BROWSE DIRECTORY ----------------
 		
+		
+		public ICommand ChooseDirectory
+		{
+			get
+			{
+				return new RelayCommand(ExecuteChooseDirectory, CanChooseDirectory);
+			}
+		}
+		
+		public void ExecuteChooseDirectory(object parameter)
+		{
+			// UNDONE Relative paths don't work
+			using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+			{
+				dialog.SelectedPath = TorrentDropLocation;
+				System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+				if (result == System.Windows.Forms.DialogResult.OK)
+				{
+					string path = dialog.SelectedPath + Path.DirectorySeparatorChar;
+					TorrentDropLocation = Paths.MakeRelativePath(path);
+				}
+			}
+		}
+		
+		public bool CanChooseDirectory(object parameter)
+		{
+			return true;
+		}
 		
 		
 		# endregion

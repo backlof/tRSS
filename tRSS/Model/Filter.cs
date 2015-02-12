@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using tRSS.Utilities;
+using System.Runtime.Serialization;
+using System.Xml;
 
 namespace tRSS.Model
 {
 	/// <summary>
 	/// Description of Filter.
 	/// </summary>
+	[DataContract()]
 	public class Filter : INotifyBase
 	{
 		public Filter(string title)
@@ -22,6 +26,7 @@ namespace tRSS.Model
 		private const string SEPARATOR = ";";
 		
 		private string _Title = "New Filter";
+		[DataMember()]
 		public string Title
 		{
 			get
@@ -37,6 +42,7 @@ namespace tRSS.Model
 		
 		
 		private bool _IsActive = false;
+		[DataMember()]
 		public bool IsActive
 		{
 			get
@@ -50,7 +56,8 @@ namespace tRSS.Model
 			}
 		}
 		
-		private bool _IgnoreCaps;
+		private bool _IgnoreCaps = true;
+		[DataMember()]
 		public bool IgnoreCaps
 		{
 			get
@@ -64,7 +71,23 @@ namespace tRSS.Model
 			}
 		}
 		
+		private bool _MatchOnce = true;
+		[DataMember()]
+		public bool MatchOnce
+		{
+			get
+			{
+				return _MatchOnce;
+			}
+			set
+			{
+				_MatchOnce = value;
+				onPropertyChanged("MatchOnce");
+			}
+		}
+		
 		private Feed _SearchInFeed;
+		[IgnoreDataMember()]
 		public Feed SearchInFeed
 		{
 			get
@@ -74,11 +97,26 @@ namespace tRSS.Model
 			set
 			{
 				_SearchInFeed = value;
-				onPropertyChanged("SearchInFeed");
 			}
 		}
 		
-		private string _TitleFilter;
+		private int _SearchInFeedIndex = 0;
+		[DataMember()]
+		public int SearchInFeedIndex
+		{
+			get
+			{
+				return _SearchInFeedIndex;
+			}
+			set
+			{
+				_SearchInFeedIndex = value;
+				onPropertyChanged("SearchInFeedIndex");
+			}
+		}
+		
+		private string _TitleFilter = "";
+		[DataMember()]
 		public string TitleFilter
 		{
 			get
@@ -92,6 +130,7 @@ namespace tRSS.Model
 			}
 		}
 		
+		[IgnoreDataMember]
 		public string TitleFilterRegex
 		{
 			get
@@ -112,6 +151,7 @@ namespace tRSS.Model
 		}
 		
 		private List<string> _Include = new List<string>();
+		[DataMember()]
 		public string Include
 		{
 			get
@@ -126,9 +166,10 @@ namespace tRSS.Model
 		}
 		
 		private List<string> _Exclude = new List<string>();
+		[DataMember()]
 		public string Exclude
 		{
-			get 
+			get
 			{
 				return string.Join(SEPARATOR, _Exclude.ToArray());
 			}
@@ -140,6 +181,7 @@ namespace tRSS.Model
 		}
 		
 		private bool _FilterEpisode = false;
+		[DataMember()]
 		public bool FilterEpisode
 		{
 			get
@@ -154,6 +196,7 @@ namespace tRSS.Model
 		}
 		
 		private int _Season = 1;
+		[DataMember()]
 		public int Season
 		{
 			get
@@ -168,6 +211,7 @@ namespace tRSS.Model
 		}
 		
 		private int _Episode = 1;
+		[DataMember()]
 		public int Episode
 		{
 			get

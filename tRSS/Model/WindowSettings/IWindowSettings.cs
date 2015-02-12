@@ -1,24 +1,16 @@
 ﻿
 using System;
+using System.Runtime.Serialization;
 using System.Windows;
 using tRSS.Utilities;
 
 namespace tRSS.Model.WindowSettings
 {
-	/// <summary>
-	/// Abstract class for window settings
-	/// </summary>
+	[DataContract()]
 	public abstract class IWindowSettings : INotifyBase
-	{
-		public string Filename
-		{
-			get
-			{
-				return this.GetType().Name + ".xml";
-			}
-		}
-		
-		private ResizeMode _Resizable;
+	{		
+		private ResizeMode _Resizable = ResizeMode.CanResize;
+		[DataMember()]
 		public ResizeMode Resizable
 		{
 			get
@@ -33,6 +25,7 @@ namespace tRSS.Model.WindowSettings
 		}
 		
 		private double _Width;
+		[DataMember()]
 		public double Width
 		{
 			get
@@ -49,6 +42,7 @@ namespace tRSS.Model.WindowSettings
 		}
 		
 		private double _Height;
+		[DataMember()]
 		public double Height
 		{
 			get
@@ -64,7 +58,8 @@ namespace tRSS.Model.WindowSettings
 			}
 		}
 		
-		private double _Top;
+		private double _Top = 0;
+		[DataMember()]
 		public double Top
 		{
 			get
@@ -78,7 +73,8 @@ namespace tRSS.Model.WindowSettings
 			}
 		}
 		
-		private double _Left;
+		private double _Left = 0;
+		[DataMember()]
 		public double Left
 		{
 			get
@@ -92,7 +88,8 @@ namespace tRSS.Model.WindowSettings
 			}
 		}
 		
-		private WindowState _State;
+		private WindowState _State = WindowState.Normal;
+		[DataMember()]
 		public WindowState State
 		{
 			get

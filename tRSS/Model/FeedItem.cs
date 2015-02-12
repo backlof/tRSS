@@ -8,7 +8,6 @@ namespace tRSS.Model
 	/// <summary>
 	/// Description of Entry.
 	/// </summary>
-	/// 
 	public class FeedItem : INotifyBase
 	{
 		public FeedItem(XmlNode item)
@@ -76,6 +75,9 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		// FIXME Not sure if this is the right pattern
+		/*
 		private bool _Filtered = false;
 		public bool Filtered
 		{
@@ -102,7 +104,7 @@ namespace tRSS.Model
 				_Downloaded = value;
 				onPropertyChanged("Downloaded");
 			}
-		}
+		}*/
 		
 		public override string ToString()
 		{

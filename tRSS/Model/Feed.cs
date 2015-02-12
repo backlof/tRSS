@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
 using tRSS.Model;
@@ -11,7 +12,7 @@ namespace tRSS.Model
 	/// <summary>
 	/// Description of Channel.
 	/// </summary>
-	/// 
+	[DataContract()]
 	public class Feed : INotifyBase
 	{
 		public Feed()
@@ -28,6 +29,7 @@ namespace tRSS.Model
 		}
 		
 		private string _URL;
+		[DataMember()]
 		public string URL
 		{
 			get
@@ -42,6 +44,7 @@ namespace tRSS.Model
 		}
 		
 		private string _Title = "New Feed";
+		[DataMember()]
 		public string Title
 		{
 			get
@@ -56,6 +59,7 @@ namespace tRSS.Model
 		}
 		
 		private string _Description;
+		[DataMember()]
 		public string Description
 		{
 			get
@@ -70,6 +74,7 @@ namespace tRSS.Model
 		}
 		
 		private ObservableCollection<FeedItem> _Items = new ObservableCollection<FeedItem>();
+		[IgnoreDataMember()]
 		public ObservableCollection<FeedItem> Items
 		{
 			get
@@ -87,7 +92,7 @@ namespace tRSS.Model
 			// UNDONE Check URL before updating
 			
 			XmlDocument feed = new XmlDocument();
-			feed.Load("rss.xml"); //temporary offline testing
+			feed.Load("RSS.xml"); //temporary offline testing
 			
 			XmlNode channel = feed.SelectSingleNode("rss/channel");
 			XmlNodeList items = feed.SelectNodes("rss/channel/item");

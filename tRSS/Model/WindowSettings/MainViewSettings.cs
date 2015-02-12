@@ -1,52 +1,22 @@
 ﻿
 using System;
+using System.Runtime.Serialization;
 using System.Windows;
 
 namespace tRSS.Model.WindowSettings
 {
-	/// <summary>
-	/// Description of MainViewSettings.
-	/// </summary>
+	[DataContract()]
 	public class MainViewSettings : IWindowSettings
 	{
 		public MainViewSettings()
 		{
-			Resizable = ResizeMode.CanResize;
-			State = WindowState.Normal;
 			Width = 0;
-			MinWidth = 630; //620;
 			Height = 800;
-			MinHeight = 660; //650;
 		}
 		
-		private int _MinWidth;
-		public int MinWidth
-		{
-			get
-			{
-				return _MinWidth;
-			}
-			set
-			{
-				_MinWidth = value;
-				onPropertyChanged("MinWidth");
-			}
-		}
+		public const string FILENAME = "MainView";
 		
-		private int _MinHeight;
-		public int MinHeight
-		{
-			get
-			{
-				return _MinHeight;
-			}
-			set
-			{
-				_MinHeight = value;
-				onPropertyChanged("MinHeight");
-			}
-		}
-		
+		[IgnoreDataMemberAttribute()]
 		public string Print 
 		{ 
 			get
