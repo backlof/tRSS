@@ -25,6 +25,9 @@ namespace tRSS.ViewModel
 		public MainViewModel()
 		{
 			Load();
+			
+			// HACK Testing
+			Data.Update();
 		}
 		
 		

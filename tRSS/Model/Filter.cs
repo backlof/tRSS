@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -86,20 +88,6 @@ namespace tRSS.Model
 			}
 		}
 		
-		private Feed _SearchInFeed;
-		[IgnoreDataMember()]
-		public Feed SearchInFeed
-		{
-			get
-			{
-				return _SearchInFeed;
-			}
-			set
-			{
-				_SearchInFeed = value;
-			}
-		}
-		
 		private int _SearchInFeedIndex = 0;
 		[DataMember()]
 		public int SearchInFeedIndex
@@ -125,57 +113,102 @@ namespace tRSS.Model
 			}
 			set
 			{
-				_TitleFilter = value;
+				// Replace all Regex Operators - except the ones I translate
+				_TitleFilter = Utils.ReplaceCharacters(value.Trim(), REJECT_CHARS, "");
+				RegexPattern = TitleFilter;
 				onPropertyChanged("TitleFilter");
 			}
 		}
 		
+		private const string REJECT_CHARS =  @"$^{[(|)]}+\";
+		
+		// REGEX OPERATORS *.$^{[(|)]}+?\
+		private string _RegexPattern = "";
 		[IgnoreDataMember]
-		public string TitleFilterRegex
+		public string RegexPattern
 		{
 			get
 			{
-				// UNDONE Implement a simple filter for torrent titles
+				return _RegexPattern;
+			}
+			set
+			{
 				StringBuilder sb = new StringBuilder();
-				sb.Append("^");
-				foreach (char letter in TitleFilter)
+				
+				// * = Wildcard
+				// . = Whitespaces
+				// ? = Any character
+				
+				int length = value.Length;
+				
+				if(length > 0)
 				{
-					if(letter.Equals('.'))
+					// No wildcard in beginning, then "Begins with"
+					if(value[0] != '*')
 					{
-						sb.Append(@"\s");
+						sb.Append(@"^");
 					}
-					else{ sb.Append(letter); } // FIXME Not sure if this is correct way to Regex word blocks
+					
+					foreach(char letter in value)
+					{
+						if (letter == '*')
+						{
+							// Any symbol - any number of times
+							sb.Append(@".*");
+						}
+						else if (letter == '?')
+						{
+							// Any symbol - 0 or 1 times
+							sb.Append(".?");
+						}
+						else if (letter == '.')
+						{
+							// Whitespace 1 time
+							sb.Append(@"[\s._-]");
+						}
+						else
+						{
+							sb.Append(letter);
+						}
+					}
 				}
-				return @sb.ToString();
+				else
+				{
+					sb.Append(".^"); // No matches
+				}
+				
+				_RegexPattern = @sb.ToString();
+				onPropertyChanged("RegexPattern");
 			}
 		}
 		
-		private List<string> _Include = new List<string>();
+		
+		private string _Include = "";
 		[DataMember()]
 		public string Include
 		{
 			get
 			{
-				return string.Join(SEPARATOR, _Include.ToArray());
+				return _Include;
 			}
 			set
 			{
-				_Include = new List<string>(value.Split(SEPARATOR[0]));
+				_Include = value;
 				onPropertyChanged("Include");
 			}
 		}
 		
-		private List<string> _Exclude = new List<string>();
+		private string _Exclude = "";
 		[DataMember()]
 		public string Exclude
 		{
 			get
 			{
-				return string.Join(SEPARATOR, _Exclude.ToArray());
+				return _Exclude;
 			}
 			set
 			{
-				_Exclude = new List<string>(value.Split(SEPARATOR[0]));
+				_Exclude = value;
 				onPropertyChanged("Exclude");
 			}
 		}
@@ -224,6 +257,95 @@ namespace tRSS.Model
 				onPropertyChanged("Episode");
 			}
 		}
+		
+		public void FilterFeed(Feed toSearch)
+		{
+			if (IsActive)
+			{
+				foreach (FeedItem item in toSearch.Items)
+				{
+					bool match = true;
+					
+					if (DownloadedItems.Contains(item))
+					{
+						match = false;
+					}
+					
+					
+					
+					// Deactivate IsActive when download && !IsTV
+					/*
+						if (MatchOnce && DownloadedItems.Count > 0 && !FilterEpisode)
+						{
+							break;
+						}*/
+					
+					RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
+					
+					// Name
+					if (!Regex.IsMatch(item.Title, RegexPattern, option))
+					{
+						match = false;
+					}
+					
+					/*
+					System.Diagnostics.Debug.WriteLine("Pass");
+					System.Diagnostics.Debug.WriteLine(item.ToString());
+					System.Diagnostics.Debug.WriteLine(ToString());
+					 */
+					
+					string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
+					
+					// Include
+					string include = IgnoreCaps ? Include.ToLower() : Include;
+					foreach (string element in include.Split(SEPARATOR[0]))
+					{
+						if(!title.Contains(element))
+						{
+							match = false;
+						}
+					}
+					
+					// Exclude
+					// Make list from array - array from separated string - check if string contains any elements from list
+					// http://stackoverflow.com/questions/4987873/how-to-find-if-a-string-contains-any-items-of-an-list-of-strings
+					// http://stackoverflow.com/questions/251924/string-split-returns-a-string-i-want-a-liststring-is-there-a-one-liner-to-co
+					string exclude = IgnoreCaps ? Exclude.ToLower() : Exclude;
+					if ((new List<string>(exclude.Split(SEPARATOR[0]))).Any(title.Contains))
+					{
+						match = false;
+					}
+					
+					// Episode
+					if (FilterEpisode)
+					{
+						Match m = GetEpisodeFromString(item.Title);
+						if (m.Success)
+						{
+							string season  = m.Groups["season"].Value;
+							string episode = m.Groups["episode"].Value;
+							// TODO Rest of logic
+						}
+						else
+						{
+							match = false;
+						}
+					}
+					
+					if(match)
+					{
+						// Ready to download
+						item.DownloadedDateTime = DateTime.Now;
+						DownloadedItems.Add(item);
+					}
+					
+					
+				}
+			}
+		}
+		
+		[DataMember()]
+		private List<FeedItem> DownloadedItems = new List<FeedItem>();
 		
 		private static bool IsTV(string title)
 		{

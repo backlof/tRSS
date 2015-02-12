@@ -21,7 +21,7 @@
 		<StackPanel Orientation="Horizontal" Margin="10" DockPanel.Dock="Top" VerticalAlignment="Top">
 			<GroupBox Header="Location" Padding="8" >
 				<StackPanel Orientation="Horizontal">
-					<TextBox Width="381" Margin="0,0,8,0" Text="{Binding Path=Data.TorrentDropLocation}" VerticalContentAlignment="Center" />
+					<TextBox Width="381" Margin="0,0,8,0" Text="{Binding Path=Data.TorrentDropLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" />
 					<Button Content="Browse" Command="{Binding Path=Data.ChooseDirectory}" />
 				</StackPanel>
 			</GroupBox>
@@ -42,7 +42,7 @@
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
-				<RowDefinition Height="380" />
+				<RowDefinition Height="424" />
 			</Grid.RowDefinitions>
 			
 			<Grid Grid.Row="0" Grid.Column="0"  Margin="10,0,10,0">
@@ -57,7 +57,7 @@
 						<DataTemplate>
 							<Grid>
 								<TextBlock Text="{Binding Path=Title}" MouseDown="TextBlock_MouseDown" />
-								<TextBox Text="{Binding Path=Title}" Visibility="Collapsed" KeyDown="TextBox_KeyDown" Padding="1" />
+								<TextBox Text="{Binding Path=Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Collapsed" KeyDown="TextBox_KeyDown" Padding="1" />
 							</Grid>
 						</DataTemplate>
 					</ListBox.ItemTemplate>
@@ -121,7 +121,8 @@
 				<DataGrid Grid.Row="1" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.SelectedFeed.Items}">
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
-						<DataGridTextColumn Header="Date" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
+						<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
+						<DataGridTextColumn Header="Downloaded" Binding="{Binding Path=DownloadedDateTime, Converter={StaticResource DateConverter}}" />
 					</DataGrid.Columns>
 				</DataGrid>
 			</Grid>
@@ -149,12 +150,17 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 					
 					<Label Grid.Row="0" Grid.Column="0" Content="Filter" Margin="0,4,0,0" />
-					<TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.TitleFilter, Mode=TwoWay}" />
-					<Label Grid.Row="2" Grid.Column="0" Content="Feed" Margin="0,4,0,0" />
-					<ComboBox Grid.Row="3" Grid.Column="0" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFilter.SearchInFeed, Mode=OneWayToSource}" ItemsSource="{Binding Path=Data.Feeds}" >
+					<TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.TitleFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<Label Grid.Row="2" Grid.Column="0" Content="Regex" Margin="0,4,0,0" />
+					<TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.RegexPattern}" IsEnabled="False" />
+					
+					<Label Grid.Row="4" Grid.Column="0" Content="Feed" Margin="0,4,0,0" />
+					<ComboBox Grid.Row="5" Grid.Column="0" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" >
 						<ComboBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Title}" />
@@ -162,7 +168,8 @@
 						</ComboBox.ItemTemplate>
 					</ComboBox>
 					
-					<GroupBox Header="Options" Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" VerticalAlignment="Center" Padding="8" Margin="8,0,0,0">
+					
+					<GroupBox Header="Options" Grid.Column="1" Grid.Row="0" Grid.RowSpan="6" VerticalAlignment="Center" Padding="8" Margin="8,0,0,0">
 						<StackPanel>
 							<CheckBox Margin="0,0,0,8" Content="Match once" IsChecked="{Binding Path=Data.SelectedFilter.MatchOnce, Mode=TwoWay}" />
 							<CheckBox Content="Ignore caps" IsChecked="{Binding Path=Data.SelectedFilter.IgnoreCaps, Mode=TwoWay}" />
@@ -170,12 +177,12 @@
 					</GroupBox>
 					
 					
-					<Label Grid.Row="4" Grid.ColumnSpan="2" Content="Include" Margin="0,4,0,0" />
-					<TextBox Grid.Row="5" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Include, Mode=TwoWay}" />
-					<Label Grid.Row="6" Grid.ColumnSpan="2" Content="Exclude" Margin="0,4,0,0" />
-					<TextBox Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Exclude, Mode=TwoWay}" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+					<Label Grid.Row="6" Grid.ColumnSpan="2" Content="Include" Margin="0,4,0,0" />
+					<TextBox Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Include, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<Label Grid.Row="8" Grid.ColumnSpan="2" Content="Exclude" Margin="0,4,0,0" />
+					<TextBox Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Exclude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 					
-					<GroupBox Padding="8" Grid.Row="8" Grid.ColumnSpan="2" HorizontalAlignment="Left">
+					<GroupBox Padding="8" Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Left">
 						<GroupBox.Header>
 							<CheckBox IsChecked="{Binding Path=Data.SelectedFilter.FilterEpisode, Mode=TwoWay}" Content="TV Show" Margin="0,12,0,0" />
 						</GroupBox.Header>

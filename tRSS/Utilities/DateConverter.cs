@@ -16,6 +16,12 @@ namespace tRSS.Utilities
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{			
 			DateTime date = (DateTime)value;
+			
+			if(date.Equals(default(DateTime)))
+			{
+				return "";
+			}
+			
 			return date.ToString(_format, CultureInfo.CurrentCulture);
 		}
 		

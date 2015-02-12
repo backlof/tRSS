@@ -85,6 +85,7 @@
     <Compile Include="Utilities\INotifyBase.cs" />
     <Compile Include="Utilities\Paths.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
+    <Compile Include="Utilities\Utils.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="View\Main.xaml.cs">
       <SubType>Code</SubType>
@@ -109,7 +110,7 @@
     <Folder Include="ViewModel" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="rss.xml">
+    <Content Include="RSS.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="tRSS.cd" />

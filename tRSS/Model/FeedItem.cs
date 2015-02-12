@@ -75,6 +75,30 @@ namespace tRSS.Model
 			}
 		}
 		
+		private DateTime _DownloadedDateTime;
+		public DateTime DownloadedDateTime
+		{
+			get
+			{
+				return _DownloadedDateTime;
+			}
+			set
+			{
+				_DownloadedDateTime = DateTime.Now;
+				onPropertyChanged("Downloaded");
+			}
+		}
+		
+		public bool Downloaded
+		{ 
+			get
+			{
+				return !DownloadedDateTime.Equals(default(DateTime));
+			}
+		}
+		
+		
+		
 		
 		// FIXME Not sure if this is the right pattern
 		/*

@@ -37,7 +37,6 @@ namespace tRSS.Model
 			walkingDead.IgnoreCaps = true;
 			walkingDead.Include = "1080p;720p";
 			walkingDead.Exclude = "WEB-DL;HDTV;1080i;DIMENSION;MPEG;";
-			walkingDead.SearchInFeed = tvShows;
 			walkingDead.FilterEpisode = true;
 			walkingDead.Season = 5;
 			walkingDead.Episode = 10;
@@ -193,6 +192,18 @@ namespace tRSS.Model
 			return String.Format("[Library UpdateInMinutes={0}, TorrentDropLocation={1}]", _UpdateInMinutes, _TorrentDropLocation);
 		}
 		
+		public void Update()
+		{
+			foreach (Feed feed in Feeds)
+			{
+				feed.Update();
+			}
+			foreach (Filter filter in Filters)
+			{				
+				filter.FilterFeed(Feeds[filter.SearchInFeedIndex]);
+			}
+		}
+		
 		# region Commands
 		
 		// --------- DELETE FEED ----------------
@@ -272,7 +283,7 @@ namespace tRSS.Model
 			Filter f = new Filter();
 			
 			f.TitleFilter = SelectedFilter.TitleFilter;
-			f.SearchInFeed = SelectedFilter.SearchInFeed;
+			f.SearchInFeedIndex = SelectedFilter.SearchInFeedIndex;
 			f.IgnoreCaps = SelectedFilter.IgnoreCaps;
 			f.Include = SelectedFilter.Include;
 			f.Exclude = SelectedFilter.Exclude;

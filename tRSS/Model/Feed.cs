@@ -17,7 +17,6 @@ namespace tRSS.Model
 	{
 		public Feed()
 		{
-			Update();
 		}
 		
 		// HACK Temporary testing constructor
