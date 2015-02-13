@@ -33,13 +33,13 @@ namespace tRSS.Model
 			
 			Filter walkingDead = new Filter("The Walking Dead");
 			walkingDead.IsActive = true;
-			walkingDead.TitleFilter = "The.Walking.Dead*";
+			walkingDead.TitleFilter = "The Walking Dead";
 			walkingDead.IgnoreCaps = true;
-			walkingDead.Include = "1080p;720p";
-			walkingDead.Exclude = "WEB-DL;HDTV;1080i;DIMENSION;MPEG;";
+			walkingDead.Include = "720p;HDTV;";
+			walkingDead.Exclude = "WEB-DL;1080i;MPEG;";
 			walkingDead.FilterEpisode = true;
 			walkingDead.Season = 5;
-			walkingDead.Episode = 10;
+			walkingDead.Episode = 9;
 			Filters.Add(walkingDead);
 			Filters.Add(new Filter("Family Guy"));
 			Filters.Add(new Filter("South Park"));
@@ -185,6 +185,21 @@ namespace tRSS.Model
 		}
 		
 		
+		// FIXME Might not be needed
+		public List<FeedItem> DownloadedItems
+		{
+			get
+			{
+				List<FeedItem> items = new List<FeedItem>();
+				foreach (Filter f in Filters)
+				{
+					items.AddRange(f.DownloadedItems);
+				}
+				return items;
+			}
+		}
+		
+		
 		# endregion
 		
 		public override string ToString()
@@ -201,7 +216,7 @@ namespace tRSS.Model
 			foreach (Filter filter in Filters)
 			{				
 				filter.FilterFeed(Feeds[filter.SearchInFeedIndex]);
-			}
+			}			
 		}
 		
 		# region Commands

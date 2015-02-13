@@ -4,8 +4,8 @@
 	xmlns:util="clr-namespace:tRSS.Utilities"
 	Title="tRSS.View"
 	Closing="Window_Closing"
-	MinHeight="720"
-	MinWidth="630"
+	MinHeight="660"
+	MinWidth="430"
 	Height="{Binding Path=View.Height, Mode=TwoWay}"
 	Width="{Binding Path=View.Width, Mode=TwoWay}"
 	Top="{Binding Path=View.Top, Mode=TwoWay}"
@@ -18,34 +18,51 @@
 				<TextBlock Text="{Binding Path=View.Print}" />
 			</StatusBarItem>
 		</StatusBar>
-		<StackPanel Orientation="Horizontal" Margin="10" DockPanel.Dock="Top" VerticalAlignment="Top">
-			<GroupBox Header="Location" Padding="8" >
+		<ToolBarTray DockPanel.Dock="Top" >
+			<ToolBar  ToolTip="Find the folder you want your torrent files to go.">
+				<Button>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Resources/Icons/folder.png" />
+						<TextBlock Margin="3,0,0,0" Text="Browse" />
+					</StackPanel>
+				</Button>
+				<TextBox Width="200" />
+			</ToolBar>
+			<ToolBar>
 				<StackPanel Orientation="Horizontal">
-					<TextBox Width="381" Margin="0,0,8,0" Text="{Binding Path=Data.TorrentDropLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" />
-					<Button Content="Browse" Command="{Binding Path=Data.ChooseDirectory}" />
+					<wpfTool:IntegerUpDown Margin="3,0,3,0" Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
+					<TextBlock Text="Minute updates" Margin="3" />
 				</StackPanel>
-			</GroupBox>
-			<GroupBox Header="Update every" Padding="8">
-				<StackPanel Orientation="Horizontal">
-					<wpfTool:IntegerUpDown Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
-					<Label Content="minute(s)" />
-				</StackPanel>
-			</GroupBox>
-		</StackPanel>
+			</ToolBar>
+			<ToolBar ToolTip="Update RSS feeds right now.">
+				<Button>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Resources/Icons/table_refresh.png" />
+						<TextBlock Margin="3,0,0,0" Text="Update" />
+					</StackPanel>
+				</Button>
+			</ToolBar>
+		</ToolBarTray>
 		
 		
 		
-		<Grid Margin="0">
+		
+		
+		
+		
+		
+		
+		<Grid Margin="10">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
-				<RowDefinition Height="424" />
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 			
-			<Grid Grid.Row="0" Grid.Column="0"  Margin="10,0,10,0">
+			<Grid Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" >
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
@@ -73,7 +90,7 @@
 				</ListBox>
 			</Grid>
 			
-			<Grid Grid.Row="1" Grid.Column="0" Margin="10,0,10,0" >
+			<Grid Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" >
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -122,14 +139,13 @@
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
 						<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
-						<DataGridTextColumn Header="Downloaded" Binding="{Binding Path=DownloadedDateTime, Converter={StaticResource DateConverter}}" />
 					</DataGrid.Columns>
 				</DataGrid>
 			</Grid>
 			
 			
 			
-			<GroupBox Grid.Row="1" Grid.Column="1" Width="400" Padding="8" Margin="0,16,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+			<GroupBox Grid.Row="1" Grid.Column="1" Padding="8" Margin="0,16,0,0" VerticalAlignment="Top">
 				<GroupBox.Header>
 					<CheckBox Content="{Binding Path=Data.SelectedFilter.Title}" IsChecked="{Binding Path=Data.SelectedFilter.IsActive, Mode=TwoWay}" />
 				</GroupBox.Header>
@@ -195,8 +211,6 @@
 					</GroupBox>
 				</Grid>
 			</GroupBox>
-		
-		
 		</Grid>
 	</DockPanel>
 

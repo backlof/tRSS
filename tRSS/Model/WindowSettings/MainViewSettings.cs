@@ -10,8 +10,6 @@ namespace tRSS.Model.WindowSettings
 	{
 		public MainViewSettings()
 		{
-			Width = 0;
-			Height = 800;
 		}
 		
 		public const string FILENAME = "MainView";

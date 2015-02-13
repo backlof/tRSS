@@ -20,8 +20,6 @@ namespace tRSS.ViewModel
 		public Library Data { get; set; }
 		public MainViewSettings View { get; set; }
 		
-		// TODO DataContractSerialization for XML (referanser kan spesifiseres)
-		
 		public MainViewModel()
 		{
 			Load();

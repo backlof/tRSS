@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using tRSS.Utilities;
@@ -8,6 +10,7 @@ namespace tRSS.Model
 	/// <summary>
 	/// Description of Entry.
 	/// </summary>
+	[DataContract()]
 	public class FeedItem : INotifyBase
 	{
 		public FeedItem(XmlNode item)
@@ -20,6 +23,7 @@ namespace tRSS.Model
 		}
 		
 		private int _GUID;
+		[DataMember()]
 		public int GUID
 		{
 			get
@@ -34,6 +38,7 @@ namespace tRSS.Model
 		}
 		
 		private string _Title;
+		[DataMember()]
 		public string Title
 		{
 			get
@@ -48,6 +53,7 @@ namespace tRSS.Model
 		}
 		
 		private string _TorrentLocation;
+		[DataMember()]
 		public string TorrentLocation
 		{
 			get
@@ -62,6 +68,7 @@ namespace tRSS.Model
 		}
 		
 		private DateTime _Published;
+		[DataMember()]
 		public DateTime Published
 		{
 			get
@@ -75,49 +82,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		private DateTime _DownloadedDateTime;
-		public DateTime DownloadedDateTime
-		{
-			get
-			{
-				return _DownloadedDateTime;
-			}
-			set
-			{
-				_DownloadedDateTime = DateTime.Now;
-				onPropertyChanged("Downloaded");
-			}
-		}
-		
-		public bool Downloaded
-		{ 
-			get
-			{
-				return !DownloadedDateTime.Equals(default(DateTime));
-			}
-		}
-		
-		
-		
-		
-		// FIXME Not sure if this is the right pattern
-		/*
-		private bool _Filtered = false;
-		public bool Filtered
-		{
-			get
-			{
-				return _Filtered;
-			}
-			set
-			{
-				_Filtered = value;
-				onPropertyChanged("Filtered");
-			}
-		}
-		
-		private bool _Downloaded = false;
-		public bool Downloaded
+		private DateTime _Downloaded;
+		[DataMember()]
+		public DateTime Downloaded
 		{
 			get
 			{
@@ -128,11 +95,117 @@ namespace tRSS.Model
 				_Downloaded = value;
 				onPropertyChanged("Downloaded");
 			}
-		}*/
+		}
+		
+		[IgnoreDataMember()]
+		public bool IsTV
+		{
+			get
+			{
+				return EpisodeMatch.Success;
+			}
+		}
+		
+		private Match _EpisodeMatch;
+		[IgnoreDataMember()]
+		public Match EpisodeMatch
+		{
+			get
+			{
+				if(_EpisodeMatch == null)
+				{
+					Regex regExp = new Regex(@"S(?<season>\d{1,2})E(?<episode>\d{1,2})", RegexOptions.IgnoreCase);
+					_EpisodeMatch = regExp.Match(Title);
+				}
+				return _EpisodeMatch;
+			}
+		}
+		
+		private int _Season = 0;
+		[IgnoreDataMember()]
+		public int Season
+		{
+			get
+			{
+				if (_Season == 0)
+				{
+					Match m = EpisodeMatch;
+					string season = m.Groups["season"].Value;
+					_Season = Int32.Parse(season);
+				}
+				return _Season;
+			}
+		}
+		
+		private int _Episode = 0;
+		[IgnoreDataMember()]
+		public int Episode
+		{
+			get
+			{
+				if (_Episode == 0)
+				{
+					Match m = EpisodeMatch;
+					string episode = m.Groups["episode"].Value;
+					_Episode = Int32.Parse(episode);
+				}
+				return _Episode;
+			}
+		}
+		
+		public void Download()
+		{
+			// TODO Download torrent here
+			Downloaded = DateTime.Now;
+		}
+		
+		// FIXME Don't know if references in Filters to downloaded items survive after updating Feeds
 		
 		public override string ToString()
 		{
-			return String.Format("[Item GUID={0}, Title={1}, Link={2}, Published={3}]", GUID, Title, TorrentLocation, Published);
+			return string.Format("[FeedItem GUID={0}, Title={1}, Published={2}, Season={3}, Episode={4}]", _GUID, _Title, _Published, _Season, _Episode);
 		}
+		
+		#region Equals and GetHashCode implementation
+		public override bool Equals(object obj)
+		{
+			FeedItem other = obj as FeedItem;
+			if (other == null)
+				return false;
+			return this._GUID == other._GUID && this._Title == other._Title && this._TorrentLocation == other._TorrentLocation;
+		}
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				hashCode += 1000000007 * _GUID.GetHashCode();
+				if (_Title != null)
+					hashCode += 1000000009 * _Title.GetHashCode();
+				if (_TorrentLocation != null)
+					hashCode += 1000000021 * _TorrentLocation.GetHashCode();
+				hashCode += 1000000033 * _Published.GetHashCode();
+				if (_EpisodeMatch != null)
+					hashCode += 1000000087 * _EpisodeMatch.GetHashCode();
+				hashCode += 1000000093 * _Season.GetHashCode();
+				hashCode += 1000000097 * _Episode.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		public static bool operator ==(FeedItem lhs, FeedItem rhs)
+		{
+			if (ReferenceEquals(lhs, rhs))
+				return true;
+			if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null))
+				return false;
+			return lhs.Equals(rhs);
+		}
+		
+		public static bool operator !=(FeedItem lhs, FeedItem rhs)
+		{
+			return !(lhs == rhs);
+		}
+		#endregion
 	}
 }

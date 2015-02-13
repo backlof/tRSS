@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -25,7 +27,12 @@ namespace tRSS.Model
 		
 		public Filter(){}
 		
-		private const string SEPARATOR = ";";
+		// REGEX OPERATORS *.$^{[(|)]}+?\
+		private const string REJECT_CHARS =  @"$^{[(|)]}+\";
+		private const string SEPERATOR = ";";
+		private readonly string[] Seperators = {";", "|", "+"};
+		
+		# region Properties
 		
 		private string _Title = "New Filter";
 		[DataMember()]
@@ -41,7 +48,6 @@ namespace tRSS.Model
 				onPropertyChanged("Title");
 			}
 		}
-		
 		
 		private bool _IsActive = false;
 		[DataMember()]
@@ -115,14 +121,11 @@ namespace tRSS.Model
 			{
 				// Replace all Regex Operators - except the ones I translate
 				_TitleFilter = Utils.ReplaceCharacters(value.Trim(), REJECT_CHARS, "");
-				RegexPattern = TitleFilter;
 				onPropertyChanged("TitleFilter");
+				RegexPattern = TitleFilter;
 			}
 		}
-		
-		private const string REJECT_CHARS =  @"$^{[(|)]}+\";
-		
-		// REGEX OPERATORS *.$^{[(|)]}+?\
+				
 		private string _RegexPattern = "";
 		[IgnoreDataMember]
 		public string RegexPattern
@@ -182,33 +185,34 @@ namespace tRSS.Model
 			}
 		}
 		
-		
-		private string _Include = "";
+		private List<string> _Include = new List<string>();
 		[DataMember()]
 		public string Include
 		{
 			get
 			{
-				return _Include;
+				return String.Join(SEPERATOR, _Include);
 			}
 			set
 			{
-				_Include = value;
+				string input = Utils.RemoveDiacritics(value);
+				_Include = new List<string>(input.Split(Seperators, StringSplitOptions.RemoveEmptyEntries));
 				onPropertyChanged("Include");
 			}
 		}
 		
-		private string _Exclude = "";
+		private List<string> _Exclude = new List<string>();
 		[DataMember()]
 		public string Exclude
 		{
 			get
 			{
-				return _Exclude;
+				return String.Join(SEPERATOR, _Exclude);
 			}
 			set
 			{
-				_Exclude = value;
+				string input = Utils.RemoveDiacritics(value);
+				_Exclude = new List<string>(input.Split(Seperators, StringSplitOptions.RemoveEmptyEntries));
 				onPropertyChanged("Exclude");
 			}
 		}
@@ -258,110 +262,109 @@ namespace tRSS.Model
 			}
 		}
 		
+		private ObservableCollection<FeedItem> _DownloadedItems = new ObservableCollection<FeedItem>();
+		[DataMember()]
+		public ObservableCollection<FeedItem> DownloadedItems
+		{
+			get
+			{
+				return _DownloadedItems;
+			}
+			set
+			{
+				_DownloadedItems = value;
+				onPropertyChanged("DownloadedItems");
+			}
+		}
+		
+		# endregion
+		
+		# region Filter functionality
+		
 		public void FilterFeed(Feed toSearch)
 		{
 			if (IsActive)
 			{
 				foreach (FeedItem item in toSearch.Items)
 				{
-					bool match = true;
+					// http://stackoverflow.com/questions/6177219/convert-string-array-to-lowercase
 					
-					if (DownloadedItems.Contains(item))
+					if (!DownloadedItems.Contains(item)) // Special compare in FeedItem class
 					{
-						match = false;
-					}
-					
-					
-					
-					// Deactivate IsActive when download && !IsTV
-					/*
-						if (MatchOnce && DownloadedItems.Count > 0 && !FilterEpisode)
+						string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
+						RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
+						if (Regex.IsMatch(title, RegexPattern, option))
 						{
-							break;
-						}*/
-					
-					RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
-					
-					// Name
-					if (!Regex.IsMatch(item.Title, RegexPattern, option))
-					{
-						match = false;
-					}
-					
-					/*
-					System.Diagnostics.Debug.WriteLine("Pass");
-					System.Diagnostics.Debug.WriteLine(item.ToString());
-					System.Diagnostics.Debug.WriteLine(ToString());
-					 */
-					
-					string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
-					
-					// Include
-					string include = IgnoreCaps ? Include.ToLower() : Include;
-					foreach (string element in include.Split(SEPARATOR[0]))
-					{
-						if(!title.Contains(element))
-						{
-							match = false;
+							// http://stackoverflow.com/questions/14728294/check-if-the-string-contains-all-inputs-on-the-list
+							List<string> include = IgnoreCaps ? _Include.ConvertAll(s => s.ToLower()) : _Include;
+							
+							if (include.All(title.Contains))
+							{
+								// http://stackoverflow.com/questions/4987873/how-to-find-if-a-string-contains-any-items-of-an-list-of-strings
+								List<string> exclude = IgnoreCaps ? _Exclude.ConvertAll(s => s.ToLower()) : _Exclude;
+								
+								if (!exclude.Any(title.Contains))
+								{
+									if (FilterEpisode)
+									{
+										if (item.IsTV)
+										{
+											if(IsEpisodeToDownload(item))
+											{
+												DownloadedItems.Add(item);
+												item.Download();
+											}
+										}
+									}
+									else
+									{
+										DownloadedItems.Add(item);
+										item.Download();
+									}
+								}
+							}
 						}
 					}
-					
-					// Exclude
-					// Make list from array - array from separated string - check if string contains any elements from list
-					// http://stackoverflow.com/questions/4987873/how-to-find-if-a-string-contains-any-items-of-an-list-of-strings
-					// http://stackoverflow.com/questions/251924/string-split-returns-a-string-i-want-a-liststring-is-there-a-one-liner-to-co
-					string exclude = IgnoreCaps ? Exclude.ToLower() : Exclude;
-					if ((new List<string>(exclude.Split(SEPARATOR[0]))).Any(title.Contains))
-					{
-						match = false;
-					}
-					
-					// Episode
-					if (FilterEpisode)
-					{
-						Match m = GetEpisodeFromString(item.Title);
-						if (m.Success)
-						{
-							string season  = m.Groups["season"].Value;
-							string episode = m.Groups["episode"].Value;
-							// TODO Rest of logic
-						}
-						else
-						{
-							match = false;
-						}
-					}
-					
-					if(match)
-					{
-						// Ready to download
-						item.DownloadedDateTime = DateTime.Now;
-						DownloadedItems.Add(item);
-					}
-					
-					
 				}
 			}
 		}
 		
-		[DataMember()]
-		private List<FeedItem> DownloadedItems = new List<FeedItem>();
-		
-		private static bool IsTV(string title)
+		public bool IsEpisodeToDownload(FeedItem item)
 		{
-			return GetEpisodeFromString(title).Success;
+			if (item.Season > Season || (item.Season == Season && item.Episode >= Episode))
+			{
+				if (MatchOnce)
+				{
+					bool foundSameEpisode = false;
+					
+					foreach (FeedItem downloaded in DownloadedItems)
+					{
+						if (item.Season == downloaded.Season && item.Episode == downloaded.Episode)
+						{ foundSameEpisode = true; }
+					}
+					
+					if (!foundSameEpisode)
+					{
+						return true;
+					}
+				}
+				else
+				{
+					return true;
+				}
+			}
+			
+			return false;
 		}
 		
-		private static Match GetEpisodeFromString(string statement)
-		{
-			Regex regExp = new Regex(@"S(?<season>\d{1,2})E(?<episode>\d{1,2})", RegexOptions.IgnoreCase);
-			return regExp.Match(statement);
-		}
+		# endregion
+		
 		
 		public override string ToString()
 		{
-			return String.Format("[Filter Title={0}, Exclude={1}, FilterEpisode={2}, Season={3}, Episode={4}, Include={5}]", _Title, _Exclude, FilterEpisode, Season, Episode, Include);
+			return string.Format("[Filter Title={0}, IsActive={1}, IgnoreCaps={2}, TitleFilter={3}, RegexPattern={4}, Include={5}, Exclude={6}, FilterEpisode={7}, Season={8}, Episode={9}]", _Title, _IsActive, _IgnoreCaps, _TitleFilter, _RegexPattern, Include, Exclude, _FilterEpisode, _Season, _Episode);
 		}
+
 
 	}
 }
