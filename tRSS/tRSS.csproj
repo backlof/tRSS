@@ -91,14 +91,9 @@
       <SubType>Code</SubType>
       <DependentUpon>Main.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="View\Main.xaml" />
-    <Page Include="View\Window1.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model" />

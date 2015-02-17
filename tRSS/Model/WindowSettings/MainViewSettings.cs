@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace tRSS.Model.WindowSettings
 {
@@ -22,6 +23,5 @@ namespace tRSS.Model.WindowSettings
 				return "X=" + Width + "Y=" + Height;
 			}
 		}
-
 	}
 }

@@ -4,8 +4,8 @@
 	xmlns:util="clr-namespace:tRSS.Utilities"
 	Title="tRSS.View"
 	Closing="Window_Closing"
-	MinHeight="660"
-	MinWidth="430"
+	MinHeight="697"
+	MinWidth="550"
 	Height="{Binding Path=View.Height, Mode=TwoWay}"
 	Width="{Binding Path=View.Width, Mode=TwoWay}"
 	Top="{Binding Path=View.Top, Mode=TwoWay}"
@@ -14,43 +14,54 @@
 	KeyDown="Window_KeyDown">
 	<DockPanel>
 		<StatusBar DockPanel.Dock="Bottom">
+			<StatusBar.Resources>
+				<Style TargetType="{x:Type StatusBarItem}">
+					<Setter Property="Margin" Value="3,0,3,0"/>
+				</Style>
+			</StatusBar.Resources>
 			<StatusBarItem>
 				<TextBlock Text="{Binding Path=View.Print}" />
 			</StatusBarItem>
+			<Separator />
+			<StatusBarItem>
+				<WrapPanel>
+					<TextBlock Text="Last update " />
+					<TextBlock Text="{Binding Path=Data.LastUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
+				</WrapPanel>
+			</StatusBarItem>
+			<Separator />
+			<StatusBarItem>
+				<WrapPanel>
+					<TextBlock Text="Next update " />
+					<TextBlock Text="{Binding Path=Data.NextUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
+				</WrapPanel>
+			</StatusBarItem>
 		</StatusBar>
+		
+		
 		<ToolBarTray DockPanel.Dock="Top" >
-			<ToolBar  ToolTip="Find the folder you want your torrent files to go.">
+			<ToolBar>
 				<Button>
-					<StackPanel Orientation="Horizontal">
+					<WrapPanel>
+						<Image Source="/Resources/Icons/table_refresh.png" />
+						<TextBlock Margin="3,0,0,0" Text="Refresh" />
+					</WrapPanel>
+				</Button>
+			</ToolBar>
+			<ToolBar  ToolTip="Find the folder you want your torrent files to go.">
+				<Button Command="{Binding Path=Data.ChooseDirectory}">
+					<WrapPanel>
 						<Image Source="/Resources/Icons/folder.png" />
 						<TextBlock Margin="3,0,0,0" Text="Browse" />
-					</StackPanel>
+					</WrapPanel>
 				</Button>
-				<TextBox Width="200" />
+				<TextBox Width="150" Text="{Binding Path=Data.TorrentDropDirectory, Mode=TwoWay}" />
 			</ToolBar>
 			<ToolBar>
-				<StackPanel Orientation="Horizontal">
-					<wpfTool:IntegerUpDown Margin="3,0,3,0" Value="{Binding Path=Data.UpdateInMinutes, Mode=TwoWay}" Minimum="1" Maximum="60" />
-					<TextBlock Text="Minute updates" Margin="3" />
-				</StackPanel>
-			</ToolBar>
-			<ToolBar ToolTip="Update RSS feeds right now.">
-				<Button>
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Resources/Icons/table_refresh.png" />
-						<TextBlock Margin="3,0,0,0" Text="Update" />
-					</StackPanel>
-				</Button>
+				<Label Content="Refresh every" />
+				<ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" />
 			</ToolBar>
 		</ToolBarTray>
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		<Grid Margin="10">
 			<Grid.ColumnDefinitions>
@@ -127,7 +138,7 @@
 				</Grid.RowDefinitions>
 				
 				<GroupBox Grid.Row="0" Header="URL" Margin="0,10,0,10" Padding="5">
-					<TextBox MinWidth="400" MinHeight="24" VerticalContentAlignment="Center" Text="{Binding Path=Data.SelectedFeed.URL}" />
+					<TextBox  Text="{Binding Path=Data.SelectedFeed.URL}" />
 				</GroupBox>
 				<!--
 				<WrapPanel Grid.Row="0" Margin="10">
@@ -138,7 +149,7 @@
 				<DataGrid Grid.Row="1" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.SelectedFeed.Items}">
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
-						<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}}" />
+						<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}" />
 					</DataGrid.Columns>
 				</DataGrid>
 			</Grid>
@@ -176,7 +187,7 @@
 					<TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.RegexPattern}" IsEnabled="False" />
 					
 					<Label Grid.Row="4" Grid.Column="0" Content="Feed" Margin="0,4,0,0" />
-					<ComboBox Grid.Row="5" Grid.Column="0" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" >
+					<ComboBox Grid.Row="5" Grid.Column="0" ItemsSource="{Binding Path=Data.Feeds}" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" >
 						<ComboBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Title}" />

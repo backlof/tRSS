@@ -27,6 +27,12 @@ namespace tRSS
 			
 			VM = new MainViewModel();
 			DataContext = VM;
+			VM.Data.StartTimer();
+		}
+		
+		void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			VM.Data.RestartTimerWithNewInterval();
 		}
 		
 		# region Helpers for renaming in ListBox

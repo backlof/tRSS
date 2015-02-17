@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Xml;
 using tRSS.Utilities;
 using System.Runtime.Serialization;
@@ -47,6 +49,58 @@ namespace tRSS.Model
 		}
 		
 		public const string FILENAME = "Library";
+		
+		private DispatcherTimer timedRefresh;
+		
+		public void StartTimer()
+		{
+			timedRefresh = new DispatcherTimer();
+			timedRefresh.Tick += new EventHandler(timer_Tick);
+			timedRefresh.Interval = new TimeSpan(0,UpdateInterval,0);
+			timedRefresh.Start();
+			NextUpdate = DateTime.Now.AddMinutes(UpdateInterval);
+		}
+		
+		public void RestartTimerWithNewInterval()
+		{
+			timedRefresh.Stop();
+			StartTimer();
+		}
+		
+		private void timer_Tick(object sender, EventArgs e)
+		{
+			// UNDONE Update feeds here when it's functioning
+		}
+		
+		private DateTime _LastUpdate;
+		[IgnoreDataMember()]
+		public DateTime LastUpdate
+		{
+			get
+			{
+				return _LastUpdate;
+			}
+			set
+			{
+				_LastUpdate = value;
+				onPropertyChanged("LastUpdate");
+			}
+		}
+		
+		private DateTime _NextUpdate;
+		[IgnoreDataMember()]
+		public DateTime NextUpdate
+		{
+			get
+			{
+				return _NextUpdate;
+			}
+			set
+			{
+				_NextUpdate = value;
+				onPropertyChanged("NextUpdate");
+			}
+		}
 		
 		# region Properties
 		
@@ -154,36 +208,20 @@ namespace tRSS.Model
 			}
 		}
 		
-		private int _UpdateInMinutes = 5;
+		private string _TorrentDropDirectory = ".";
 		[DataMember()]
-		public int UpdateInMinutes
+		public string TorrentDropDirectory
 		{
 			get
 			{
-				return _UpdateInMinutes;
+				return _TorrentDropDirectory;
 			}
 			set
 			{
-				_UpdateInMinutes = value;
-				onPropertyChanged("UpdateInMinutes");
+				_TorrentDropDirectory = value;
+				onPropertyChanged("TorrentDropDirectory");
 			}
 		}
-		
-		private string _TorrentDropLocation = AppDomain.CurrentDomain.BaseDirectory; // HACK Might work as application
-		[DataMember()]
-		public string TorrentDropLocation
-		{
-			get
-			{
-				return _TorrentDropLocation;
-			}
-			set
-			{
-				_TorrentDropLocation = value;
-				onPropertyChanged("TorrentDropLocation");
-			}
-		}
-		
 		
 		// FIXME Might not be needed
 		public List<FeedItem> DownloadedItems
@@ -199,13 +237,60 @@ namespace tRSS.Model
 			}
 		}
 		
+		private int[] _UpdateIntervals = { 1, 5, 15, 60 };
+		[DataMember()]
+		public int[] UpdateIntervals
+		{
+			get
+			{
+				return _UpdateIntervals;
+			}
+			set
+			{
+				_UpdateIntervals = value;
+				onPropertyChanged("UpdateIntervals");
+			}
+		}
+		
+		private string[] _UpdateOptions = { "1 minute", "5 minutes", "15 minutes", "1 hour" };
+		[DataMember()]
+		public string[] UpdateOptions
+		{
+			get
+			{
+				return _UpdateOptions;
+			}
+			set
+			{
+				_UpdateOptions = value;
+				onPropertyChanged("UpdateOptions");
+			}
+		}
+		
+		private int _SelectedUpdateOption = 1;
+		[DataMember()]
+		public int SelectedUpdateOption
+		{
+			get
+			{
+				return _SelectedUpdateOption;
+			}
+			set
+			{
+				_SelectedUpdateOption = value;
+				onPropertyChanged("SelectedUpdateOption");
+			}
+		}
+		
+		public int UpdateInterval
+		{
+			get
+			{
+				return _UpdateIntervals[SelectedUpdateOption];
+			}
+		}
 		
 		# endregion
-		
-		public override string ToString()
-		{
-			return String.Format("[Library UpdateInMinutes={0}, TorrentDropLocation={1}]", _UpdateInMinutes, _TorrentDropLocation);
-		}
 		
 		public void Update()
 		{
@@ -214,9 +299,11 @@ namespace tRSS.Model
 				feed.Update();
 			}
 			foreach (Filter filter in Filters)
-			{				
+			{
 				filter.FilterFeed(Feeds[filter.SearchInFeedIndex]);
-			}			
+			}
+			
+			LastUpdate = DateTime.Now;
 		}
 		
 		# region Commands
@@ -328,15 +415,23 @@ namespace tRSS.Model
 		
 		public void ExecuteChooseDirectory(object parameter)
 		{
-			// UNDONE Relative paths don't work
 			using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
 			{
-				dialog.SelectedPath = TorrentDropLocation;
+				try
+				{
+					dialog.SelectedPath = Path.GetFullPath(TorrentDropDirectory);
+				}
+				catch(ArgumentException ae)
+				{
+					dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
+					System.Diagnostics.Debug.WriteLine(ae.ToString());
+				}
+				
 				System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 				if (result == System.Windows.Forms.DialogResult.OK)
 				{
 					string path = dialog.SelectedPath + Path.DirectorySeparatorChar;
-					TorrentDropLocation = Paths.MakeRelativePath(path);
+					TorrentDropDirectory = Paths.MakeRelativePath(path);
 				}
 			}
 		}
