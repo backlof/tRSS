@@ -18,7 +18,7 @@ namespace tRSS.Model
 	/// Description of Filter.
 	/// </summary>
 	[DataContract()]
-	public class Filter : INotifyBase
+	public class Filter : ObjectBase
 	{
 		public Filter(string title)
 		{
@@ -27,10 +27,10 @@ namespace tRSS.Model
 		
 		public Filter(){}
 		
-		// REGEX OPERATORS *.$^{[(|)]}+?\
-		private const string REJECT_CHARS =  @"$^{[(|)]}+\";
-		private const string SEPERATOR = ";";
-		private readonly string[] Seperators = {";", "|", "+"};
+		// Fields have to be static unless they're stored in XML
+		// They're only initialized when the class object is
+		// Not during deserialization
+		
 		
 		# region Properties
 		
@@ -109,117 +109,11 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _TitleFilter = "";
-		[DataMember()]
-		public string TitleFilter
-		{
-			get
-			{
-				return _TitleFilter;
-			}
-			set
-			{
-				// Replace all Regex Operators - except the ones I translate
-				_TitleFilter = Utils.ReplaceCharacters(value.Trim(), REJECT_CHARS, "");
-				onPropertyChanged("TitleFilter");
-				RegexPattern = TitleFilter;
-			}
-		}
-				
-		private string _RegexPattern = "";
-		[IgnoreDataMember]
-		public string RegexPattern
-		{
-			get
-			{
-				return _RegexPattern;
-			}
-			set
-			{
-				StringBuilder sb = new StringBuilder();
-				
-				// * = Wildcard
-				// . = Whitespaces
-				// ? = Any character
-				
-				int length = value.Length;
-				
-				if(length > 0)
-				{
-					// No wildcard in beginning, then "Begins with"
-					if(value[0] != '*')
-					{
-						sb.Append(@"^");
-					}
-					
-					foreach(char letter in value)
-					{
-						if (letter == '*')
-						{
-							// Any symbol - any number of times
-							sb.Append(@".*");
-						}
-						else if (letter == '?')
-						{
-							// Any symbol - 0 or 1 times
-							sb.Append(".?");
-						}
-						else if (letter == '.')
-						{
-							// Whitespace 1 time
-							sb.Append(@"[\s._-]");
-						}
-						else
-						{
-							sb.Append(letter);
-						}
-					}
-				}
-				else
-				{
-					sb.Append(".^"); // No matches
-				}
-				
-				_RegexPattern = @sb.ToString();
-				onPropertyChanged("RegexPattern");
-			}
-		}
 		
-		private List<string> _Include = new List<string>();
-		[DataMember()]
-		public string Include
-		{
-			get
-			{
-				return String.Join(SEPERATOR, _Include);
-			}
-			set
-			{
-				string input = Utils.RemoveDiacritics(value);
-				_Include = new List<string>(input.Split(Seperators, StringSplitOptions.RemoveEmptyEntries));
-				onPropertyChanged("Include");
-			}
-		}
-		
-		private List<string> _Exclude = new List<string>();
-		[DataMember()]
-		public string Exclude
-		{
-			get
-			{
-				return String.Join(SEPERATOR, _Exclude);
-			}
-			set
-			{
-				string input = Utils.RemoveDiacritics(value);
-				_Exclude = new List<string>(input.Split(Seperators, StringSplitOptions.RemoveEmptyEntries));
-				onPropertyChanged("Exclude");
-			}
-		}
 		
 		private bool _FilterEpisode = false;
 		[DataMember()]
-		public bool FilterEpisode
+		public bool FilterEpisodes
 		{
 			get
 			{
@@ -279,53 +173,206 @@ namespace tRSS.Model
 		
 		# endregion
 		
+		# region Include / Exclude
+		
+		private static readonly char[] INCLUDE_INTERPRET_SEPARATORS = {';', '|', '+'};
+		
+		[IgnoreDataMember()]
+		public List<string> IncludeList
+		{
+			get
+			{
+				string include = IgnoreCaps ? Include.ToLower() : Include;
+				return new List<string>(include.Split(INCLUDE_INTERPRET_SEPARATORS, StringSplitOptions.RemoveEmptyEntries));
+			}
+		}
+		
+		
+		private string _Include;
+		[DataMember()]
+		public string Include
+		{
+			get
+			{
+				return _Include;
+			}
+			set
+			{
+				_Include = Utils.RemoveDiacritics(value);
+				onPropertyChanged("Include");
+			}
+		}
+		
+		
+		[IgnoreDataMember()]
+		public List<string> ExcludeList
+		{
+			get
+			{
+				string exclude = IgnoreCaps ? Exclude.ToLower() : Exclude;
+				return new List<string>(exclude.Split(INCLUDE_INTERPRET_SEPARATORS, StringSplitOptions.RemoveEmptyEntries));
+			}
+		}
+		
+		private string _Exclude = "";
+		[DataMember()]
+		public string Exclude
+		{
+			get
+			{
+				return _Exclude;
+			}
+			set
+			{
+				_Exclude = Utils.RemoveDiacritics(value);
+				onPropertyChanged("Exclude");
+			}
+		}
+		
+		# endregion
+		
+		# region Title filter
+		
+		// REGEX OPERATORS *.$^{[(|)]}+?\
+		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
+		
+		private string _TitleFilter = "";
+		[DataMember()]
+		public string TitleFilter
+		{
+			get
+			{
+				return _TitleFilter;
+			}
+			set
+			{
+				// Replace all Regex Operators - except the ones I translate
+				_TitleFilter = Utils.ReplaceCharacters(value.Trim(), REJECT_CHARS, "");
+				onPropertyChanged("TitleFilter");
+				RegexPattern = TitleFilter;
+			}
+		}
+		
+		private string _RegexPattern = "";
+		[IgnoreDataMember()]
+		public string RegexPattern
+		{
+			get
+			{
+				return _RegexPattern;
+			}
+			set
+			{
+				StringBuilder sb = new StringBuilder();
+				
+				// * = Wildcard
+				// . = Whitespaces
+				// ? = Any character 0 or 1 times
+				
+				int length = value.Length;
+				
+				if(length > 0)
+				{
+					// No wildcard in beginning, then "Begins with"
+					if(value[0] != '*')
+					{
+						sb.Append(@"^");
+					}
+					
+					foreach(char letter in value)
+					{
+						if (letter == '*')
+						{
+							sb.Append(@".*");
+						}
+						else if (letter == '?')
+						{
+							sb.Append(".?");
+						}
+						else if (letter == '.')
+						{
+							sb.Append(@"[\s._-]");
+						}
+						else
+						{
+							sb.Append(letter);
+						}
+					}
+				}
+				else
+				{
+					sb.Append(".^"); // No matches
+				}
+				
+				_RegexPattern = @sb.ToString();
+				onPropertyChanged("RegexPattern");
+			}
+		}
+		
+		# endregion
+		
 		# region Filter functionality
 		
-		public void FilterFeed(Feed toSearch)
+		public void FilterFeed(Feed toSearch, string location)
 		{
-			if (IsActive)
+			
+			foreach (FeedItem item in toSearch.Items)
 			{
-				foreach (FeedItem item in toSearch.Items)
-				{
-					// http://stackoverflow.com/questions/6177219/convert-string-array-to-lowercase
-					
+				if (IsActive)
+				{					
 					if (!DownloadedItems.Contains(item)) // Special compare in FeedItem class
 					{
 						string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
 						RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
+						
 						if (Regex.IsMatch(title, RegexPattern, option))
-						{
-							// http://stackoverflow.com/questions/14728294/check-if-the-string-contains-all-inputs-on-the-list
-							List<string> include = IgnoreCaps ? _Include.ConvertAll(s => s.ToLower()) : _Include;
-							
-							if (include.All(title.Contains))
-							{
-								// http://stackoverflow.com/questions/4987873/how-to-find-if-a-string-contains-any-items-of-an-list-of-strings
-								List<string> exclude = IgnoreCaps ? _Exclude.ConvertAll(s => s.ToLower()) : _Exclude;
-								
-								if (!exclude.Any(title.Contains))
+						{							
+							if (IncludeList.All(title.Contains))
+							{								
+								if (!ExcludeList.Any(title.Contains))
 								{
-									if (FilterEpisode)
+									if (FilterEpisodes)
 									{
 										if (item.IsTV)
 										{
 											if(IsEpisodeToDownload(item))
 											{
-												DownloadedItems.Add(item);
-												item.Download();
+												Download(item, location);
+												
 											}
 										}
 									}
 									else
 									{
-										DownloadedItems.Add(item);
-										item.Download();
+										if (MatchOnce)
+										{
+											IsActive = false;
+										}
+										Download(item, location);
 									}
 								}
 							}
 						}
 					}
 				}
+				// Not active
+				else
+				{
+					break;
+				}
+			}
+		}
+		
+		public async void Download(FeedItem item, string location)
+		{
+			if (await item.Download(location))
+			{
+				DownloadedItems.Add(item);
+			}
+			else // Failed to download torrent
+			{
+				// Only matters if MatchOnce == true
+				IsActive = true;
 			}
 		}
 		
@@ -343,18 +390,12 @@ namespace tRSS.Model
 						{ foundSameEpisode = true; }
 					}
 					
-					if (!foundSameEpisode)
-					{
-						return true;
-					}
+					if (!foundSameEpisode) { return true; }
+					else { return false; }
 				}
-				else
-				{
-					return true;
-				}
+				else { return true; }
 			}
-			
-			return false;
+			else { return false; }
 		}
 		
 		# endregion
@@ -364,7 +405,5 @@ namespace tRSS.Model
 		{
 			return string.Format("[Filter Title={0}, IsActive={1}, IgnoreCaps={2}, TitleFilter={3}, RegexPattern={4}, Include={5}, Exclude={6}, FilterEpisode={7}, Season={8}, Episode={9}]", _Title, _IsActive, _IgnoreCaps, _TitleFilter, _RegexPattern, Include, Exclude, _FilterEpisode, _Season, _Episode);
 		}
-
-
 	}
 }

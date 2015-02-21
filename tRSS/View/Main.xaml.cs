@@ -14,9 +14,6 @@ using tRSS.ViewModel;
 
 namespace tRSS
 {
-	/// <summary>
-	/// Interaction logic for Window1.xaml
-	/// </summary>
 	public partial class Main : Window
 	{
 		public MainViewModel VM { get; set; }
@@ -33,6 +30,11 @@ namespace tRSS
 		void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			VM.Data.RestartTimerWithNewInterval();
+		}
+		
+		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			VM.SaveData();
 		}
 		
 		# region Helpers for renaming in ListBox
@@ -89,11 +91,6 @@ namespace tRSS
 			{
 				EnableEditing();
 			}
-		}
-		
-		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			VM.Save();
 		}
 		
 		# endregion

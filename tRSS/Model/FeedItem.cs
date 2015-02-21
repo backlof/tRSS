@@ -1,30 +1,25 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Net.Mime;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 using tRSS.Utilities;
 
 namespace tRSS.Model
 {
-	/// <summary>
-	/// Description of Entry.
-	/// </summary>
 	[DataContract()]
-	public class FeedItem : INotifyBase
+	public class FeedItem : ObjectBase
 	{
-		public FeedItem(XmlNode item)
-		{
-			Title = item.SelectSingleNode("title").InnerText;
-			TorrentLocation = item.SelectSingleNode("link").InnerText;
-			GUID = Convert.ToInt32(item.SelectSingleNode("guid").InnerText);
-			// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
-			Published = DateTime.Parse(item.SelectSingleNode("pubDate").InnerText);
-		}
-		
-		private int _GUID;
+		private string _GUID;
 		[DataMember()]
-		public int GUID
+		public string GUID
 		{
 			get
 			{
@@ -52,18 +47,18 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _TorrentLocation;
+		private string _URL;
 		[DataMember()]
-		public string TorrentLocation
+		public string URL
 		{
 			get
 			{
-				return _TorrentLocation;
+				return _URL;
 			}
 			set
 			{
-				_TorrentLocation = value;
-				onPropertyChanged("TorrentLocation");
+				_URL = value;
+				onPropertyChanged("URL");
 			}
 		}
 		
@@ -153,13 +148,67 @@ namespace tRSS.Model
 			}
 		}
 		
-		public void Download()
+		public async Task<bool> Download(string location)
 		{
-			// TODO Download torrent here
-			Downloaded = DateTime.Now;
+			// http://stackoverflow.com/questions/9857709/downloading-a-torrent-file-with-webclient-results-in-corrupt-file
+			
+			if (await GetTorrent(location))
+			{
+				Downloaded = DateTime.Now;
+				return true;
+			}
+			else
+			{ 
+				return false;
+			}
 		}
 		
-		// FIXME Don't know if references in Filters to downloaded items survive after updating Feeds
+		public async Task<bool> GetTorrent(string location)
+		{
+			// http://stackoverflow.com/questions/18207730/how-to-make-ordinary-webrequest-async-and-awaitable
+			
+			try
+			{
+				byte[] result;
+				byte[] buffer = new byte[4096];
+
+				WebRequest wr = WebRequest.Create(URL);
+				wr.ContentType = "application/x-bittorrent";
+				
+				using (WebResponse response = await wr.GetResponseAsync())
+				{
+					bool gzip = response.Headers["Content-Encoding"] == "gzip";
+					
+					var responseStream = gzip ? new GZipStream(response.GetResponseStream(), CompressionMode.Decompress) : response.GetResponseStream();
+
+					using (MemoryStream memoryStream = new MemoryStream())
+					{
+						int count = 0;
+						do
+						{
+							count = responseStream.Read(buffer, 0, buffer.Length);
+							memoryStream.Write(buffer, 0, count);
+						}
+						while (count != 0);
+
+						result = memoryStream.ToArray();
+						
+						// Can't find original filename
+						using (BinaryWriter writer = new BinaryWriter(new FileStream(location + Paths.CleanFileName(Title) + ".torrent", FileMode.Create)))
+						{
+							writer.Write(result);
+						}
+					}
+				}
+				
+				return true;
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine(e.ToString());
+				return false;
+			}
+		}
 		
 		public override string ToString()
 		{
@@ -172,7 +221,7 @@ namespace tRSS.Model
 			FeedItem other = obj as FeedItem;
 			if (other == null)
 				return false;
-			return this._GUID == other._GUID && this._Title == other._Title && this._TorrentLocation == other._TorrentLocation;
+			return this._GUID == other._GUID && this._Title == other._Title && this.URL == other.URL;
 		}
 		
 		public override int GetHashCode()
@@ -182,8 +231,8 @@ namespace tRSS.Model
 				hashCode += 1000000007 * _GUID.GetHashCode();
 				if (_Title != null)
 					hashCode += 1000000009 * _Title.GetHashCode();
-				if (_TorrentLocation != null)
-					hashCode += 1000000021 * _TorrentLocation.GetHashCode();
+				if (URL != null)
+					hashCode += 1000000021 * URL.GetHashCode();
 				hashCode += 1000000033 * _Published.GetHashCode();
 				if (_EpisodeMatch != null)
 					hashCode += 1000000087 * _EpisodeMatch.GetHashCode();

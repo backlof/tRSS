@@ -41,25 +41,34 @@
 		
 		<ToolBarTray DockPanel.Dock="Top" >
 			<ToolBar>
-				<Button>
+				<Button Command="{Binding Path=SaveCommand}">
 					<WrapPanel>
-						<Image Source="/Resources/Icons/table_refresh.png" />
-						<TextBlock Margin="3,0,0,0" Text="Refresh" />
+						<Image Source="/Resources/Icons/table_save.png" UseLayoutRounding="True" />
+						<TextBlock Margin="3,0,0,0" Text="Save" />
 					</WrapPanel>
 				</Button>
 			</ToolBar>
+			
 			<ToolBar  ToolTip="Find the folder you want your torrent files to go.">
 				<Button Command="{Binding Path=Data.ChooseDirectory}">
 					<WrapPanel>
-						<Image Source="/Resources/Icons/folder.png" />
+						<Image Source="/Resources/Icons/folder.png" UseLayoutRounding="True" />
 						<TextBlock Margin="3,0,0,0" Text="Browse" />
 					</WrapPanel>
 				</Button>
-				<TextBox Width="150" Text="{Binding Path=Data.TorrentDropDirectory, Mode=TwoWay}" />
+				<TextBox Width="150" Text="{Binding Path=Data.TorrentDropDirectory}" IsEnabled="False" />
 			</ToolBar>
 			<ToolBar>
 				<Label Content="Refresh every" />
 				<ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" />
+			</ToolBar>
+			<ToolBar>
+				<Button Command="{Binding Path=Data.Refresh}">
+					<WrapPanel>
+						<Image Source="/Resources/Icons/table_refresh.png" UseLayoutRounding="True" />
+						<TextBlock Margin="3,0,0,0" Text="Refresh" />
+					</WrapPanel>
+				</Button>
 			</ToolBar>
 		</ToolBarTray>
 		
@@ -70,7 +79,7 @@
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
+				<RowDefinition Height="412" />
 			</Grid.RowDefinitions>
 			
 			<Grid Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" >
@@ -91,8 +100,16 @@
 					</ListBox.ItemTemplate>
 					<ListBox.ContextMenu>
 						<ContextMenu>
-							<MenuItem Header="New" Command="{Binding Path=Data.NewFeed}" />
-							<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFeed}" />
+							<MenuItem Header="New" Command="{Binding Path=Data.NewFeed}" >
+								<MenuItem.Icon>
+									<Image Source="/Resources/Icons/feed_add.png" UseLayoutRounding="True" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFeed}" >
+								<MenuItem.Icon>
+									<Image Source="/Resources/Icons/feed_delete.png" UseLayoutRounding="True" />
+								</MenuItem.Icon>
+							</MenuItem>
 						</ContextMenu>
 					</ListBox.ContextMenu>
 					<ListBox.InputBindings>
@@ -120,8 +137,16 @@
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
 							<ContextMenu>
-								<MenuItem Header="New" Command="{Binding Path=Data.NewFilter}" />
-								<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFilter}" />
+								<MenuItem Header="New" Command="{Binding Path=Data.NewFilter}" >
+									<MenuItem.Icon>
+										<Image Source="/Resources/Icons/layout_add.png" UseLayoutRounding="True" />
+									</MenuItem.Icon>
+								</MenuItem>
+								<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFilter}" >
+									<MenuItem.Icon>
+										<Image Source="/Resources/Icons/layout_delete.png" UseLayoutRounding="True" />
+									</MenuItem.Icon>
+								</MenuItem>
 							</ContextMenu>
 						</ListBox.ContextMenu>
 						<ListBox.InputBindings>

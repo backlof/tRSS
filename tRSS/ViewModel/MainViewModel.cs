@@ -13,7 +13,7 @@ using System.Windows.Threading;
 
 namespace tRSS.ViewModel
 {
-	public class MainViewModel : INotifyBase
+	public class MainViewModel : ObjectBase
 	{
 		public Library Data { get; set; }
 		public MainViewSettings View { get; set; }
@@ -21,8 +21,6 @@ namespace tRSS.ViewModel
 		public MainViewModel()
 		{
 			Load();
-			
-			// HACK Testing
 			Data.Update();
 		}
 		
@@ -37,8 +35,7 @@ namespace tRSS.ViewModel
 		{
 			string path;
 			
-			
-			path = Location(Library.FILENAME);
+			path = ObjectBase.SaveLocation(typeof(Library));			
 			if(File.Exists(path))
 			{
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -53,7 +50,7 @@ namespace tRSS.ViewModel
 			}
 			
 			
-			path = Location(MainViewSettings.FILENAME);
+			path = ObjectBase.SaveLocation(typeof(MainViewSettings));
 			if(File.Exists(path))
 			{
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -68,34 +65,28 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		public void Save()
+		public void SaveData()
 		{
-			string path;
-			DataContractSerializer dcs;
-			XmlWriterSettings xws = new XmlWriterSettings(){ Indent = true };
-			
-			path = Location(Library.FILENAME);
-			dcs = new DataContractSerializer(typeof(Library));
-			if(!Directory.Exists(Path.GetDirectoryName(path)))
+			Data.Save();
+			View.Save();
+		}
+		
+		public ICommand SaveCommand
+		{
+			get
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(path));
+				return new RelayCommand(ExecuteSaveCommand, CanSaveCommand);
 			}
-			using (XmlWriter xw = XmlWriter.Create(path, xws))
-			{
-				dcs.WriteObject(xw, Data);
-			}
-			
-			
-			path = Location(MainViewSettings.FILENAME);
-			dcs = new DataContractSerializer(typeof(MainViewSettings));
-			if(!Directory.Exists(Path.GetDirectoryName(path)))
-			{
-				Directory.CreateDirectory(Path.GetDirectoryName(path));
-			}
-			using (XmlWriter xw = XmlWriter.Create(path, xws))
-			{
-				dcs.WriteObject(xw, View);
-			}
+		}
+		
+		public void ExecuteSaveCommand(object parameter)
+		{
+			SaveData();
+		}
+		
+		public bool CanSaveCommand(object parameter)
+		{
+			return true;
 		}
 	}
 }

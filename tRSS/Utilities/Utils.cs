@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -10,7 +11,7 @@ namespace tRSS.Utilities
 	/// Description of Utils.
 	/// </summary>
 	public static class Utils
-	{
+	{		
 		public static string ReplaceCharacters(this string replace, string characters, string with)
 		{
 			string[] temp;

@@ -12,43 +12,39 @@ using System.Runtime.Serialization;
 
 namespace tRSS.Model
 {
-	/// <summary>
-	/// Has lists
-	/// Executes business logic so that ViewModels don't have to
-	/// Example: Updates
-	/// </summary>
-	
 	[DataContract()]
-	public class Library : INotifyBase
-	{
+	public class Library : ObjectBase
+	{		
 		public Library()
 		{
-			Test = new Feed();
-			onPropertyChanged("Test");
-			
 			// HACK Testing
-			Feed tvShows = new Feed("TV Shows", "https://tracker.com");
+			Feed tvShows = new Feed("TV Shows", "https://kickass.to/tv/?rss=1");
 			Feeds.Add(tvShows);
-			Feeds.Add(new Feed("Movies", "https://tracker.com"));
-			Feeds.Add(new Feed("Music", "https://tracker.com"));
+			Feeds.Add(new Feed("Movies", "https://kickass.to/movies/?rss=1"));
+			Feeds.Add(new Feed("Music", "https://kickass.to/music/?rss=1"));
 			
+			Filter allTVShows = new Filter("All TV Shows");
+			allTVShows.IsActive = false;
+			allTVShows.TitleFilter = "*";
+			allTVShows.IgnoreCaps = true;
+			allTVShows.Include = "";
+			allTVShows.Exclude = "";
+			allTVShows.FilterEpisodes = false;
+			allTVShows.Season = 5;
+			allTVShows.Episode = 9;
+			Filters.Add(allTVShows);
 			
-			Filter walkingDead = new Filter("The Walking Dead");
-			walkingDead.IsActive = true;
-			walkingDead.TitleFilter = "The Walking Dead";
-			walkingDead.IgnoreCaps = true;
-			walkingDead.Include = "720p;HDTV;";
-			walkingDead.Exclude = "WEB-DL;1080i;MPEG;";
-			walkingDead.FilterEpisode = true;
-			walkingDead.Season = 5;
-			walkingDead.Episode = 9;
-			Filters.Add(walkingDead);
-			Filters.Add(new Filter("Family Guy"));
-			Filters.Add(new Filter("South Park"));
-			Filters.Add(new Filter("Tiny House Nation"));
+			TorrentDropDirectory = FOLDER;	
+			if(!Directory.Exists(Path.GetDirectoryName(TorrentDropDirectory)))
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(TorrentDropDirectory));
+			}
+			
 		}
 		
-		public const string FILENAME = "Library";
+		public static readonly string FOLDER = @"Torrents\";
+		
+		# region Timer
 		
 		private DispatcherTimer timedRefresh;
 		
@@ -56,7 +52,7 @@ namespace tRSS.Model
 		{
 			timedRefresh = new DispatcherTimer();
 			timedRefresh.Tick += new EventHandler(timer_Tick);
-			timedRefresh.Interval = new TimeSpan(0,UpdateInterval,0);
+			timedRefresh.Interval = new TimeSpan(0,UpdateInterval,0); // Hour, minute, second
 			timedRefresh.Start();
 			NextUpdate = DateTime.Now.AddMinutes(UpdateInterval);
 		}
@@ -69,11 +65,16 @@ namespace tRSS.Model
 		
 		private void timer_Tick(object sender, EventArgs e)
 		{
-			// UNDONE Update feeds here when it's functioning
+			Update();
+			NextUpdate = DateTime.Now.AddMinutes(UpdateInterval);
 		}
 		
+		# endregion
+		
+		# region Properties
+		
 		private DateTime _LastUpdate;
-		[IgnoreDataMember()]
+		[DataMember()]
 		public DateTime LastUpdate
 		{
 			get
@@ -99,23 +100,6 @@ namespace tRSS.Model
 			{
 				_NextUpdate = value;
 				onPropertyChanged("NextUpdate");
-			}
-		}
-		
-		# region Properties
-		
-		private Feed _Test;
-		[IgnoreDataMember()]
-		public Feed Test
-		{
-			get
-			{
-				return _Test;
-			}
-			set
-			{
-				_Test = value;
-				onPropertyChanged("Test");
 			}
 		}
 		
@@ -162,7 +146,6 @@ namespace tRSS.Model
 			}
 		}
 		
-		
 		private int _SelectedFeedIndex;
 		[IgnoreDataMember()]
 		public int SelectedFeedIndex
@@ -208,7 +191,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _TorrentDropDirectory = ".";
+		private string _TorrentDropDirectory;
 		[DataMember()]
 		public string TorrentDropDirectory
 		{
@@ -223,7 +206,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		// FIXME Might not be needed
+		// HACK Not sure if I need this, yet
 		public List<FeedItem> DownloadedItems
 		{
 			get
@@ -237,33 +220,19 @@ namespace tRSS.Model
 			}
 		}
 		
-		private int[] _UpdateIntervals = { 1, 5, 15, 60 };
-		[DataMember()]
-		public int[] UpdateIntervals
-		{
-			get
-			{
-				return _UpdateIntervals;
-			}
-			set
-			{
-				_UpdateIntervals = value;
-				onPropertyChanged("UpdateIntervals");
-			}
-		}
+		# endregion
 		
-		private string[] _UpdateOptions = { "1 minute", "5 minutes", "15 minutes", "1 hour" };
+		# region Update interval
+		
+		private static readonly int[] UPDATE_INTERVALS = { 1, 5, 15, 60 };
+		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "5 minutes", "15 minutes", "1 hour" };
+
 		[DataMember()]
 		public string[] UpdateOptions
 		{
 			get
 			{
-				return _UpdateOptions;
-			}
-			set
-			{
-				_UpdateOptions = value;
-				onPropertyChanged("UpdateOptions");
+				return UPDATE_OPTIONS;
 			}
 		}
 		
@@ -286,29 +255,15 @@ namespace tRSS.Model
 		{
 			get
 			{
-				return _UpdateIntervals[SelectedUpdateOption];
+				return UPDATE_INTERVALS[SelectedUpdateOption];
 			}
 		}
 		
 		# endregion
 		
-		public void Update()
-		{
-			foreach (Feed feed in Feeds)
-			{
-				feed.Update();
-			}
-			foreach (Filter filter in Filters)
-			{
-				filter.FilterFeed(Feeds[filter.SearchInFeedIndex]);
-			}
-			
-			LastUpdate = DateTime.Now;
-		}
-		
 		# region Commands
 		
-		// --------- DELETE FEED ----------------
+		# region Delete feed
 		
 		public ICommand DeleteFeed
 		{
@@ -321,6 +276,13 @@ namespace tRSS.Model
 		public void ExecuteDeleteFeed(object parameter)
 		{
 			Feeds.Remove(SelectedFeed);
+			
+			foreach (Filter filter in Filters)
+			{
+				// SearchInFeedIndex becomes -1 when feed is deleted
+				if (filter.SearchInFeedIndex < 0)
+				{ filter.SearchInFeedIndex = 0; }
+			}
 		}
 		
 		public bool CanDeleteFeed(object parameter)
@@ -328,7 +290,9 @@ namespace tRSS.Model
 			return Feeds.Count > 1;
 		}
 		
-		// --------- DELETE FILTER ----------------
+		# endregion
+		
+		# region Delete filter
 		
 		public ICommand DeleteFilter
 		{
@@ -348,7 +312,9 @@ namespace tRSS.Model
 			return Filters.Count > 1;
 		}
 		
-		// --------- NEW FEED ----------------
+		# endregion
+		
+		# region New feed
 		
 		public ICommand NewFeed
 		{
@@ -370,7 +336,9 @@ namespace tRSS.Model
 			return true;
 		}
 		
-		// --------- NEW FILTER ----------------
+		# endregion
+		
+		# region New filter
 		
 		public ICommand NewFilter
 		{
@@ -389,7 +357,7 @@ namespace tRSS.Model
 			f.IgnoreCaps = SelectedFilter.IgnoreCaps;
 			f.Include = SelectedFilter.Include;
 			f.Exclude = SelectedFilter.Exclude;
-			f.FilterEpisode = SelectedFilter.FilterEpisode;
+			f.FilterEpisodes = SelectedFilter.FilterEpisodes;
 			f.Season = SelectedFilter.Season;
 			f.Episode = SelectedFilter.Episode;
 			
@@ -402,8 +370,9 @@ namespace tRSS.Model
 			return true;
 		}
 		
-		// --------- BROWSE DIRECTORY ----------------
+		# endregion
 		
+		# region Choose directory
 		
 		public ICommand ChooseDirectory
 		{
@@ -415,6 +384,7 @@ namespace tRSS.Model
 		
 		public void ExecuteChooseDirectory(object parameter)
 		{
+			
 			using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
 			{
 				try
@@ -423,7 +393,7 @@ namespace tRSS.Model
 				}
 				catch(ArgumentException ae)
 				{
-					dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
+					dialog.SelectedPath = FOLDER;
 					System.Diagnostics.Debug.WriteLine(ae.ToString());
 				}
 				
@@ -441,13 +411,47 @@ namespace tRSS.Model
 			return true;
 		}
 		
+		# endregion
+		
+		# region Refresh feeds
+		
+		public ICommand Refresh
+		{
+			get
+			{
+				return new RelayCommand(ExecuteRefresh, CanRefresh);
+			}
+		}
+		
+		public void ExecuteRefresh(object parameter)
+		{
+			Update();
+		}
+		
+		public bool CanRefresh(object parameter)
+		{
+			return true;
+		}
+		
 		
 		# endregion
 		
-		// ==========================================
-		//   MAKE BUSINESS LOGIC FUNCTIONALITY HERE
-		// ==========================================
+		# endregion
 		
-		// Update Feeds -> Filter Items
+		
+		public void Update()
+		{
+			foreach (Feed feed in Feeds)
+			{
+				feed.Update();
+			}
+			foreach (Filter filter in Filters)
+			{
+				// Needs to use index, because SearchInFeed depends on binding and window isn't loaded
+				filter.FilterFeed(Feeds[filter.SearchInFeedIndex], TorrentDropDirectory);
+			}
+			
+			LastUpdate = DateTime.Now;
+		}
 	}
 }

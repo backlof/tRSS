@@ -7,7 +7,7 @@ using tRSS.Utilities;
 namespace tRSS.Model.WindowSettings
 {
 	[DataContract()]
-	public abstract class IWindowSettings : INotifyBase
+	public abstract class IWindowSettings : ObjectBase
 	{		
 		private ResizeMode _Resizable = ResizeMode.CanResize;
 		[DataMember()]

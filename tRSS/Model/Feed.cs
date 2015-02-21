@@ -9,11 +9,8 @@ using tRSS.Utilities;
 
 namespace tRSS.Model
 {
-	/// <summary>
-	/// Description of Channel.
-	/// </summary>
 	[DataContract()]
-	public class Feed : INotifyBase
+	public class Feed : ObjectBase
 	{
 		public Feed()
 		{
@@ -27,7 +24,7 @@ namespace tRSS.Model
 			Update();
 		}
 		
-		private string _URL;
+		private string _URL = "";
 		[DataMember()]
 		public string URL
 		{
@@ -88,28 +85,47 @@ namespace tRSS.Model
 		
 		public void Update()
 		{
-			// UNDONE Check URL before updating
-			
-			XmlDocument feed = new XmlDocument();
-			feed.Load("RSS.xml"); //temporary offline testing
-			
-			XmlNode channel = feed.SelectSingleNode("rss/channel");
-			XmlNodeList items = feed.SelectNodes("rss/channel/item");
-			
-			// Temporary
-			if(String.IsNullOrEmpty(Title))
+			try
 			{
-				Title = channel.SelectSingleNode("title").InnerText;
+				XmlDocument feed = new XmlDocument();
+				
+				feed.Load(URL);
+				
+				XmlNode channelNode = feed.SelectSingleNode("rss/channel");
+				Description = channelNode.SelectSingleNode("description").InnerText;
+				
+				XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
+				
+				Items = new ObservableCollection<FeedItem>();
+				
+				foreach (XmlNode itemNode in itemNodes)
+				{
+					// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
+					
+					FeedItem item = new FeedItem();
+					item.Title = itemNode.SelectSingleNode("title").InnerText;
+					item.GUID = itemNode.SelectSingleNode("guid").InnerText;
+					item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText);
+					item.URL = itemNode.SelectSingleNode("enclosure") != null
+						? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText
+						: itemNode.SelectSingleNode("link").InnerText;
+					
+					Items.Add(item);
+				}
+				onPropertyChanged("Items");
 			}
-			
-			Description = channel.SelectSingleNode("description").InnerText;
-			
-			Items = new ObservableCollection<FeedItem>();
-			foreach (XmlNode item in items)
+			catch (ArgumentNullException ane)
 			{
-				Items.Add(new FeedItem(item));
+				System.Diagnostics.Debug.WriteLine("Invalid feed URL");
+				System.Diagnostics.Debug.WriteLine(ToString());
+				System.Diagnostics.Debug.WriteLine(ane.ToString());
 			}
-			onPropertyChanged("Items");
+			catch (ArgumentException ae)
+			{
+				System.Diagnostics.Debug.WriteLine("Invalid feed URL");
+				System.Diagnostics.Debug.WriteLine(ToString());
+				System.Diagnostics.Debug.WriteLine(ae.ToString());
+			}
 		}
 		
 		public override string ToString()
