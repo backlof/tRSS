@@ -15,8 +15,8 @@ In order to get a match:
 * Feed must be selected
 * The beginning of your title must match `Filter` (Wildcards are optional)
 
-| Symbol	| Meaning								| Regex		|
-|:-:		|-										|:-:		|
+| Symbol | Meaning | Regex |
+|:-:|-|:-:|
 |`*`		| Wildcard; zero or more characters.	|`.*`		|
 |`.`		| Whitespace characters.				|`[\s._-]`	|
 |`?`		| 0 or 1 character of any type.			|`.?`		|
