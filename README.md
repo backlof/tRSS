@@ -15,11 +15,11 @@ In order to get a match:
 * Feed must be selected
 * The beginning of your title must match `Filter` (Wildcards are optional)
 
-| Symbol | Meaning | Regex |
-|:-:|-|:-:|
-|`*`		| Wildcard; zero or more characters.	|`.*`		|
-|`.`		| Whitespace characters.				|`[\s._-]`	|
-|`?`		| 0 or 1 character of any type.			|`.?`		|
+| Symbol  | Meaning                             | Regex     |
+|:-------:|-------------------------------------|:---------:|
+|`*`      | Wildcard; zero or more characters.  |`.*`       |
+|`.`		  | Whitespace characters.			      	|`[\s._-]`	|
+|`?`		  | 0 or 1 character of any type.		  	|`.?`     	|
 
 * Title must include all terms in `Include`, separated by `;`
 * Title must not include any terms in `Exclude`, separated by `;`
