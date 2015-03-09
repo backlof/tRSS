@@ -18,7 +18,7 @@ In order to get a match:
 | Symbol  | Meaning                             | Regex     |
 |:-------:|-------------------------------------|:---------:|
 |`*`      | Wildcard; zero or more characters.  |`.*`       |
-|`.`		  | Whitespace characters.			      	|`[\s._-]`	|
+|`.`		  | 1 whitespace character			      	|`[\s._-]`	|
 |`?`		  | 0 or 1 character of any type.		  	|`.?`     	|
 
 * Title must include all terms in `Include`, separated by `;`
