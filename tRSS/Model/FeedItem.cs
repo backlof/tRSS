@@ -148,11 +148,11 @@ namespace tRSS.Model
 			}
 		}
 		
-		public async Task<bool> Download(string location)
+		public async Task<bool> Download(string toLocation)
 		{
 			// http://stackoverflow.com/questions/9857709/downloading-a-torrent-file-with-webclient-results-in-corrupt-file
 			
-			if (await GetTorrent(location))
+			if (await GetTorrent(toLocation))
 			{
 				Downloaded = DateTime.Now;
 				return true;
@@ -163,7 +163,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		public async Task<bool> GetTorrent(string location)
+		public async Task<bool> GetTorrent(string toLocation)
 		{
 			// http://stackoverflow.com/questions/18207730/how-to-make-ordinary-webrequest-async-and-awaitable
 			
@@ -194,7 +194,7 @@ namespace tRSS.Model
 						result = memoryStream.ToArray();
 						
 						// Can't find original filename
-						using (BinaryWriter writer = new BinaryWriter(new FileStream(location + Paths.CleanFileName(Title) + ".torrent", FileMode.Create)))
+						using (BinaryWriter writer = new BinaryWriter(new FileStream(toLocation + Paths.CleanFileName(Title) + ".torrent", FileMode.Create)))
 						{
 							writer.Write(result);
 						}

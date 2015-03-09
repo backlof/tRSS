@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,14 +15,5 @@ namespace tRSS.Model.WindowSettings
 		}
 		
 		public const string FILENAME = "MainView";
-		
-		[IgnoreDataMemberAttribute()]
-		public string Print 
-		{ 
-			get
-			{
-				return "X=" + Width + "Y=" + Height;
-			}
-		}
 	}
 }

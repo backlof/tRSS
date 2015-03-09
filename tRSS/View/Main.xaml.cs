@@ -20,16 +20,16 @@ namespace tRSS
 		
 		public Main()
 		{
-			InitializeComponent();
-			
 			VM = new MainViewModel();
 			DataContext = VM;
 			VM.Data.StartTimer();
+			
+			InitializeComponent();
 		}
 		
 		void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			VM.Data.RestartTimerWithNewInterval();
+			VM.Data.ResetTimer();
 		}
 		
 		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -45,6 +45,7 @@ namespace tRSS
 		private void EnableEditing()
 		{
 			HasFocused = true;
+			FocusManager.SetFocusedElement(VisualTreeHelper.GetParent(ActiveTextBox), ActiveTextBox);
 			ActiveTextBox.Visibility = Visibility.Visible;
 		}
 		
@@ -62,11 +63,6 @@ namespace tRSS
 			}
 			
 			ActiveTextBox = (TextBox)((Grid)((TextBlock)sender).Parent).Children[1];
-			
-			if(e.ClickCount == 2)
-			{
-				EnableEditing();
-			}
 		}
 		
 		void TextBox_KeyDown(object sender, KeyEventArgs e)

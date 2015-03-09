@@ -10,6 +10,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <ApplicationIcon>Resources\ModernWeb\RSS.ico</ApplicationIcon>
+    <NoWin32Manifest>False</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -98,10 +100,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model" />
-    <Folder Include="Data" />
     <Folder Include="Model\WindowSettings" />
     <Folder Include="Resources" />
-    <Folder Include="Resources\Icons" />
+    <Folder Include="Resources\100Flat2" />
+    <Folder Include="Resources\3dSocial" />
+    <Folder Include="Resources\FamFamFamSilk" />
+    <Folder Include="Resources\LongShadowMedia" />
+    <Folder Include="Resources\ModernWeb" />
+    <Folder Include="Resources\Windows8Metro" />
     <Folder Include="Utilities" />
     <Folder Include="View" />
     <Folder Include="ViewModel" />
@@ -111,36 +117,52 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="Resources\Icons\folder.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Feed_Add.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\table_refresh.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Feed_Delete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\table_save.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\database_refresh.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Layout_Add.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\page_save.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Layout_Delete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\feed_add.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Table_Refresh.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\feed_delete.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="Resources\100Flat2\License.txt" />
+    <None Include="Resources\100Flat2\RSS.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\3dSocial\License.txt" />
+    <None Include="Resources\3dSocial\RSS.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <Content Include="Resources\FamFamFamSilk\License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\folder_add.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\FamFamFamSilk\Disk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\layout_add.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="Resources\LongShadowMedia\License.txt" />
+    <None Include="Resources\LongShadowMedia\RSS.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <Content Include="Resources\ModernWeb\License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Icons\layout_delete.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Resources\ModernWeb\RSS.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Windows8Metro\License.txt" />
+    <None Include="Resources\Windows8Metro\RSS.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

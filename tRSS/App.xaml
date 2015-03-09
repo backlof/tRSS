@@ -1,8 +1,8 @@
 ﻿<Application x:Class="tRSS.App"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:util="clr-namespace:tRSS.Utilities"
-	StartupUri="View/Main.xaml">
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:util="clr-namespace:tRSS.Utilities"
+             StartupUri="View/Main.xaml">
 	<Application.Resources>
 		<util:DateConverter x:Key="DateConverter" />
 	</Application.Resources>

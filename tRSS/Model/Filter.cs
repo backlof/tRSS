@@ -94,7 +94,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private int _SearchInFeedIndex = 0;
+		private int _SearchInFeedIndex;
 		[DataMember()]
 		public int SearchInFeedIndex
 		{
@@ -113,7 +113,7 @@ namespace tRSS.Model
 		
 		private bool _FilterEpisode = false;
 		[DataMember()]
-		public bool FilterEpisodes
+		public bool FilterEpisode
 		{
 			get
 			{
@@ -156,9 +156,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		private ObservableCollection<FeedItem> _DownloadedItems = new ObservableCollection<FeedItem>();
+		private List<FeedItem> _DownloadedItems = new List<FeedItem>();
 		[DataMember()]
-		public ObservableCollection<FeedItem> DownloadedItems
+		public List<FeedItem> DownloadedItems
 		{
 			get
 			{
@@ -313,67 +313,48 @@ namespace tRSS.Model
 		
 		# region Filter functionality
 		
-		public void FilterFeed(Feed toSearch, string location)
+		public bool ShouldDownload(FeedItem item)
 		{
-			
-			foreach (FeedItem item in toSearch.Items)
+			if (!DownloadedItems.Contains(item))
 			{
 				if (IsActive)
-				{					
-					if (!DownloadedItems.Contains(item)) // Special compare in FeedItem class
+				{
+					string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
+					RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
+					
+					if (Regex.IsMatch(title, RegexPattern, option))
 					{
-						string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
-						RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
-						
-						if (Regex.IsMatch(title, RegexPattern, option))
-						{							
-							if (IncludeList.All(title.Contains))
-							{								
-								if (!ExcludeList.Any(title.Contains))
+						if (IncludeList.All(title.Contains))
+						{
+							if (!ExcludeList.Any(title.Contains))
+							{
+								if (FilterEpisode)
 								{
-									if (FilterEpisodes)
+									if (item.IsTV)
 									{
-										if (item.IsTV)
+										if(IsEpisodeToDownload(item))
 										{
-											if(IsEpisodeToDownload(item))
-											{
-												Download(item, location);
-												
-											}
+											DownloadedItems.Add(item);
+											return true;
 										}
 									}
-									else
+								}
+								else
+								{
+									if (MatchOnce)
 									{
-										if (MatchOnce)
-										{
-											IsActive = false;
-										}
-										Download(item, location);
+										IsActive = false;
 									}
+									DownloadedItems.Add(item);
+									return true;
 								}
 							}
 						}
 					}
 				}
-				// Not active
-				else
-				{
-					break;
-				}
 			}
-		}
-		
-		public async void Download(FeedItem item, string location)
-		{
-			if (await item.Download(location))
-			{
-				DownloadedItems.Add(item);
-			}
-			else // Failed to download torrent
-			{
-				// Only matters if MatchOnce == true
-				IsActive = true;
-			}
+			
+			return false;
 		}
 		
 		public bool IsEpisodeToDownload(FeedItem item)
@@ -382,16 +363,15 @@ namespace tRSS.Model
 			{
 				if (MatchOnce)
 				{
-					bool foundSameEpisode = false;
-					
 					foreach (FeedItem downloaded in DownloadedItems)
 					{
 						if (item.Season == downloaded.Season && item.Episode == downloaded.Episode)
-						{ foundSameEpisode = true; }
+						{
+							return false; // If same episode is downloaded
+						}
 					}
 					
-					if (!foundSameEpisode) { return true; }
-					else { return false; }
+					return true;
 				}
 				else { return true; }
 			}

@@ -6,7 +6,7 @@
 * Periodic updates
 * Forced updates
 
-![Application window](https://github.com/backlof/tRSS/blob/master/Media/Screenshot%202015-02-21.png?raw=true)
+![Application window](https://github.com/backlof/tRSS/blob/master/Media/Screenshot.png?raw=true)
 
 ##	Filters
 In order to get a match:

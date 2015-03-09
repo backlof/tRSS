@@ -14,7 +14,7 @@ namespace tRSS.Model
 {
 	[DataContract()]
 	public class Library : ObjectBase
-	{		
+	{
 		public Library()
 		{
 			// HACK Testing
@@ -27,14 +27,14 @@ namespace tRSS.Model
 			allTVShows.IsActive = false;
 			allTVShows.TitleFilter = "*";
 			allTVShows.IgnoreCaps = true;
-			allTVShows.Include = "";
-			allTVShows.Exclude = "";
-			allTVShows.FilterEpisodes = false;
+			allTVShows.Include = "720p;H.264";
+			allTVShows.Exclude = "1080p;HDTV;";
+			allTVShows.FilterEpisode = false;
 			allTVShows.Season = 5;
 			allTVShows.Episode = 9;
 			Filters.Add(allTVShows);
 			
-			TorrentDropDirectory = FOLDER;	
+			TorrentDropDirectory = FOLDER;
 			if(!Directory.Exists(Path.GetDirectoryName(TorrentDropDirectory)))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(TorrentDropDirectory));
@@ -57,7 +57,7 @@ namespace tRSS.Model
 			NextUpdate = DateTime.Now.AddMinutes(UpdateInterval);
 		}
 		
-		public void RestartTimerWithNewInterval()
+		public void ResetTimer()
 		{
 			timedRefresh.Stop();
 			StartTimer();
@@ -117,6 +117,21 @@ namespace tRSS.Model
 			}
 		}
 		
+		// HACK Not sure if I need this, yet
+		[IgnoreDataMember()]
+		public List<FeedItem> DownloadedItems
+		{
+			get
+			{
+				List<FeedItem> items = new List<FeedItem>();
+				foreach (Filter f in Filters)
+				{
+					items.AddRange(f.DownloadedItems);
+				}
+				return items;
+			}
+		}
+		
 		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
 		[DataMember()]
 		public ObservableCollection<Filter> Filters
@@ -147,7 +162,7 @@ namespace tRSS.Model
 		}
 		
 		private int _SelectedFeedIndex;
-		[IgnoreDataMember()]
+		[DataMember()]
 		public int SelectedFeedIndex
 		{
 			get
@@ -162,7 +177,7 @@ namespace tRSS.Model
 		}
 		
 		private int _SelectedFilterIndex;
-		[IgnoreDataMember()]
+		[DataMember()]
 		public int SelectedFilterIndex
 		{
 			get
@@ -206,26 +221,12 @@ namespace tRSS.Model
 			}
 		}
 		
-		// HACK Not sure if I need this, yet
-		public List<FeedItem> DownloadedItems
-		{
-			get
-			{
-				List<FeedItem> items = new List<FeedItem>();
-				foreach (Filter f in Filters)
-				{
-					items.AddRange(f.DownloadedItems);
-				}
-				return items;
-			}
-		}
-		
 		# endregion
 		
 		# region Update interval
 		
-		private static readonly int[] UPDATE_INTERVALS = { 1, 5, 15, 60 };
-		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "5 minutes", "15 minutes", "1 hour" };
+		private static readonly int[] UPDATE_INTERVALS = { 1, 2, 5, 15, 60 };
+		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "2 minutes", "5 minutes", "15 minutes", "1 hour" };
 
 		[DataMember()]
 		public string[] UpdateOptions
@@ -236,7 +237,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private int _SelectedUpdateOption = 1;
+		private int _SelectedUpdateOption = 2;
 		[DataMember()]
 		public int SelectedUpdateOption
 		{
@@ -357,7 +358,7 @@ namespace tRSS.Model
 			f.IgnoreCaps = SelectedFilter.IgnoreCaps;
 			f.Include = SelectedFilter.Include;
 			f.Exclude = SelectedFilter.Exclude;
-			f.FilterEpisodes = SelectedFilter.FilterEpisodes;
+			f.FilterEpisode = SelectedFilter.FilterEpisode;
 			f.Season = SelectedFilter.Season;
 			f.Episode = SelectedFilter.Episode;
 			
@@ -426,6 +427,7 @@ namespace tRSS.Model
 		public void ExecuteRefresh(object parameter)
 		{
 			Update();
+			ResetTimer();
 		}
 		
 		public bool CanRefresh(object parameter)
@@ -445,13 +447,35 @@ namespace tRSS.Model
 			{
 				feed.Update();
 			}
+			FilterFeeds();
+			LastUpdate = DateTime.Now;
+		}
+		
+		public async void FilterFeeds()
+		{
 			foreach (Filter filter in Filters)
 			{
-				// Needs to use index, because SearchInFeed depends on binding and window isn't loaded
-				filter.FilterFeed(Feeds[filter.SearchInFeedIndex], TorrentDropDirectory);
+				if (filter.IsActive)
+				{
+					// Needs to use index, because SearchInFeed depends on binding and window isn't loaded
+					foreach (FeedItem item in Feeds[filter.SearchInFeedIndex].Items)
+					{
+						if (filter.ShouldDownload(item))
+						{
+							if (await item.Download(TorrentDropDirectory))
+							{
+								onPropertyChanged("DownloadedItems");
+							}
+							else // Failed to download torrent
+							{
+								// Only matters if MatchOnce == true
+								filter.IsActive = true;
+								filter.DownloadedItems.Remove(item);
+							}
+						}
+					}
+				}
 			}
-			
-			LastUpdate = DateTime.Now;
 		}
 	}
 }
