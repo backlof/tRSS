@@ -1,6 +1,6 @@
 # tRSS
 
-* Portable URL's
+* Portable
 * Smart filter
 * Visible Regex pattern
 * Periodic updates
