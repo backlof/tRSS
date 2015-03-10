@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using System.Xml;
 using tRSS.Utilities;
 using System.Runtime.Serialization;
+using tRSS.View;
 
 namespace tRSS.Model
 {
@@ -17,22 +18,10 @@ namespace tRSS.Model
 	{
 		public Library()
 		{
-			// HACK Testing
-			Feed tvShows = new Feed("TV Shows", "https://kickass.to/tv/?rss=1");
-			Feeds.Add(tvShows);
-			Feeds.Add(new Feed("Movies", "https://kickass.to/movies/?rss=1"));
-			Feeds.Add(new Feed("Music", "https://kickass.to/music/?rss=1"));
-			
-			Filter allTVShows = new Filter("All TV Shows");
-			allTVShows.IsActive = false;
-			allTVShows.TitleFilter = "*";
-			allTVShows.IgnoreCaps = true;
-			allTVShows.Include = "720p;H.264";
-			allTVShows.Exclude = "1080p;HDTV;";
-			allTVShows.FilterEpisode = false;
-			allTVShows.Season = 5;
-			allTVShows.Episode = 9;
-			Filters.Add(allTVShows);
+			Feeds.Add(new Feed{ Title = "TV Shows", URL = "https://kickass.to/tv/?rss=1"} );
+			Feeds.Add(new Feed{ Title = "Movies", URL = "https://kickass.to/movies/?rss=1" });
+			Feeds.Add(new Feed{ Title = "Music", URL = "https://kickass.to/music/?rss=1" });
+			Filters.Add(new Filter{ IsActive = false, Title="All TV Shows", TitleFilter = "*", IgnoreCaps = true, Include = "720p;H.264", Exclude = "1080p;HDTV;", FilterEpisode = false, SearchInFeedIndex = 0 });
 			
 			TorrentDropDirectory = FOLDER;
 			if(!Directory.Exists(Path.GetDirectoryName(TorrentDropDirectory)))
@@ -117,7 +106,6 @@ namespace tRSS.Model
 			}
 		}
 		
-		// HACK Not sure if I need this, yet
 		[IgnoreDataMember()]
 		public List<FeedItem> DownloadedItems
 		{
@@ -228,7 +216,6 @@ namespace tRSS.Model
 		private static readonly int[] UPDATE_INTERVALS = { 1, 2, 5, 15, 60 };
 		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "2 minutes", "5 minutes", "15 minutes", "1 hour" };
 
-		[DataMember()]
 		public string[] UpdateOptions
 		{
 			get
@@ -264,6 +251,8 @@ namespace tRSS.Model
 		
 		# region Commands
 		
+		// TODO Delete FeedItem from Downloaded DataGrid
+		
 		# region Delete feed
 		
 		public ICommand DeleteFeed
@@ -284,6 +273,8 @@ namespace tRSS.Model
 				if (filter.SearchInFeedIndex < 0)
 				{ filter.SearchInFeedIndex = 0; }
 			}
+			
+			SelectedFeedIndex = 0;
 		}
 		
 		public bool CanDeleteFeed(object parameter)
@@ -306,6 +297,8 @@ namespace tRSS.Model
 		public void ExecuteDeleteFilter(object parameter)
 		{
 			Filters.Remove(SelectedFilter);
+			
+			SelectedFilterIndex = 0;
 		}
 		
 		public bool CanDeleteFilter(object parameter)
@@ -330,9 +323,33 @@ namespace tRSS.Model
 			Feed f = new Feed();
 			Feeds.Add(f);
 			SelectedFeed = f;
+			ExecuteEditFeed(parameter);
 		}
 		
 		public bool CanNewFeed(object parameter)
+		{
+			return true;
+		}
+		
+		# endregion
+		
+		# region Edit feed
+		
+		public ICommand EditFeed
+		{
+			get
+			{
+				return new RelayCommand(ExecuteEditFeed, CanEditFeed);
+			}
+		}
+		
+		public void ExecuteEditFeed(object parameter)
+		{
+			EditFeed edit = new EditFeed(SelectedFeed);
+			edit.Show();
+		}
+		
+		public bool CanEditFeed(object parameter)
 		{
 			return true;
 		}

@@ -12,9 +12,23 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ApplicationIcon>Resources\ModernWeb\RSS.ico</ApplicationIcon>
     <NoWin32Manifest>False</NoWin32Manifest>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Alexander\AppData\Roaming\ICSharpCode/SharpDevelop4\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -31,6 +45,8 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -79,8 +95,7 @@
     <Compile Include="Model\Filter.cs" />
     <Compile Include="Model\FeedItem.cs" />
     <Compile Include="Model\Library.cs" />
-    <Compile Include="Model\WindowSettings\IWindowSettings.cs" />
-    <Compile Include="Model\WindowSettings\MainViewSettings.cs" />
+    <Compile Include="Model\WindowSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\WPFAssemblyInfo.cs" />
     <Compile Include="Utilities\DateConverter.cs" />
@@ -89,18 +104,23 @@
     <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="Utilities\TorrentDownloadHelper.cs" />
     <Compile Include="Utilities\Utils.cs" />
+    <Compile Include="ViewModel\EditFeedViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="View\EditFeed.xaml.cs">
+      <DependentUpon>EditFeed.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="View\Main.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>Main.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\EditFeed.xaml" />
     <Page Include="View\Main.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model" />
-    <Folder Include="Model\WindowSettings" />
     <Folder Include="Resources" />
     <Folder Include="Resources\100Flat2" />
     <Folder Include="Resources\3dSocial" />
@@ -147,6 +167,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\FamFamFamSilk\Disk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Feed_Edit.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\LongShadowMedia\License.txt" />

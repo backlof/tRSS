@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using tRSS.Model;
-using tRSS.Model.WindowSettings;
 using tRSS.Utilities;
 using System.Windows.Threading;
 
@@ -16,7 +15,10 @@ namespace tRSS.ViewModel
 	public class MainViewModel : ObjectBase
 	{
 		public Library Data { get; set; }
-		public MainViewSettings View { get; set; }
+		public WindowSettings View { get; set; }
+		
+		public static readonly string DATA_FILENAME = "Library";
+		public static readonly string VIEW_FILENAME = "Window-Main";
 		
 		public MainViewModel()
 		{
@@ -24,18 +26,11 @@ namespace tRSS.ViewModel
 			Data.Update();
 		}
 		
-		private const string DATA_LOCATION = "Data";
-		
-		private string Location(string filename)
-		{
-			return Path.Combine(DATA_LOCATION, filename + ".xml");
-		}
-		
 		public void Load()
 		{
 			string path;
 			
-			path = ObjectBase.SaveLocation(typeof(Library));			
+			path = ObjectBase.SaveLocation(DATA_FILENAME);			
 			if(File.Exists(path))
 			{
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -50,25 +45,25 @@ namespace tRSS.ViewModel
 			}
 			
 			
-			path = ObjectBase.SaveLocation(typeof(MainViewSettings));
+			path = ObjectBase.SaveLocation(VIEW_FILENAME);
 			if(File.Exists(path))
 			{
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
 				{
-					DataContractSerializer dcs = new DataContractSerializer(typeof(MainViewSettings));
-					View = dcs.ReadObject(fs) as MainViewSettings;
+					DataContractSerializer dcs = new DataContractSerializer(typeof(WindowSettings));
+					View = dcs.ReadObject(fs) as WindowSettings;
 				}
 			}
 			else
 			{
-				View = new MainViewSettings();
+				View = new WindowSettings();
 			}
 		}
 		
 		public void SaveData()
 		{
-			Data.Save();
-			View.Save();
+			Data.Save(DATA_FILENAME);
+			View.Save(VIEW_FILENAME);
 		}
 		
 		public ICommand SaveCommand

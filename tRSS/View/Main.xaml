@@ -3,16 +3,14 @@
 	x:Class="tRSS.Main" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
 	xmlns:util="clr-namespace:tRSS.Utilities"
 	Title="tRSS"
-	Icon="/Resources/ModernWeb/RSS.ico"
 	Closing="Window_Closing"
-	MinHeight="697"
+	MinHeight="740"
 	MinWidth="550"
 	Height="{Binding Path=View.Height, Mode=TwoWay}"
 	Width="{Binding Path=View.Width, Mode=TwoWay}"
 	Top="{Binding Path=View.Top, Mode=TwoWay}"
 	Left="{Binding Path=View.Left, Mode=TwoWay}"
-	WindowState="{Binding Path=View.State, Mode=TwoWay}"
-	KeyDown="Window_KeyDown">
+	WindowState="{Binding Path=View.State, Mode=TwoWay}">
 	<DockPanel>
 		<StatusBar DockPanel.Dock="Bottom">
 			<StatusBar.Resources>
@@ -57,7 +55,7 @@
 			
 			<ToolBar>
 				<Label Content="Refresh every" />
-				<ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" />
+				<ComboBox Width="80" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" />
 			</ToolBar>
 			
 			<ToolBar>
@@ -82,7 +80,7 @@
 					</Grid.ColumnDefinitions>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*" />
-						<RowDefinition Height="412" />
+						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 					
 					<Grid Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" >
@@ -92,13 +90,10 @@
 						</Grid.RowDefinitions>
 						
 						<Label Grid.Row="0" Content="Feeds" FontWeight="Bold" />
-						<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectionChanged="ListBox_SelectionChanged" SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+						<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<Grid>
-										<TextBlock Text="{Binding Path=Title}" MouseDown="TextBlock_MouseDown" />
-										<TextBox Text="{Binding Path=Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Collapsed" KeyDown="TextBox_KeyDown" />
-									</Grid>
+									<TextBlock Text="{Binding Path=Title}" />
 								</DataTemplate>
 							</ListBox.ItemTemplate>
 							<ListBox.ContextMenu>
@@ -106,6 +101,11 @@
 									<MenuItem Header="New" Command="{Binding Path=Data.NewFeed}" >
 										<MenuItem.Icon>
 											<Image Source="/Resources/FamFamFamSilk/Feed_Add.png" UseLayoutRounding="True" />
+										</MenuItem.Icon>
+									</MenuItem>
+									<MenuItem Header="Edit" Command="{Binding Path=Data.EditFeed}" >
+										<MenuItem.Icon>
+											<Image Source="/Resources/FamFamFamSilk/Feed_Edit.png" UseLayoutRounding="True" />
 										</MenuItem.Icon>
 									</MenuItem>
 									<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFeed}" >
@@ -129,13 +129,10 @@
 							</Grid.RowDefinitions>
 							
 							<Label Grid.Row="0" Content="Filters" FontWeight="Bold" />
-							<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectionChanged="ListBox_SelectionChanged" SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Filters}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+							<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Filters}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 								<ListBox.ItemTemplate>
 									<DataTemplate>
-										<Grid>
-											<TextBlock Text="{Binding Path=Title}" MouseDown="TextBlock_MouseDown" />
-											<TextBox Text="{Binding Path=Title}" Visibility="Collapsed" KeyDown="TextBox_KeyDown" />
-										</Grid>
+										<TextBlock Text="{Binding Path=Title}" />
 									</DataTemplate>
 								</ListBox.ItemTemplate>
 								<ListBox.ContextMenu>
@@ -159,29 +156,24 @@
 						</Grid>
 					</Grid>
 					
-					<Grid Grid.Row="0" Grid.Column="1">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="*" />
-						</Grid.RowDefinitions>
-						
-						<GroupBox Grid.Row="0" Header="URL" Margin="0,10,0,10" Padding="5">
-							<TextBox  Text="{Binding Path=Data.SelectedFeed.URL}" />
-						</GroupBox>
-						
-						<DataGrid Grid.Row="1" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.SelectedFeed.Items}">
+					
+					
+					<GroupBox Grid.Row="0" Grid.Column="1" Header="{Binding Path=Data.SelectedFeed.Title}" Padding="5">
+						<DataGrid Grid.Row="0" Grid.Column="1" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.SelectedFeed.Items}">
 							<DataGrid.Columns>
 								<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
 								<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}" />
 							</DataGrid.Columns>
 						</DataGrid>
-					</Grid>
+					</GroupBox>
+					
+					
 					
 					
 					
 					<GroupBox Grid.Row="1" Grid.Column="1" Padding="8" Margin="0,16,0,0" VerticalAlignment="Top">
 						<GroupBox.Header>
-							<CheckBox Content="{Binding Path=Data.SelectedFilter.Title}" IsChecked="{Binding Path=Data.SelectedFilter.IsActive, Mode=TwoWay}" />
+							<CheckBox Content="Active" IsChecked="{Binding Path=Data.SelectedFilter.IsActive, Mode=TwoWay}" />
 						</GroupBox.Header>
 						
 						
@@ -202,15 +194,21 @@
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
+							
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 							
-							<Label Grid.Row="0" Grid.Column="0" Content="Filter" Margin="0,4,0,0" />
-							<TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.TitleFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-							<Label Grid.Row="2" Grid.Column="0" Content="Regex" Margin="0,4,0,0" />
-							<TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.RegexPattern}" IsEnabled="False" />
+							<Label Grid.Row="0" Grid.Column="0" Content="Name" Margin="0,4,0,0" />
+							<TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 							
-							<Label Grid.Row="4" Grid.Column="0" Content="Feed" Margin="0,4,0,0" />
-							<ComboBox Grid.Row="5" Grid.Column="0" ItemsSource="{Binding Path=Data.Feeds}" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" >
+							<Label Grid.Row="2" Grid.Column="0" Content="Filter" Margin="0,4,0,0" />
+							<TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.TitleFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<Label Grid.Row="4" Grid.Column="0" Content="Regex" Margin="0,4,0,0" />
+							<TextBox Grid.Row="5" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.RegexPattern}" IsEnabled="False" />
+							
+							<Label Grid.Row="6" Grid.Column="0" Content="Feed" Margin="0,4,0,0" />
+							<ComboBox Grid.Row="7" Grid.Column="0" ItemsSource="{Binding Path=Data.Feeds}" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" >
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding Title}" />
@@ -219,7 +217,7 @@
 							</ComboBox>
 							
 							
-							<GroupBox Header="Options" Grid.Column="1" Grid.Row="0" Grid.RowSpan="6" VerticalAlignment="Center" Padding="8" Margin="8,0,0,0">
+							<GroupBox Header="Options" Grid.Column="1" Grid.Row="0" Grid.RowSpan="8" VerticalAlignment="Center" Padding="8" Margin="8,0,0,0">
 								<StackPanel>
 									<CheckBox Margin="0,0,0,8" Content="Match once" IsChecked="{Binding Path=Data.SelectedFilter.MatchOnce, Mode=TwoWay}" />
 									<CheckBox Content="Ignore caps" IsChecked="{Binding Path=Data.SelectedFilter.IgnoreCaps, Mode=TwoWay}" />
@@ -227,12 +225,12 @@
 							</GroupBox>
 							
 							
-							<Label Grid.Row="6" Grid.ColumnSpan="2" Content="Include" Margin="0,4,0,0" />
-							<TextBox Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Include, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-							<Label Grid.Row="8" Grid.ColumnSpan="2" Content="Exclude" Margin="0,4,0,0" />
-							<TextBox Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Exclude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+							<Label Grid.Row="8" Grid.ColumnSpan="2" Content="Include" Margin="0,4,0,0" />
+							<TextBox Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Include, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<Label Grid.Row="10" Grid.ColumnSpan="2" Content="Exclude" Margin="0,4,0,0" />
+							<TextBox Grid.Row="11" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Exclude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 							
-							<GroupBox Padding="8" Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Left">
+							<GroupBox Padding="8" Grid.Row="12" Grid.ColumnSpan="2" HorizontalAlignment="Left">
 								<GroupBox.Header>
 									<CheckBox IsChecked="{Binding Path=Data.SelectedFilter.FilterEpisode, Mode=TwoWay}" Content="TV Show" Margin="0,12,0,0" />
 								</GroupBox.Header>

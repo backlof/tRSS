@@ -36,59 +36,5 @@ namespace tRSS
 		{
 			VM.SaveData();
 		}
-		
-		# region Helpers for renaming in ListBox
-		
-		private TextBox ActiveTextBox;
-		private bool HasFocused = false;
-		
-		private void EnableEditing()
-		{
-			HasFocused = true;
-			FocusManager.SetFocusedElement(VisualTreeHelper.GetParent(ActiveTextBox), ActiveTextBox);
-			ActiveTextBox.Visibility = Visibility.Visible;
-		}
-		
-		private void DisableEditing()
-		{
-			HasFocused = false;
-			ActiveTextBox.Visibility = Visibility.Collapsed;
-		}
-		
-		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			if(HasFocused)
-			{
-				DisableEditing();
-			}
-			
-			ActiveTextBox = (TextBox)((Grid)((TextBlock)sender).Parent).Children[1];
-		}
-		
-		void TextBox_KeyDown(object sender, KeyEventArgs e)
-		{
-			if(e.Key == Key.Enter || e.Key == Key.Escape)
-			{
-				DisableEditing();
-			}
-		}
-		
-		void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if(HasFocused == true)
-			{
-				DisableEditing();
-			}
-		}
-		
-		void Window_KeyDown(object sender, KeyEventArgs e)
-		{
-			if(!HasFocused && ActiveTextBox != null && e.Key == Key.F2)
-			{
-				EnableEditing();
-			}
-		}
-		
-		# endregion
 	}
 }

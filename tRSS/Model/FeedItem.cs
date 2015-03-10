@@ -205,7 +205,9 @@ namespace tRSS.Model
 			}
 			catch (Exception e)
 			{
+				System.Diagnostics.Debug.WriteLine("Can't download torrent");
 				System.Diagnostics.Debug.WriteLine(e.ToString());
+				System.Diagnostics.Debug.WriteLine(ToString());
 				return false;
 			}
 		}

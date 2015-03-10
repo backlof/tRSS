@@ -14,7 +14,7 @@ namespace tRSS.Utilities
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		
-		private static readonly string SAVE_LOCATION = "Data";
+		private static readonly string SAVE_IN_FOLDER = "Data";
 
 		protected internal void onPropertyChanged(string propertyName)
 		{
@@ -24,26 +24,21 @@ namespace tRSS.Utilities
 			}
 		}
 		
-		private string SaveLocation()
+		public static string SaveLocation(string filename)
 		{
-			return SaveLocation(this.GetType());
+			return Path.Combine(SAVE_IN_FOLDER, filename + ".xml");
 		}
 		
-		public static string SaveLocation(Type type)
-		{
-			return Path.Combine(SAVE_LOCATION, type.Name + ".xml");
-		}
-		
-		public void Save()
-		{
+		public void Save(string filename)
+		{			
 			DataContractSerializer dcs = new DataContractSerializer(this.GetType());
 			XmlWriterSettings xws = new XmlWriterSettings(){ Indent = true };
 			
-			if(!Directory.Exists(Path.GetDirectoryName(SaveLocation())))
+			if(!Directory.Exists(Path.GetDirectoryName(SaveLocation(filename))))
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(SaveLocation()));
+				Directory.CreateDirectory(Path.GetDirectoryName(SaveLocation(filename)));
 			}
-			using (XmlWriter xw = XmlWriter.Create(SaveLocation(), xws))
+			using (XmlWriter xw = XmlWriter.Create(SaveLocation(filename), xws))
 			{
 				dcs.WriteObject(xw, this);
 			}

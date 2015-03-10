@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 using System.Windows;
 using tRSS.Utilities;
 
-namespace tRSS.Model.WindowSettings
+namespace tRSS.Model
 {
 	[DataContract()]
-	public abstract class IWindowSettings : ObjectBase
+	public class WindowSettings : ObjectBase
 	{		
 		private ResizeMode _Resizable = ResizeMode.CanResize;
 		[DataMember()]
@@ -33,11 +33,9 @@ namespace tRSS.Model.WindowSettings
 				return _Width;
 			}
 			set
-			{
+			{				
 				_Width = value;
 				onPropertyChanged("Width");
-				// FIXME Kan slettes
-				onPropertyChanged("Print");
 			}
 		}
 		
@@ -53,8 +51,6 @@ namespace tRSS.Model.WindowSettings
 			{
 				_Height = value;
 				onPropertyChanged("Height");
-				// FIXME Kan slettes
-				onPropertyChanged("Print");
 			}
 		}
 		
