@@ -102,7 +102,6 @@
     <Compile Include="Utilities\ObjectBase.cs" />
     <Compile Include="Utilities\Paths.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
-    <Compile Include="Utilities\TorrentDownloadHelper.cs" />
     <Compile Include="Utilities\Utils.cs" />
     <Compile Include="ViewModel\EditFeedViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

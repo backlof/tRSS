@@ -10,10 +10,33 @@ namespace tRSS.Utilities
 	/// Description of Path.
 	/// </summary>
 	public static class Paths
-	{
-		// HACK Not sure if paths work
+	{		
+		public static string MakeRelativeDirectory(string path)
+		{
+			return MakeRelativeDirectory(AppDomain.CurrentDomain.BaseDirectory, path);
+		}
 		
-		public static string MakeRelativePath(string fromPath, string toPath)
+		public static string MakeRelativeDirectory(string fromPath, string toPath)
+		{
+			if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+			if (String.IsNullOrEmpty(toPath))   throw new ArgumentNullException("toPath");
+			
+			Uri fromUri = new Uri(fromPath);
+			Uri toUri = new Uri(toPath);
+			
+			if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+			if (fromUri.Equals(toUri)) { return "."; }
+			
+			Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+			return Uri.UnescapeDataString(relativeUri.ToString()) + Path.DirectorySeparatorChar;;
+		}
+		
+		public static string MakeRelativeFile(string path)
+		{
+			return MakeRelativeFile(AppDomain.CurrentDomain.BaseDirectory, path);
+		}
+		
+		public static string MakeRelativeFile(string fromPath, string toPath)
 		{
 			if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
 			if (String.IsNullOrEmpty(toPath))   throw new ArgumentNullException("toPath");
@@ -34,9 +57,6 @@ namespace tRSS.Utilities
 			return new string(fileName.Where(x => !invalidChars.Contains(x)).ToArray() );
 		}
 		
-		public static string MakeRelativePath(string path)
-		{
-			return MakeRelativePath(AppDomain.CurrentDomain.BaseDirectory, path);
-		}
+		
 	}
 }

@@ -158,7 +158,7 @@
 					
 					
 					
-					<GroupBox Grid.Row="0" Grid.Column="1" Header="{Binding Path=Data.SelectedFeed.Title}" Padding="5">
+					<GroupBox Grid.Row="0" Grid.Column="1" Header="{Binding Path=Data.SelectedFeed.Title}" Padding="8" Margin="0,16,0,0">
 						<DataGrid Grid.Row="0" Grid.Column="1" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.SelectedFeed.Items}">
 							<DataGrid.Columns>
 								<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
@@ -221,6 +221,7 @@
 								<StackPanel>
 									<CheckBox Margin="0,0,0,8" Content="Match once" IsChecked="{Binding Path=Data.SelectedFilter.MatchOnce, Mode=TwoWay}" />
 									<CheckBox Content="Ignore caps" IsChecked="{Binding Path=Data.SelectedFilter.IgnoreCaps, Mode=TwoWay}" />
+								<Button Content="Reset" Margin="0,8,0,0" Command="{Binding Path=Data.ResetFilter}" />
 								</StackPanel>
 							</GroupBox>
 							

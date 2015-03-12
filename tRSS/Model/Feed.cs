@@ -12,17 +12,9 @@ namespace tRSS.Model
 	[DataContract()]
 	public class Feed : ObjectBase
 	{
-		public Feed()
-		{
-		}
+		public Feed(){}
 		
-		// HACK Temporary testing constructor
-		public Feed(string title, string url)
-		{
-			Title = title;
-			URL = url;
-			Update();
-		}
+		# region Properties
 		
 		private string _URL = "";
 		[DataMember()]
@@ -39,21 +31,6 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _EditURL = "";
-		[IgnoreDataMember()]
-		public string EditURL
-		{
-			get
-			{
-				return _EditURL;
-			}
-			set
-			{
-				_EditURL = value;
-				onPropertyChanged("EditURL");
-			}
-		}
-		
 		private string _Title = "New Feed";
 		[DataMember()]
 		public string Title
@@ -66,21 +43,6 @@ namespace tRSS.Model
 			{
 				_Title = value;
 				onPropertyChanged("Title");
-			}
-		}
-		
-		private string _EditTitle = "";
-		[IgnoreDataMember()]
-		public string EditTitle
-		{
-			get
-			{
-				return _EditTitle;
-			}
-			set
-			{
-				_EditTitle = value;
-				onPropertyChanged("EditTitle");
 			}
 		}
 		
@@ -113,11 +75,47 @@ namespace tRSS.Model
 			}
 		}
 		
+		# endregion
+		
+		# region Edit functionality
+		
 		public void FinalizeEdit()
 		{
 			URL = EditURL;
 			Title = EditTitle;
 		}
+		
+		private string _EditURL = "";
+		[IgnoreDataMember()]
+		public string EditURL
+		{
+			get
+			{
+				return _EditURL;
+			}
+			set
+			{
+				_EditURL = value;
+				onPropertyChanged("EditURL");
+			}
+		}
+		
+		private string _EditTitle = "";
+		[IgnoreDataMember()]
+		public string EditTitle
+		{
+			get
+			{
+				return _EditTitle;
+			}
+			set
+			{
+				_EditTitle = value;
+				onPropertyChanged("EditTitle");
+			}
+		}
+		
+		# endregion
 		
 		public void Update()
 		{

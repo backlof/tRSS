@@ -28,7 +28,6 @@ namespace tRSS.Model
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(TorrentDropDirectory));
 			}
-			
 		}
 		
 		public static readonly string FOLDER = @"Torrents\";
@@ -251,7 +250,7 @@ namespace tRSS.Model
 		
 		# region Commands
 		
-		// TODO Delete FeedItem from Downloaded DataGrid
+		// TODO Delete item from downloaded tab
 		
 		# region Delete feed
 		
@@ -284,6 +283,29 @@ namespace tRSS.Model
 		
 		# endregion
 		
+		# region Reset filter
+		
+		public ICommand ResetFilter
+		{
+			get
+			{
+				return new RelayCommand(ExecuteResetFilter, CanResetFilter);
+			}
+		}
+		
+		public void ExecuteResetFilter(object parameter)
+		{
+			SelectedFilter.DownloadedItems = new List<FeedItem>();
+			onPropertyChanged("DownloadedItems");
+		}
+		
+		public bool CanResetFilter(object parameter)
+		{
+			return SelectedFilter.DownloadedItems.Count > 0;
+		}
+		
+		# endregion
+		
 		# region Delete filter
 		
 		public ICommand DeleteFilter
@@ -297,8 +319,8 @@ namespace tRSS.Model
 		public void ExecuteDeleteFilter(object parameter)
 		{
 			Filters.Remove(SelectedFilter);
-			
 			SelectedFilterIndex = 0;
+			onPropertyChanged("DownloadedItems");
 		}
 		
 		public bool CanDeleteFilter(object parameter)
@@ -418,8 +440,7 @@ namespace tRSS.Model
 				System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 				if (result == System.Windows.Forms.DialogResult.OK)
 				{
-					string path = dialog.SelectedPath + Path.DirectorySeparatorChar;
-					TorrentDropDirectory = Paths.MakeRelativePath(path);
+					TorrentDropDirectory = Paths.MakeRelativeDirectory(dialog.SelectedPath);
 				}
 			}
 		}

@@ -20,17 +20,11 @@ namespace tRSS.Model
 	[DataContract()]
 	public class Filter : ObjectBase
 	{
-		public Filter(string title)
-		{
-			Title = title;
-		}
-		
 		public Filter(){}
 		
 		// Fields have to be static unless they're stored in XML
 		// They're only initialized when the class object is
 		// Not during deserialization
-		
 		
 		# region Properties
 		
@@ -108,8 +102,6 @@ namespace tRSS.Model
 				onPropertyChanged("SearchInFeedIndex");
 			}
 		}
-		
-		
 		
 		private bool _FilterEpisode = false;
 		[DataMember()]
@@ -231,7 +223,7 @@ namespace tRSS.Model
 		
 		# endregion
 		
-		# region Title filter
+		# region Regex filter
 		
 		// REGEX OPERATORS *.$^{[(|)]}+?\
 		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
