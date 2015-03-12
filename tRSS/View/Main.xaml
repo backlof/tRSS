@@ -11,6 +11,15 @@
 	Top="{Binding Path=View.Top, Mode=TwoWay}"
 	Left="{Binding Path=View.Left, Mode=TwoWay}"
 	WindowState="{Binding Path=View.State, Mode=TwoWay}">
+	
+	<Window.Resources>
+        <Style TargetType="{x:Type ListBoxItem}" x:Key="ListBoxItemDragDrop">
+            <Setter Property="AllowDrop" Value="True" />
+        	<EventSetter Event="PreviewMouseMove" Handler="ListBoxItem_PreviewMouseMoveEvent" />
+            <EventSetter Event="Drop" Handler="ListBoxItem_Drop" />
+        </Style>
+    </Window.Resources>
+	
 	<DockPanel>
 		<StatusBar DockPanel.Dock="Bottom">
 			<StatusBar.Resources>
@@ -90,7 +99,7 @@
 						</Grid.RowDefinitions>
 						
 						<Label Grid.Row="0" Content="Feeds" FontWeight="Bold" />
-						<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+						<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListBoxItemDragDrop}" >
 							<ListBox.ItemTemplate>
 								<DataTemplate>
 									<TextBlock Text="{Binding Path=Title}" />
@@ -129,7 +138,7 @@
 							</Grid.RowDefinitions>
 							
 							<Label Grid.Row="0" Content="Filters" FontWeight="Bold" />
-							<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Filters}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+							<ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0" SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Filters}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListBoxItemDragDrop}" >
 								<ListBox.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding Path=Title}" />
@@ -194,7 +203,7 @@
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
-							
+								
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
@@ -221,7 +230,7 @@
 								<StackPanel>
 									<CheckBox Margin="0,0,0,8" Content="Match once" IsChecked="{Binding Path=Data.SelectedFilter.MatchOnce, Mode=TwoWay}" />
 									<CheckBox Content="Ignore caps" IsChecked="{Binding Path=Data.SelectedFilter.IgnoreCaps, Mode=TwoWay}" />
-								<Button Content="Reset" Margin="0,8,0,0" Command="{Binding Path=Data.ResetFilter}" />
+									<Button Content="Reset" Padding="2" Margin="0,8,0,0" Command="{Binding Path=Data.ResetFilter}" />
 								</StackPanel>
 							</GroupBox>
 							
@@ -256,10 +265,12 @@
 			
 			
 			<TabItem Header="Downloaded">
-				
-				
-				
-				<DataGrid Margin="10" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.DownloadedItems}" >
+				<DataGrid Margin="10" CanUserAddRows="False" AutoGenerateColumns="False" CanUserResizeRows="False" IsReadOnly="True" ItemsSource="{Binding Path=Data.DownloadedItems}" SelectedItem="{Binding Path=Data.SelectedDownload}" >
+					<DataGrid.ContextMenu>
+						<ContextMenu >
+							<MenuItem Header="Remove" Command="{Binding Path=Data.RemoveDownload}" />
+						</ContextMenu>
+					</DataGrid.ContextMenu>
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
 						<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}" />

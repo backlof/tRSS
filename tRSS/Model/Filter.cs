@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -38,7 +37,7 @@ namespace tRSS.Model
 			}
 			set
 			{
-				_Title = value;
+				_Title = value.Trim();
 				onPropertyChanged("Title");
 			}
 		}
@@ -190,7 +189,7 @@ namespace tRSS.Model
 			}
 			set
 			{
-				_Include = Utils.RemoveDiacritics(value);
+				_Include = Utils.RemoveDiacritics(value.Trim());
 				onPropertyChanged("Include");
 			}
 		}
@@ -216,7 +215,7 @@ namespace tRSS.Model
 			}
 			set
 			{
-				_Exclude = Utils.RemoveDiacritics(value);
+				_Exclude = Utils.RemoveDiacritics(value.Trim());
 				onPropertyChanged("Exclude");
 			}
 		}

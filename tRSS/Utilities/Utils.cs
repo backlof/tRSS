@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Media;
 
 namespace tRSS.Utilities
 {
@@ -35,6 +37,29 @@ namespace tRSS.Utilities
 			}
 			
 			return sb.ToString().Normalize(NormalizationForm.FormC);
+		}
+		
+		public static T FindAncestor<T>(DependencyObject from) where T : class
+		{
+			if (from == null)
+			{
+				return null;
+			}
+
+			T candidate = from as T;
+			if (candidate != null)
+			{
+				return candidate;
+			}
+
+			return FindAncestor<T>(VisualTreeHelper.GetParent(from));
+		}
+		
+		public static void PrintError(string message, object sender, Exception e)
+		{
+			System.Diagnostics.Debug.WriteLine(message);
+			System.Diagnostics.Debug.WriteLine(sender.ToString());
+			System.Diagnostics.Debug.WriteLine(e.ToString() + Environment.NewLine);
 		}
 	}
 }

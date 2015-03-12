@@ -193,6 +193,21 @@ namespace tRSS.Model
 			}
 		}
 		
+		private FeedItem _SelectedDownload;
+		[IgnoreDataMember()]
+		public FeedItem SelectedDownload
+		{
+			get
+			{
+				return _SelectedDownload;
+			}
+			set
+			{
+				_SelectedDownload = value;
+				onPropertyChanged("SelectedDownload");
+			}
+		}
+		
 		private string _TorrentDropDirectory;
 		[DataMember()]
 		public string TorrentDropDirectory
@@ -265,14 +280,6 @@ namespace tRSS.Model
 		public void ExecuteDeleteFeed(object parameter)
 		{
 			Feeds.Remove(SelectedFeed);
-			
-			foreach (Filter filter in Filters)
-			{
-				// SearchInFeedIndex becomes -1 when feed is deleted
-				if (filter.SearchInFeedIndex < 0)
-				{ filter.SearchInFeedIndex = 0; }
-			}
-			
 			SelectedFeedIndex = 0;
 		}
 		
@@ -390,16 +397,16 @@ namespace tRSS.Model
 		
 		public void ExecuteNewFilter(object parameter)
 		{
-			Filter f = new Filter();
-			
-			f.TitleFilter = SelectedFilter.TitleFilter;
-			f.SearchInFeedIndex = SelectedFilter.SearchInFeedIndex;
-			f.IgnoreCaps = SelectedFilter.IgnoreCaps;
-			f.Include = SelectedFilter.Include;
-			f.Exclude = SelectedFilter.Exclude;
-			f.FilterEpisode = SelectedFilter.FilterEpisode;
-			f.Season = SelectedFilter.Season;
-			f.Episode = SelectedFilter.Episode;
+			Filter f = new Filter{
+				TitleFilter = SelectedFilter.TitleFilter,
+				SearchInFeedIndex = SelectedFilter.SearchInFeedIndex,
+				IgnoreCaps = SelectedFilter.IgnoreCaps,
+				Include = SelectedFilter.Include,
+				Exclude = SelectedFilter.Exclude,
+				FilterEpisode = SelectedFilter.FilterEpisode,
+				Season = SelectedFilter.Season,
+				Episode = SelectedFilter.Episode
+			};
 			
 			Filters.Add(f);
 			SelectedFilter = f;
@@ -431,10 +438,9 @@ namespace tRSS.Model
 				{
 					dialog.SelectedPath = Path.GetFullPath(TorrentDropDirectory);
 				}
-				catch(ArgumentException ae)
+				catch(ArgumentException)
 				{
 					dialog.SelectedPath = FOLDER;
-					System.Diagnostics.Debug.WriteLine(ae.ToString());
 				}
 				
 				System.Windows.Forms.DialogResult result = dialog.ShowDialog();
@@ -476,14 +482,49 @@ namespace tRSS.Model
 		
 		# endregion
 		
+		# region Remove download
+		
+		public ICommand RemoveDownload
+		{
+			get
+			{
+				return new RelayCommand(ExecuteRemoveDownload, CanRemoveDownload);
+			}
+		}
+		
+		public void ExecuteRemoveDownload(object parameter)
+		{
+			foreach (Filter filter in Filters)
+			{
+				if (filter.DownloadedItems.Contains(SelectedDownload))
+				{
+					filter.DownloadedItems.Remove(SelectedDownload);
+					onPropertyChanged("DownloadedItems");
+				}
+			}
+		}
+		
+		public bool CanRemoveDownload(object parameter)
+		{
+			return SelectedDownload != null;
+		}
+		
 		# endregion
 		
+		# endregion
+		
+		
+		// TODO Make error logger similar to UnhandledException everywhere
+		// Make a utility class
 		
 		public void Update()
 		{
 			foreach (Feed feed in Feeds)
 			{
-				feed.Update();
+				if (!(String.IsNullOrEmpty(feed.URL)))
+				{
+					feed.Update();
+				}
 			}
 			FilterFeeds();
 			LastUpdate = DateTime.Now;
@@ -493,7 +534,7 @@ namespace tRSS.Model
 		{
 			foreach (Filter filter in Filters)
 			{
-				if (filter.IsActive)
+				if (filter.IsActive && filter.SearchInFeedIndex != -1)
 				{
 					// Needs to use index, because SearchInFeed depends on binding and window isn't loaded
 					foreach (FeedItem item in Feeds[filter.SearchInFeedIndex].Items)

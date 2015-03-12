@@ -30,8 +30,8 @@
 							<Setter Property="Margin" Value="3,0,3,0" />
 						</Style>
 					</WrapPanel.Resources>
-					<Button Content="Save" Margin="8,0,0,0" Padding="4" Click="Save" />
-					<Button Content="Cancel" Margin="8,0,0,0" Padding="4" Click="Cancel" />
+					<Button Content="Save" Margin="8,0,0,0" Padding="2" Click="Save" />
+					<Button Content="Cancel" Margin="8,0,0,0" Padding="2" Click="Cancel" />
 				</WrapPanel>
 			</Grid>
 		</GroupBox>

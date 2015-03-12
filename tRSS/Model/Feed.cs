@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
@@ -13,6 +14,8 @@ namespace tRSS.Model
 	public class Feed : ObjectBase
 	{
 		public Feed(){}
+		
+		public static readonly String DEFAULT_TITLE = "New Feed";
 		
 		# region Properties
 		
@@ -31,7 +34,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _Title = "New Feed";
+		private string _Title = DEFAULT_TITLE;
 		[DataMember()]
 		public string Title
 		{
@@ -43,21 +46,6 @@ namespace tRSS.Model
 			{
 				_Title = value;
 				onPropertyChanged("Title");
-			}
-		}
-		
-		private string _Description;
-		[DataMember()]
-		public string Description
-		{
-			get
-			{
-				return _Description;
-			}
-			private set
-			{
-				_Description = value;
-				onPropertyChanged("Description");
 			}
 		}
 		
@@ -81,8 +69,8 @@ namespace tRSS.Model
 		
 		public void FinalizeEdit()
 		{
-			URL = EditURL;
-			Title = EditTitle;
+			URL = EditURL.Trim();
+			Title = EditTitle.Trim();
 		}
 		
 		private string _EditURL = "";
@@ -126,7 +114,11 @@ namespace tRSS.Model
 				feed.Load(URL);
 				
 				XmlNode channelNode = feed.SelectSingleNode("rss/channel");
-				Description = channelNode.SelectSingleNode("description").InnerText;
+				
+				if (String.IsNullOrEmpty(Title) || Title == DEFAULT_TITLE)
+				{
+					Title = channelNode.SelectSingleNode("title").InnerText;
+				}
 				
 				XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
 				
@@ -148,23 +140,19 @@ namespace tRSS.Model
 				}
 				onPropertyChanged("Items");
 			}
-			catch (ArgumentNullException ane)
+			catch (FileNotFoundException fnfe)
 			{
-				System.Diagnostics.Debug.WriteLine("Invalid feed URL");
-				System.Diagnostics.Debug.WriteLine(ToString());
-				System.Diagnostics.Debug.WriteLine(ane.ToString());
+				Utils.PrintError("RSS feed not found.", this, fnfe);
 			}
-			catch (ArgumentException ae)
+			catch (NullReferenceException nre)
 			{
-				System.Diagnostics.Debug.WriteLine("Invalid feed URL");
-				System.Diagnostics.Debug.WriteLine(ToString());
-				System.Diagnostics.Debug.WriteLine(ae.ToString());
+				Utils.PrintError("Not able to parse RSS feed.", this, nre);
 			}
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[Feed URL={0}, Title={1}, Description={2}]", _URL, _Title, _Description);
+			return String.Format("[Feed URL={0}, Title={1}]", _URL, _Title);
 		}
 		
 	}
