@@ -112,6 +112,7 @@ namespace tRSS.Model
 				XmlDocument feed = new XmlDocument();
 				
 				feed.Load(URL);
+				// FIXME When site is down, application freezes
 				
 				XmlNode channelNode = feed.SelectSingleNode("rss/channel");
 				
