@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
@@ -105,41 +106,49 @@ namespace tRSS.Model
 		
 		# endregion
 		
-		public void Update()
+		public async void Update()
 		{
 			try
 			{
-				XmlDocument feed = new XmlDocument();
+				WebRequest wr = WebRequest.Create(URL);
 				
-				feed.Load(URL);
-				// FIXME When site is down, application freezes
-				
-				XmlNode channelNode = feed.SelectSingleNode("rss/channel");
-				
-				if (String.IsNullOrEmpty(Title) || Title == DEFAULT_TITLE)
+				using (WebResponse response = await wr.GetResponseAsync())
 				{
-					Title = channelNode.SelectSingleNode("title").InnerText;
-				}
-				
-				XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
-				
-				Items = new ObservableCollection<FeedItem>();
-				
-				foreach (XmlNode itemNode in itemNodes)
-				{
-					// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
 					
-					FeedItem item = new FeedItem();
-					item.Title = itemNode.SelectSingleNode("title").InnerText;
-					item.GUID = itemNode.SelectSingleNode("guid").InnerText;
-					item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText);
-					item.URL = itemNode.SelectSingleNode("enclosure") != null
-						? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText
-						: itemNode.SelectSingleNode("link").InnerText;
+					//feed.Load(URL);
+
+					// FIXME When site is down, application freezes
 					
-					Items.Add(item);
+					XmlDocument feed = new XmlDocument();
+					feed.Load(response.GetResponseStream());
+					
+					XmlNode channelNode = feed.SelectSingleNode("rss/channel");
+					
+					if (String.IsNullOrEmpty(Title) || Title == DEFAULT_TITLE)
+					{
+						Title = channelNode.SelectSingleNode("title").InnerText;
+					}
+					
+					XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
+					
+					Items = new ObservableCollection<FeedItem>();
+					
+					foreach (XmlNode itemNode in itemNodes)
+					{
+						// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
+						
+						FeedItem item = new FeedItem();
+						item.Title = itemNode.SelectSingleNode("title").InnerText;
+						item.GUID = itemNode.SelectSingleNode("guid").InnerText;
+						item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText);
+						item.URL = itemNode.SelectSingleNode("enclosure") != null
+							? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText
+							: itemNode.SelectSingleNode("link").InnerText;
+						
+						Items.Add(item);
+					}
+					onPropertyChanged("Items");
 				}
-				onPropertyChanged("Items");
 			}
 			catch (FileNotFoundException fnfe)
 			{
@@ -148,6 +157,10 @@ namespace tRSS.Model
 			catch (NullReferenceException nre)
 			{
 				Utils.PrintError("Not able to parse RSS feed.", this, nre);
+			}
+			catch (WebException we)
+			{
+				Utils.PrintError("Connection timed out while loading feed.", this, we);
 			}
 		}
 		

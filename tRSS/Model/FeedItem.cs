@@ -207,9 +207,9 @@ namespace tRSS.Model
 				
 				return true;
 			}
-			catch (Exception e)
+			catch (WebException we)
 			{
-				Utils.PrintError("Can't download torrent.", this, e);
+				Utils.PrintError("Connection timed out while downloading torrent.", this, we);
 				return false;
 			}
 		}

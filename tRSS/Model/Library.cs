@@ -265,8 +265,6 @@ namespace tRSS.Model
 		
 		# region Commands
 		
-		// TODO Delete item from downloaded tab
-		
 		# region Delete feed
 		
 		public ICommand DeleteFeed
@@ -512,11 +510,7 @@ namespace tRSS.Model
 		# endregion
 		
 		# endregion
-		
-		
-		// TODO Make error logger similar to UnhandledException everywhere
-		// Make a utility class
-		
+				
 		public void Update()
 		{
 			foreach (Feed feed in Feeds)
