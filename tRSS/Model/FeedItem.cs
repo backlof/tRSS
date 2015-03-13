@@ -122,10 +122,10 @@ namespace tRSS.Model
 		{
 			get
 			{
-				if (_Season == 0)
+				if (_Season == 0 && IsTV)
 				{
-					Match m = EpisodeMatch;
-					string season = m.Groups["season"].Value;
+					
+					string season = EpisodeMatch.Groups["season"].Value;
 					_Season = Int32.Parse(season);
 				}
 				return _Season;
@@ -138,10 +138,9 @@ namespace tRSS.Model
 		{
 			get
 			{
-				if (_Episode == 0)
+				if (_Episode == 0 && IsTV)
 				{
-					Match m = EpisodeMatch;
-					string episode = m.Groups["episode"].Value;
+					string episode = EpisodeMatch.Groups["episode"].Value;
 					_Episode = Int32.Parse(episode);
 				}
 				return _Episode;

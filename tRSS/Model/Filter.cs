@@ -99,21 +99,31 @@ namespace tRSS.Model
 			{
 				_SearchInFeedIndex = value;
 				onPropertyChanged("SearchInFeedIndex");
+				onPropertyChanged("HasFeed");
 			}
 		}
 		
-		private bool _FilterEpisode = false;
-		[DataMember()]
-		public bool FilterEpisode
+		[IgnoreDataMember()]
+		public bool HasFeed
 		{
 			get
 			{
-				return _FilterEpisode;
+				return SearchInFeedIndex != -1;
+			}
+		}
+		
+		private bool _IsTV = false;
+		[DataMember()]
+		public bool IsTV
+		{
+			get
+			{
+				return _IsTV;
 			}
 			set
 			{
-				_FilterEpisode = value;
-				onPropertyChanged("FilterEpisode");
+				_IsTV = value;
+				onPropertyChanged("IsTV");
 			}
 		}
 		
@@ -319,24 +329,18 @@ namespace tRSS.Model
 						{
 							if (!ExcludeList.Any(title.Contains))
 							{
-								if (FilterEpisode)
+								if (IsTV)
 								{
 									if (item.IsTV)
 									{
 										if(IsEpisodeToDownload(item))
 										{
-											DownloadedItems.Add(item);
 											return true;
 										}
 									}
 								}
 								else
 								{
-									if (MatchOnce)
-									{
-										IsActive = false;
-									}
-									DownloadedItems.Add(item);
 									return true;
 								}
 							}
@@ -356,9 +360,12 @@ namespace tRSS.Model
 				{
 					foreach (FeedItem downloaded in DownloadedItems)
 					{
-						if (item.Season == downloaded.Season && item.Episode == downloaded.Episode)
+						if (downloaded.IsTV) // In case filter used to be NotTV
 						{
-							return false; // If same episode is downloaded
+							if (item.Season == downloaded.Season && item.Episode == downloaded.Episode)
+							{
+								return false; // If same episode is downloaded
+							}
 						}
 					}
 					
@@ -374,7 +381,7 @@ namespace tRSS.Model
 		
 		public override string ToString()
 		{
-			return string.Format("[Filter Title={0}, IsActive={1}, IgnoreCaps={2}, TitleFilter={3}, RegexPattern={4}, Include={5}, Exclude={6}, FilterEpisode={7}, Season={8}, Episode={9}]", _Title, _IsActive, _IgnoreCaps, _TitleFilter, _RegexPattern, Include, Exclude, _FilterEpisode, _Season, _Episode);
+			return string.Format("[Filter Title={0}, IsActive={1}, IgnoreCaps={2}, TitleFilter={3}, RegexPattern={4}, Include={5}, Exclude={6}, FilterEpisode={7}, Season={8}, Episode={9}]", _Title, _IsActive, _IgnoreCaps, _TitleFilter, _RegexPattern, Include, Exclude, _IsTV, _Season, _Episode);
 		}
 	}
 }

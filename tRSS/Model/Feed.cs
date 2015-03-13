@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using tRSS.Model;
 using tRSS.Utilities;
+using System.Threading.Tasks;
 
 namespace tRSS.Model
 {
@@ -106,19 +107,14 @@ namespace tRSS.Model
 		
 		# endregion
 		
-		public async void Update()
+		public async Task<bool> Update()
 		{
 			try
 			{
 				WebRequest wr = WebRequest.Create(URL);
 				
 				using (WebResponse response = await wr.GetResponseAsync())
-				{
-					
-					//feed.Load(URL);
-
-					// FIXME When site is down, application freezes
-					
+				{					
 					XmlDocument feed = new XmlDocument();
 					feed.Load(response.GetResponseStream());
 					
@@ -126,7 +122,7 @@ namespace tRSS.Model
 					
 					if (String.IsNullOrEmpty(Title) || Title == DEFAULT_TITLE)
 					{
-						Title = channelNode.SelectSingleNode("title").InnerText;
+						Title = channelNode.SelectSingleNode("title").InnerText.Trim();
 					}
 					
 					XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
@@ -138,29 +134,34 @@ namespace tRSS.Model
 						// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
 						
 						FeedItem item = new FeedItem();
-						item.Title = itemNode.SelectSingleNode("title").InnerText;
-						item.GUID = itemNode.SelectSingleNode("guid").InnerText;
-						item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText);
+						item.Title = itemNode.SelectSingleNode("title").InnerText.Trim();
+						item.GUID = itemNode.SelectSingleNode("guid").InnerText.Trim();
+						item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText.Trim());
 						item.URL = itemNode.SelectSingleNode("enclosure") != null
-							? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText
-							: itemNode.SelectSingleNode("link").InnerText;
+							? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText.Trim()
+							: itemNode.SelectSingleNode("link").InnerText.Trim();
 						
 						Items.Add(item);
 					}
+					
 					onPropertyChanged("Items");
+					return true;
 				}
 			}
 			catch (FileNotFoundException fnfe)
 			{
 				Utils.PrintError("RSS feed not found.", this, fnfe);
+				return false;
 			}
 			catch (NullReferenceException nre)
 			{
 				Utils.PrintError("Not able to parse RSS feed.", this, nre);
+				return false;
 			}
 			catch (WebException we)
 			{
 				Utils.PrintError("Connection timed out while loading feed.", this, we);
+				return false;
 			}
 		}
 		

@@ -21,7 +21,7 @@ namespace tRSS.Model
 			Feeds.Add(new Feed{ Title = "TV Shows", URL = "https://kickass.to/tv/?rss=1"} );
 			Feeds.Add(new Feed{ Title = "Movies", URL = "https://kickass.to/movies/?rss=1" });
 			Feeds.Add(new Feed{ Title = "Music", URL = "https://kickass.to/music/?rss=1" });
-			Filters.Add(new Filter{ IsActive = false, Title="All TV Shows", TitleFilter = "*", IgnoreCaps = true, Include = "720p;H.264", Exclude = "1080p;HDTV;", FilterEpisode = false, SearchInFeedIndex = 0 });
+			Filters.Add(new Filter{ IsActive = false, Title="All TV Shows", TitleFilter = "*", IgnoreCaps = true, Include = "720p;H.264", Exclude = "1080p;HDTV;", IsTV = false, SearchInFeedIndex = 0 });
 			
 			TorrentDropDirectory = FOLDER;
 			if(!Directory.Exists(Path.GetDirectoryName(TorrentDropDirectory)))
@@ -401,7 +401,7 @@ namespace tRSS.Model
 				IgnoreCaps = SelectedFilter.IgnoreCaps,
 				Include = SelectedFilter.Include,
 				Exclude = SelectedFilter.Exclude,
-				FilterEpisode = SelectedFilter.FilterEpisode,
+				IsTV = SelectedFilter.IsTV,
 				Season = SelectedFilter.Season,
 				Episode = SelectedFilter.Episode
 			};
@@ -509,43 +509,71 @@ namespace tRSS.Model
 		
 		# endregion
 		
-		# endregion
-				
-		public void Update()
+		
+		# region Remove download
+		
+		public ICommand FilterSelected
 		{
+			get
+			{
+				return new RelayCommand(ExecuteFilterSelected, CanFilterSelected);
+			}
+		}
+		
+		public void ExecuteFilterSelected(object parameter)
+		{
+			FilterFeed(SelectedFilter);
+		}
+		
+		public bool CanFilterSelected(object parameter)
+		{
+			return SelectedFilter.HasFeed;
+		}
+		
+		# endregion
+		
+		# endregion
+		
+		public async void Update()
+		{
+			// Update
 			foreach (Feed feed in Feeds)
 			{
 				if (!(String.IsNullOrEmpty(feed.URL)))
 				{
-					feed.Update();
+					bool x = await feed.Update();
 				}
 			}
-			FilterFeeds();
+			
+			// Filter
+			foreach (Filter filter in Filters)
+			{
+				if (filter.IsActive && filter.HasFeed)
+				{
+					FilterFeed(filter);
+				}
+			}
+			
 			LastUpdate = DateTime.Now;
 		}
 		
-		public async void FilterFeeds()
+		public async void FilterFeed(Filter filter)
 		{
-			foreach (Filter filter in Filters)
+			foreach (FeedItem item in Feeds[filter.SearchInFeedIndex].Items)
 			{
-				if (filter.IsActive && filter.SearchInFeedIndex != -1)
+				if (filter.ShouldDownload(item))
 				{
-					// Needs to use index, because SearchInFeed depends on binding and window isn't loaded
-					foreach (FeedItem item in Feeds[filter.SearchInFeedIndex].Items)
+					if (await item.Download(TorrentDropDirectory))
 					{
-						if (filter.ShouldDownload(item))
+						filter.DownloadedItems.Add(item);
+						
+						if (filter.MatchOnce && !filter.IsTV)
 						{
-							if (await item.Download(TorrentDropDirectory))
-							{
-								onPropertyChanged("DownloadedItems");
-							}
-							else // Failed to download torrent
-							{
-								// Only matters if MatchOnce == true
-								filter.IsActive = true;
-								filter.DownloadedItems.Remove(item);
-							}
+							filter.IsActive = false;
 						}
+						
+						onPropertyChanged("DownloadedItems");
+						onPropertyChanged("CanResetFilter");
 					}
 				}
 			}
