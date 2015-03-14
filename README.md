@@ -13,13 +13,13 @@ Download torrent files from RSS Feeds to a watched folder in your torrent client
 
 * Filter is `Active`
 * Feed is selected for the filter
-* The beginning of the torrent title matches `Filter`
+* The beginning of the torrent title matches `Filter` (see below)
 * Torrent title contains all terms in `Include` (separated by `;`)
 * Torrent contains no terms in `Exclude` (separated by `;`)
 
 Also, you can
 
-* `Ignore caps` in `Filter`, `Include` and `Exclude`
+* `Ignore caps` affecting `Filter`, `Include` and `Exclude`
 * `Match once` to deactivate filter after download
 
 For TV shows
