@@ -17,13 +17,13 @@
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 				<Label Grid.Row="0" Content="Name" Margin="0,4,0,0" />
 				<TextBox Grid.Row="1" Text="{Binding Path=Data.EditTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				<Label Grid.Row="2" Content="URL" Margin="0,4,0,0" />
-				<TextBox Grid.Row="3" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Text="{Binding Path=Data.EditURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				<TextBox Grid.Row="3" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Text="{Binding Path=Data.EditURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				<WrapPanel Grid.Row="4" HorizontalAlignment="Right" Margin="0,12,0,0">
 					<WrapPanel.Resources>
 						<Style TargetType="{x:Type Button}">
