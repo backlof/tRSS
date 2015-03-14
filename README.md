@@ -8,8 +8,7 @@ Download torrent files from RSS Feeds to a watched folder in your torrent client
 
 ![Application window](https://github.com/backlof/tRSS/blob/master/Media/Screenshot.png?raw=true)
 
-##	Filters
-### How to get a match
+## How to get a match
 
 * Filter is `Active`
 * Feed is selected for the filter
