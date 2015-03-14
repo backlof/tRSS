@@ -20,12 +20,12 @@ Download torrent files from RSS Feeds to a watched folder in your torrent client
 Also, you can
 
 * `Ignore caps` affecting `Filter`, `Include` and `Exclude`
-* `Match once` to deactivate filter after download
+* `Match once` to deactivate filter after download (unless `TV Show`)
 
 For TV shows
 
 * Torrent episode is equal or higher
-* With `Match once` episodes will only download once
+* With `Match once` each episode will only download once
 
 ### Filter
 #### Symbols
