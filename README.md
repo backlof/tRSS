@@ -32,37 +32,21 @@ Also, you can
 ### Filter
 #### Symbols
 
-| Symbol  | Meaning                             | Regex     |
-|:-------:|-------------------------------------|:---------:|
-|`*`      | Wildcard; zero or more characters.  |`.*`       |
-|`.`		  | 1 whitespace character			      	|`[\s._-]`	|
-|`?`		  | 0 or 1 character of any type.		  	|`.?`     	|
+|Symbol	|Meaning											|Regex		|
+|:------:|--------------------------------------|:---------:|
+|`*`		|Wildcard; zero or more characters.		|`.*`       |
+|`.`		|1 whitespace characters					|`[\s._-]`	|
+|`?`		|0 or 1 character of any type.			|`.?`     	|
 
 #### Examples
 
 
-|Regex|Ignore Case|Torrent|Match|
-|-|:-:|-|:-:|
-|`the tv show`|Yes|The TV Show S01E02 720P|Yes|
-|`The TV Show`|No|The TV Show S01E02 720P|Yes|
-|`the tv show`|No|The TV Show S01E02 720P|No|
-|`The.TV.Show`|Yes|The.TV.Show.S01E02.720P|Yes|
-|`The.TV.Show`|Yes|The_TV_Show_S01E02_720P|Yes|
-|`The.TV.Show`|Yes|The TV Show S01E02 720P|Yes|
-|`*TV Show`|Yes|The TV Show S01E02 720P|Yes|
-|`TV Show`|No|The TV Show S01E02 720P|No|
-|`Bob?s TV Show`|Yes|Bob's TV Show S01E02 720P|Yes|
-|`Bob?s TV Show`|Yes|Bobs TV Show S01E02 720P|Yes|
-
-
-
-
-* Title must include all terms in `Include`, separated by `;`
-* Title must not include any terms in `Exclude`, separated by `;`
-* Episode must be equal or higher if you've checked `TV Show`
-
-**Note**
-
-* You can ignore caps in `Filter`, `Include` and `Exclude`
-* `Match once` will deactivate a filter after download, unless `TV Show`
-* Each episode will only download once with `Match once`
+|Filter				|Torrent								|Match	|
+|-----------------|-----------------------------|:------:|
+|`TV Show`			|`Bob's TV Show S01E02 720P`	|No		|
+|`*TV Show`			|`Bob's TV Show S01E02 720P`	|Yes		|
+|`Bob?s TV Show`	|`Bob's TV Show S01E02 720P`	|Yes		|
+|`Bob?s TV Show`	|`Bobs TV Show S01E02 720P` 	|Yes		|
+|`Bob's.TV.Show`	|`Bob's TV Show S01E02 720P`	|Yes		|
+|`Bob's.TV.Show`	|`Bob's.TV.Show.S01E02.720P`	|Yes		|
+|`Bob's.TV.Show`	|`Bob's_TV_Show_S01E02_720P`	|Yes		|
