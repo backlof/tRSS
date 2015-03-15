@@ -38,6 +38,8 @@ namespace tRSS
 			VM.SaveData();
 		}
 		
+		// TODO Max width for textblocks (filter and feed)
+		
 		void ListBoxItem_Drop(object sender, DragEventArgs e)
 		{
 			//http://stackoverflow.com/questions/19936149/drag-and-drop-listboxitems-generically?lq=1

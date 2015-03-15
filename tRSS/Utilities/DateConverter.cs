@@ -4,10 +4,6 @@ using System.Globalization;
 
 namespace tRSS.Utilities
 {
-	/// <summary>
-	/// Description of DateConverter.
-	/// </summary>
-	
 	[ValueConversion(typeof(DateTime), typeof(String))]
 	public class DateConverter : IValueConverter
 	{	

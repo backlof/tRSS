@@ -15,7 +15,7 @@ namespace tRSS.ViewModel
 	public class MainViewModel : ObjectBase
 	{
 		public Library Data { get; set; }
-		public WindowSettings View { get; set; }
+		public MainViewSettings View { get; set; }
 		
 		public static readonly string DATA_FILENAME = "Library";
 		public static readonly string VIEW_FILENAME = "Window-Main";
@@ -50,13 +50,13 @@ namespace tRSS.ViewModel
 			{
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
 				{
-					DataContractSerializer dcs = new DataContractSerializer(typeof(WindowSettings));
-					View = dcs.ReadObject(fs) as WindowSettings;
+					DataContractSerializer dcs = new DataContractSerializer(typeof(MainViewSettings));
+					View = dcs.ReadObject(fs) as MainViewSettings;
 				}
 			}
 			else
 			{
-				View = new WindowSettings();
+				View = new MainViewSettings();
 			}
 		}
 		

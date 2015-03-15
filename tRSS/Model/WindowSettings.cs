@@ -84,6 +84,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		private WindowState _State = WindowState.Normal;
 		[DataMember()]
 		public WindowState State
