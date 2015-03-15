@@ -1,32 +1,49 @@
 # tRSS
+Download torrent files from RSS Feeds to a watched folder in your torrent client with this application.
 
 * Portable
 * Smart filter
 * Visible Regex pattern
 * Periodic updates
-* Forced updates
 
 ![Application window](https://github.com/backlof/tRSS/blob/master/Media/Screenshot.png?raw=true)
 
-##	Filters
-In order to get a match:
+## How to get a match
 
-* Filter must be active (top checkbox)
-* Feed must be selected
-* The beginning of your title must match `Filter` (Wildcards are optional)
+* Filter is `Active`
+* Feed is selected for the filter
+* The beginning of the torrent title matches `Filter` (see below)
+* Torrent title contains all terms in `Include` (separated by `;`)
+* Torrent contains no terms in `Exclude` (separated by `;`)
 
-| Symbol  | Meaning                             | Regex     |
-|:-------:|-------------------------------------|:---------:|
-|`*`      | Wildcard; zero or more characters.  |`.*`       |
-|`.`		  | 1 whitespace character			      	|`[\s._-]`	|
-|`?`		  | 0 or 1 character of any type.		  	|`.?`     	|
+Also, you can
 
-* Title must include all terms in `Include`, separated by `;`
-* Title must not include any terms in `Exclude`, separated by `;`
-* Episode must be equal or higher if you've checked `TV Show`
+* `Ignore caps` affecting `Filter`, `Include` and `Exclude`
+* `Match once` to deactivate filter after download (unless `TV Show`)
 
-**Note**
+For TV shows
 
-* You can ignore caps in `Filter`, `Include` and `Exclude`
-* `Match once` will deactivate a filter after download, unless `TV Show`
-* Each episode will only download once with `Match once`
+* Torrent episode is equal or higher
+* With `Match once` each episode will only download once
+
+### Filter
+#### Symbols
+
+|Symbol	|Meaning											|Regex		|
+|:------:|--------------------------------------|:---------:|
+|`*`		|Wildcard; zero or more characters.		|`.*`       |
+|`.`		|1 whitespace characters					|`[\s._-]`	|
+|`?`		|0 or 1 character of any type.			|`.?`     	|
+
+#### Examples
+
+
+|Filter				|Torrent								|Match	|
+|-----------------|-----------------------------|:------:|
+|`TV Show`			|`Bob's TV Show S01E02 720P`	|No		|
+|`*TV Show`			|`Bob's TV Show S01E02 720P`	|Yes		|
+|`Bob?s TV Show`	|`Bob's TV Show S01E02 720P`	|Yes		|
+|`Bob?s TV Show`	|`Bobs TV Show S01E02 720P` 	|Yes		|
+|`Bob's.TV.Show`	|`Bob's TV Show S01E02 720P`	|Yes		|
+|`Bob's.TV.Show`	|`Bob's.TV.Show.S01E02.720P`	|Yes		|
+|`Bob's.TV.Show`	|`Bob's_TV_Show_S01E02_720P`	|Yes		|
