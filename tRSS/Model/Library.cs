@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Shell;
 using System.Windows.Threading;
 using System.Xml;
 using tRSS.Utilities;
@@ -15,7 +16,6 @@ using tRSS.View;
 
 namespace tRSS.Model
 {
-	//[DataContract()]
 	[Serializable()]
 	public class Library : ObjectBase
 	{
@@ -40,6 +40,14 @@ namespace tRSS.Model
 		}
 		
 		public static readonly string FOLDER = @"Torrents\";
+		
+		public static bool WindowIsActive = true; // Is set by code-behind
+		
+		public static readonly string BACKUP_DIR = "Backup";
+		
+		public string FiltersPath { get { return Path.Combine(BACKUP_DIR, "Filters.xml"); } }
+		public string FeedsPath { get { return Path.Combine(BACKUP_DIR, "Feeds.xml"); } }
+		
 		
 		private int _FeedIdCount = 0;
 		public int FeedIdCount
@@ -230,8 +238,6 @@ namespace tRSS.Model
 		}
 		
 		# endregion
-		
-		
 		
 		# region Update interval
 		
@@ -520,7 +526,6 @@ namespace tRSS.Model
 		
 		# endregion
 		
-		
 		# region Filter selected
 		
 		public ICommand FilterSelected
@@ -550,10 +555,139 @@ namespace tRSS.Model
 		
 		# endregion
 		
+		# region Save backup
+		
+		public ICommand SaveBackup
+		{
+			get
+			{
+				return new RelayCommand(ExecuteSaveBackup, CanSaveBackup);
+			}
+		}
+		
+		public void ExecuteSaveBackup(object parameter)
+		{
+			if (!Directory.Exists(Path.GetDirectoryName(FeedsPath)))
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(FeedsPath));
+			}
+			
+			XmlWriterSettings xws = new XmlWriterSettings(){ Indent = true };
+			
+			DataContractSerializer dcs = new DataContractSerializer(Feeds.GetType());
+			using (XmlWriter xw = XmlWriter.Create(FeedsPath, xws))
+			{
+				dcs.WriteObject(xw, Feeds);
+			}
+			
+			dcs = new DataContractSerializer(Filters.GetType());
+			using (XmlWriter xw = XmlWriter.Create(FiltersPath, xws))
+			{
+				dcs.WriteObject(xw, Filters);
+			}
+		}
+		
+		public bool CanSaveBackup(object parameter)
+		{
+			return true;
+		}
+		
+		# endregion
+		
+		# region Restore
+		
+		public ICommand Restore
+		{
+			get
+			{
+				return new RelayCommand(ExecuteRestore, CanRestore);
+			}
+		}
+		
+		public void ExecuteRestore(object parameter)
+		{
+			using (FileStream fs = new FileStream(FeedsPath, FileMode.Open, FileAccess.Read))
+			{
+				DataContractSerializer dcs = new DataContractSerializer(Feeds.GetType());
+				Feeds = dcs.ReadObject(fs) as ObservableCollection<Feed>;
+			}
+			
+			using (FileStream fs = new FileStream(FiltersPath, FileMode.Open, FileAccess.Read))
+			{
+				DataContractSerializer dcs = new DataContractSerializer(Filters.GetType());
+				Filters = dcs.ReadObject(fs) as ObservableCollection<Filter>;
+			}
+			SelectedFilter = Filters[0];
+			SelectedFeed = Feeds[0];
+			
+			System.Windows.Application.Current.Shutdown();
+		}
+		
+		public bool CanRestore(object parameter)
+		{
+			return File.Exists(FeedsPath) && File.Exists(FiltersPath);
+		}
+		
+		# endregion
+		
+		# endregion
+
+		#region Notification
+		
+		private TaskbarItemProgressState _NotificationState = TaskbarItemProgressState.None;
+		public TaskbarItemProgressState NotificationState
+		{
+			get
+			{
+				return _NotificationState;
+			}
+			set
+			{
+				_NotificationState = value;
+				onPropertyChanged("NotificationState");
+			}
+		}
+		
+		public bool IsNotifying
+		{
+			get
+			{
+				return NotificationState != TaskbarItemProgressState.None;
+			}
+		}
+		
+		public void NotifyLoading()
+		{
+			NotificationState = TaskbarItemProgressState.Indeterminate;
+		}
+		
+		public void NotifyNow()
+		{
+			NotificationState = TaskbarItemProgressState.Normal;
+			
+			if (WindowIsActive)
+			{
+				NotifyTimedDeactive(2000);
+			}
+		}
+		
+		private async void NotifyTimedDeactive(int millisecs)
+		{
+			await System.Threading.Tasks.Task.Delay(1000);
+			NotifyDeactivate();
+		}
+		
+		public void NotifyDeactivate()
+		{
+			NotificationState = TaskbarItemProgressState.None;
+		}
+		
 		# endregion
 		
 		public async void Update()
 		{
+			NotifyLoading();
+			
 			// Refresh
 			foreach (Feed feed in Feeds)
 			{
@@ -563,10 +697,12 @@ namespace tRSS.Model
 				}
 			}
 			
+			NotifyDeactivate();
+			
 			// Filter
 			foreach (Filter filter in Filters)
 			{
-				if (filter.IsActive && filter.HasFeed)
+				if (filter.IsActive)
 				{
 					FilterFeed(filter);
 				}
@@ -577,29 +713,35 @@ namespace tRSS.Model
 		
 		public async void FilterFeed(Filter filter)
 		{
-			foreach (FeedItem item in filter.SearchInFeed.Items)
+			if (filter.HasFeed)
 			{
-				if (filter.ShouldDownload(item))
+				foreach (FeedItem item in filter.SearchInFeed.Items)
 				{
-					if (await item.Download(TorrentDropDirectory))
+					if (filter.ShouldDownload(item))
 					{
-						filter.DownloadedItems.Add(item);
-						LastMatch = item.Title;
-						
-						using(StreamWriter sw = File.AppendText(@"Download.log"))
+						if (await item.Download(TorrentDropDirectory))
 						{
-							sw.WriteLine(String.Format("[{0}]", DateTime.Now.ToString("g")));
-							sw.WriteLine(item.ToString());
-							sw.WriteLine(filter.ToString() + Environment.NewLine);
+							filter.DownloadedItems.Add(item);
+							
+							LastMatch = item.Title;
+							
+							NotifyNow();
+							
+							using(StreamWriter sw = File.AppendText(@"Download.log"))
+							{
+								sw.WriteLine(String.Format("[{0}]", DateTime.Now.ToString("g")));
+								sw.WriteLine(item.ToString());
+								sw.WriteLine(filter.ToString() + Environment.NewLine);
+							}
+							
+							if (filter.MatchOnce && !filter.IsTV)
+							{
+								filter.IsActive = false;
+							}
+							
+							onPropertyChanged("DownloadedItems");
+							onPropertyChanged("CanResetFilter");
 						}
-						
-						if (filter.MatchOnce && !filter.IsTV)
-						{
-							filter.IsActive = false;
-						}
-						
-						onPropertyChanged("DownloadedItems");
-						onPropertyChanged("CanResetFilter");
 					}
 				}
 			}

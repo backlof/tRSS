@@ -13,7 +13,7 @@ using System.Xml;
 
 namespace tRSS.Model
 {
-
+	[DataContract(Name="Filter")]
 	[Serializable()]
 	public class Filter : ObjectBase
 	{
@@ -26,6 +26,7 @@ namespace tRSS.Model
 		# region Properties
 		
 		private string _Title = "New Filter";
+		[DataMember(Name="Title", IsRequired=false)]
 		public string Title
 		{
 			get
@@ -40,6 +41,7 @@ namespace tRSS.Model
 		}
 		
 		private bool _IsActive = false;
+		[DataMember(Name="Enabled", IsRequired=false)]
 		public bool IsActive
 		{
 			get
@@ -54,6 +56,7 @@ namespace tRSS.Model
 		}
 		
 		private bool _IgnoreCaps = true;
+		[DataMember(Name="IgnoreCaps", IsRequired=false)]
 		public bool IgnoreCaps
 		{
 			get
@@ -68,6 +71,7 @@ namespace tRSS.Model
 		}
 		
 		private bool _MatchOnce = true;
+		[DataMember(Name="MatchOnce", IsRequired=false)]
 		public bool MatchOnce
 		{
 			get
@@ -81,7 +85,8 @@ namespace tRSS.Model
 			}
 		}
 		
-		private Feed _SearchInFeed;
+		private Feed _SearchInFeed = null;
+		[IgnoreDataMember]
 		public Feed SearchInFeed
 		{
 			get
@@ -95,6 +100,7 @@ namespace tRSS.Model
 			}
 		}
 		
+		[IgnoreDataMember]
 		public bool HasFeed
 		{
 			get
@@ -104,6 +110,7 @@ namespace tRSS.Model
 		}
 		
 		private bool _IsTV = false;
+		[DataMember(Name="TV", IsRequired=false)]
 		public bool IsTV
 		{
 			get
@@ -118,6 +125,7 @@ namespace tRSS.Model
 		}
 		
 		private int _Season = 1;
+		[DataMember(Name="Season", IsRequired=false)]
 		public int Season
 		{
 			get
@@ -132,6 +140,7 @@ namespace tRSS.Model
 		}
 		
 		private int _Episode = 1;
+		[DataMember(Name="Episode", IsRequired=false)]
 		public int Episode
 		{
 			get
@@ -146,6 +155,7 @@ namespace tRSS.Model
 		}
 		
 		private List<FeedItem> _DownloadedItems = new List<FeedItem>();
+		[DataMember(Name="Downloads", IsRequired=false)]
 		public List<FeedItem> DownloadedItems
 		{
 			get
@@ -165,6 +175,7 @@ namespace tRSS.Model
 		
 		private static readonly char[] INCLUDE_INTERPRET_SEPARATORS = {';', '|', '+'};
 		
+		[IgnoreDataMember]
 		public List<string> IncludeList
 		{
 			get
@@ -175,6 +186,7 @@ namespace tRSS.Model
 		}
 		
 		private string _Include;
+		[DataMember(Name="Include", IsRequired=false)]
 		public string Include
 		{
 			get
@@ -188,7 +200,7 @@ namespace tRSS.Model
 			}
 		}
 		
-
+		[IgnoreDataMember]
 		public List<string> ExcludeList
 		{
 			get
@@ -199,6 +211,7 @@ namespace tRSS.Model
 		}
 		
 		private string _Exclude = "";
+		[DataMember(Name="Exclude", IsRequired=false)]
 		public string Exclude
 		{
 			get
@@ -220,6 +233,7 @@ namespace tRSS.Model
 		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
 		
 		private string _TitleFilter = "";
+		[DataMember(Name="Filter", IsRequired=false)]
 		public string TitleFilter
 		{
 			get
@@ -238,6 +252,7 @@ namespace tRSS.Model
 		// TODO Make function that sets season and episode as highest or latest
 		
 		private string _RegexPattern = "";
+		[IgnoreDataMember]
 		public string RegexPattern
 		{
 			get

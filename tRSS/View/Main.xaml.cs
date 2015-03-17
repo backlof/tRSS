@@ -133,5 +133,30 @@ namespace tRSS
 				//draggedItem.IsSelected = true;
 			}
 		}
+		
+		void Window_Activated(object sender, EventArgs e)
+		{
+			if (VM.Data.IsNotifying)
+			{
+				VM.Data.NotifyDeactivate();
+			}
+			
+			Library.WindowIsActive = true;
+		}
+		
+		void Window_Deactivated(object sender, EventArgs e)
+		{
+			Library.WindowIsActive = false;
+		}
+		
+		void GitHub_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("http://github.com/backlof/tRSS/blob/master/README.md");
+		}
+		
+		void Exit_Click(object sender, RoutedEventArgs e)
+		{
+			Application.Current.Shutdown();
+		}
 	}
 }

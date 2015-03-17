@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace tRSS.Model
 {
-	[Serializable()]
+	[DataContract(Name="Feed")]
+	[Serializable]
 	public class Feed : ObjectBase
 	{
 		public Feed(){}
@@ -20,8 +21,11 @@ namespace tRSS.Model
 		public static readonly String DEFAULT_TITLE = "New Feed";
 		
 		# region Properties
-
+		
+		
+		
 		private string _URL = "";
+		[DataMember(Name="URL", IsRequired=false)]
 		public string URL
 		{
 			get
@@ -36,6 +40,7 @@ namespace tRSS.Model
 		}
 		
 		private string _Title = DEFAULT_TITLE;
+		[DataMember(Name="Title", IsRequired=false)]
 		public string Title
 		{
 			get
@@ -49,8 +54,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		[NonSerialized()]
+		[NonSerialized]
 		private ObservableCollection<FeedItem> _Items = new ObservableCollection<FeedItem>();
+		[IgnoreDataMember]
 		public ObservableCollection<FeedItem> Items
 		{
 			get
@@ -73,8 +79,9 @@ namespace tRSS.Model
 			Title = EditTitle.Trim();
 		}
 		
-		[NonSerialized()]
+		[NonSerialized]
 		private string _EditURL = "";
+		[IgnoreDataMember]
 		public string EditURL
 		{
 			get
@@ -88,8 +95,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		[NonSerialized()]
+		[NonSerialized]
 		private string _EditTitle = "";
+		[IgnoreDataMember]
 		public string EditTitle
 		{
 			get

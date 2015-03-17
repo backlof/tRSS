@@ -21,6 +21,8 @@ namespace tRSS.ViewModel
 		public static readonly string DATA_FILENAME = "Library";
 		public static readonly string VIEW_FILENAME = "Window-Main";
 		
+		
+		
 		public MainViewModel()
 		{
 			Load();

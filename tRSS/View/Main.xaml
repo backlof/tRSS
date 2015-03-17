@@ -4,15 +4,21 @@
 	xmlns:util="clr-namespace:tRSS.Utilities"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	Title="tRSS"
+	Activated="Window_Activated"
+	Deactivated="Window_Deactivated"
 	Closing="Window_Closing"
 	ContentRendered="Window_ContentRendered"
-	MinHeight="555"
+	MinHeight="572"
 	MinWidth="550"
 	Height="{Binding Path=View.Height, Mode=TwoWay}"
 	Width="{Binding Path=View.Width, Mode=TwoWay}"
 	Top="{Binding Path=View.Top, Mode=TwoWay}"
 	Left="{Binding Path=View.Left, Mode=TwoWay}"
 	WindowState="{Binding Path=View.State, Mode=TwoWay}">
+	
+	<Window.TaskbarItemInfo>
+		<TaskbarItemInfo ProgressState="{Binding Path=Data.NotificationState, Mode=OneWay}" ProgressValue="100" />
+	</Window.TaskbarItemInfo>
 	
 	<Window.Resources>
 		<Style TargetType="{x:Type ListBoxItem}" x:Key="GenericDragDrop">
@@ -21,6 +27,7 @@
 			<EventSetter Event="Drop" Handler="Generic_Drop" />
 		</Style>
 		
+		<CheckBox x:Key="Current" IsChecked="{Binding Path=Data.Notify.State.IsActive, Source={x:Static Application.Current}}" />
 		
 		<Style TargetType="{x:Type ListBoxItem}" x:Key="FeedDragDrop">
 			<Setter Property="AllowDrop" Value="True" />
@@ -105,43 +112,69 @@
 		
 		
 		
-		<!-- TOP TOOLBAR -->
 		
-		<ToolBarTray DockPanel.Dock="Top">
-			<ToolBar Band="{Binding Path=View.SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=View.SaveBandIndex, Mode=TwoWay}" >
-				<Button Command="{Binding Path=SaveCommand}">
-					<WrapPanel>
-						<Image Source="/Resources/FamFamFamSilk/Disk.png" UseLayoutRounding="True" />
-						<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Save" />
-					</WrapPanel>
-				</Button>
-			</ToolBar>
-			
-			<ToolBar ToolTip="Find the folder you want your torrent files to go." Band="{Binding Path=View.BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=View.BrowseBandIndex, Mode=TwoWay}" >
-				<Button Command="{Binding Path=Data.ChooseDirectory}">
-					<WrapPanel>
-						<Image Source="/Resources/FamFamFamSilk/Folder.png" UseLayoutRounding="True" />
-						<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Browse" />
-					</WrapPanel>
-				</Button>
-				<TextBox Margin="5,0,0,0" Width="150" Text="{Binding Path=Data.TorrentDropDirectory}" IsEnabled="False" />
-			</ToolBar>
-			
-			<ToolBar Band="{Binding Path=View.IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=View.IntervalBandIndex, Mode=TwoWay}" >
-				<Label Content="Refresh every" />
-				<ComboBox Width="80" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged" />
-			</ToolBar>
-			
-			<ToolBar Band="{Binding Path=View.RefreshBand, Mode=TwoWay}" BandIndex="{Binding Path=View.RefreshBandIndex, Mode=TwoWay}"  >
-				<Button Command="{Binding Path=Data.Refresh}">
-					<WrapPanel>
-						<Image Source="/Resources/FamFamFamSilk/Table_Refresh.png" UseLayoutRounding="True" />
-						<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Refresh" />
-					</WrapPanel>
-				</Button>
-			</ToolBar>
 		
-		</ToolBarTray>
+		<StackPanel DockPanel.Dock="Top">
+			<Menu BorderBrush="LightGray" BorderThickness="1">
+				<MenuItem Header="_File">
+					<MenuItem Header="_Backup" Command="{Binding Path=Data.SaveBackup}" />
+					<MenuItem Header="_Restore" Command="{Binding Path=Data.Restore}" />
+					<Separator />
+					<MenuItem Header="_Exit" Click="Exit_Click" />
+				</MenuItem>
+				<MenuItem Header="Help">
+					<MenuItem Header="_GitHub Manual" Click="GitHub_Click" />
+				</MenuItem>
+			</Menu>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<!-- TOP TOOLBAR -->
+			
+			<ToolBarTray>
+				<ToolBar Band="{Binding Path=View.SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=View.SaveBandIndex, Mode=TwoWay}" >
+					<Button Command="{Binding Path=SaveCommand}">
+						<WrapPanel>
+							<Image Source="/Resources/FamFamFamSilk/Disk.png" UseLayoutRounding="True" />
+							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Save" />
+						</WrapPanel>
+					</Button>
+				</ToolBar>
+				
+				<ToolBar ToolTip="Find the folder you want your torrent files to go." Band="{Binding Path=View.BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=View.BrowseBandIndex, Mode=TwoWay}" >
+					<Button Command="{Binding Path=Data.ChooseDirectory}">
+						<WrapPanel>
+							<Image Source="/Resources/FamFamFamSilk/Folder.png" UseLayoutRounding="True" />
+							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Browse" />
+						</WrapPanel>
+					</Button>
+					<TextBox Margin="5,0,0,0" Width="150" Text="{Binding Path=Data.TorrentDropDirectory}" IsEnabled="False" />
+				</ToolBar>
+				
+				<ToolBar Band="{Binding Path=View.IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=View.IntervalBandIndex, Mode=TwoWay}" >
+					<Label Content="Refresh every" />
+					<ComboBox Width="80" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged" />
+				</ToolBar>
+				
+				<ToolBar Band="{Binding Path=View.RefreshBand, Mode=TwoWay}" BandIndex="{Binding Path=View.RefreshBandIndex, Mode=TwoWay}"  >
+					<Button Command="{Binding Path=Data.Refresh}">
+						<WrapPanel>
+							<Image Source="/Resources/FamFamFamSilk/Table_Refresh.png" UseLayoutRounding="True" />
+							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Refresh" />
+						</WrapPanel>
+					</Button>
+				</ToolBar>
+			
+			</ToolBarTray>
+		</StackPanel>
+		
+		
 		
 		
 		
@@ -203,7 +236,7 @@
 					
 					<!-- FILTER FORM -->
 					
-					<GroupBox Grid.Column="2" Margin="4">
+					<GroupBox Grid.Column="2" Margin="4" Padding="8,8,8,0">
 						<GroupBox.Header>
 							<CheckBox Content="Active" IsChecked="{Binding Path=Data.SelectedFilter.IsActive, Mode=TwoWay}" />
 						</GroupBox.Header>
