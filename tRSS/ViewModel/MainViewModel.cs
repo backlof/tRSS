@@ -9,6 +9,7 @@ using System.Xml;
 using tRSS.Model;
 using tRSS.Utilities;
 using System.Windows.Threading;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace tRSS.ViewModel
 {
@@ -23,20 +24,16 @@ namespace tRSS.ViewModel
 		public MainViewModel()
 		{
 			Load();
-			Data.Update();
 		}
 		
 		public void Load()
-		{
-			string path;
-			
-			path = ObjectBase.SaveLocation(DATA_FILENAME);			
-			if(File.Exists(path))
+		{			
+			if (File.Exists(ObjectBase.SaveLocation(DATA_FILENAME)))
 			{
-				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+				using (Stream stream = File.Open(ObjectBase.SaveLocation(DATA_FILENAME), FileMode.Open))
 				{
-					DataContractSerializer dcs = new DataContractSerializer(typeof(Library));
-					Data = dcs.ReadObject(fs) as Library;
+					BinaryFormatter bFormatter = new BinaryFormatter();
+					Data = bFormatter.Deserialize(stream) as Library;
 				}
 			}
 			else
@@ -44,14 +41,12 @@ namespace tRSS.ViewModel
 				Data = new Library();
 			}
 			
-			
-			path = ObjectBase.SaveLocation(VIEW_FILENAME);
-			if(File.Exists(path))
+			if (File.Exists(ObjectBase.SaveLocation(VIEW_FILENAME)))
 			{
-				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+				using (Stream stream = File.Open(ObjectBase.SaveLocation(VIEW_FILENAME), FileMode.Open))
 				{
-					DataContractSerializer dcs = new DataContractSerializer(typeof(MainViewSettings));
-					View = dcs.ReadObject(fs) as MainViewSettings;
+					BinaryFormatter bFormatter = new BinaryFormatter();
+					View = bFormatter.Deserialize(stream) as MainViewSettings;
 				}
 			}
 			else
@@ -64,6 +59,11 @@ namespace tRSS.ViewModel
 		{
 			Data.Save(DATA_FILENAME);
 			View.Save(VIEW_FILENAME);
+		}
+		
+		public void Update()
+		{
+			Data.Update();
 		}
 		
 		public ICommand SaveCommand

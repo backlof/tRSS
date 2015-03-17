@@ -14,11 +14,10 @@ using tRSS.Utilities;
 
 namespace tRSS.Model
 {
-	[DataContract()]
+	[Serializable()]
 	public class FeedItem : ObjectBase
 	{
 		private string _GUID;
-		[DataMember()]
 		public string GUID
 		{
 			get
@@ -33,7 +32,6 @@ namespace tRSS.Model
 		}
 		
 		private string _Title;
-		[DataMember()]
 		public string Title
 		{
 			get
@@ -48,7 +46,6 @@ namespace tRSS.Model
 		}
 		
 		private string _URL;
-		[DataMember()]
 		public string URL
 		{
 			get
@@ -63,7 +60,6 @@ namespace tRSS.Model
 		}
 		
 		private DateTime _Published;
-		[DataMember()]
 		public DateTime Published
 		{
 			get
@@ -78,7 +74,6 @@ namespace tRSS.Model
 		}
 		
 		private DateTime _Downloaded;
-		[DataMember()]
 		public DateTime Downloaded
 		{
 			get
@@ -92,7 +87,6 @@ namespace tRSS.Model
 			}
 		}
 		
-		[IgnoreDataMember()]
 		public bool IsTV
 		{
 			get
@@ -101,8 +95,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		[NonSerialized()]
 		private Match _EpisodeMatch;
-		[IgnoreDataMember()]
 		public Match EpisodeMatch
 		{
 			get
@@ -117,7 +111,6 @@ namespace tRSS.Model
 		}
 		
 		private int _Season = 0;
-		[IgnoreDataMember()]
 		public int Season
 		{
 			get
@@ -133,7 +126,6 @@ namespace tRSS.Model
 		}
 		
 		private int _Episode = 0;
-		[IgnoreDataMember()]
 		public int Episode
 		{
 			get

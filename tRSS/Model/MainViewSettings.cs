@@ -5,11 +5,12 @@ using System.Windows;
 
 namespace tRSS.Model
 {
-	[DataContract()]
+	[Serializable()]
 	public class MainViewSettings : WindowSettings
-	{	
+	{
+		# region Datagrid column width
+		
 		private double _FilterSplitterPosition = 100;
-		[DataMember()]
 		public double FilterSplitterPosition
 		{
 			get
@@ -24,7 +25,6 @@ namespace tRSS.Model
 		}
 		
 		private double _FeedSplitterPosition = 100;
-		[DataMember()]
 		public double FeedSplitterPosition
 		{
 			get
@@ -39,7 +39,6 @@ namespace tRSS.Model
 		}
 		
 		private double _FeedWidthTitle = 250;
-		[DataMember()]
 		public double FeedWidthTitle
 		{
 			get
@@ -54,7 +53,6 @@ namespace tRSS.Model
 		}
 		
 		private double _FeedWidthPublished = 100;
-		[DataMember()]
 		public double FeedWidthPublished
 		{
 			get
@@ -69,7 +67,6 @@ namespace tRSS.Model
 		}
 		
 		private double _FilterWidthTitle = 250;
-		[DataMember()]
 		public double FilterWidthTitle
 		{
 			get
@@ -84,7 +81,6 @@ namespace tRSS.Model
 		}
 		
 		private double _FilterWidthPublished = 100;
-		[DataMember()]
 		public double FilterWidthPublished
 		{
 			get
@@ -99,7 +95,6 @@ namespace tRSS.Model
 		}
 		
 		private double _FilterWidthDownloaded = 100;
-		[DataMember()]
 		public double FilterWidthDownloaded
 		{
 			get
@@ -111,6 +106,124 @@ namespace tRSS.Model
 				_FilterWidthDownloaded = value;
 				onPropertyChanged("FilterWidthDownloaded");
 			}
+		
 		}
+		#endregion
+		
+		# region Toolbar
+		
+		private int _SaveBand = 0;
+		public int SaveBand
+		{
+			get
+			{
+				return _SaveBand;
+			}
+			set
+			{
+				_SaveBand = value;
+				onPropertyChanged("SaveBand");
+			}
+		}
+		
+		private int _SaveBandIndex = 0;
+		public int SaveBandIndex
+		{
+			get
+			{
+				return _SaveBandIndex;
+			}
+			set
+			{
+				_SaveBandIndex = value;
+				onPropertyChanged("SaveBandIndex");
+			}
+		}
+		
+		private int _BrowseBand = 0;
+		public int BrowseBand
+		{
+			get
+			{
+				return _BrowseBand;
+			}
+			set
+			{
+				_BrowseBand = value;
+				onPropertyChanged("BrowseBand");
+			}
+		}
+		
+		private int _BrowseBandIndex = 1;
+		public int BrowseBandIndex
+		{
+			get
+			{
+				return _BrowseBandIndex;
+			}
+			set
+			{
+				_BrowseBandIndex = value;
+				onPropertyChanged("BrowseBandIndex");
+			}
+		}
+		
+		private int _IntervalBand = 0;
+		public int IntervalBand
+		{
+			get
+			{
+				return _IntervalBand;
+			}
+			set
+			{
+				_IntervalBand = value;
+				onPropertyChanged("IntervalBand");
+			}
+		}
+		
+		private int _IntervalBandIndex = 2;
+		public int IntervalBandIndex
+		{
+			get
+			{
+				return _IntervalBandIndex;
+			}
+			set
+			{
+				_IntervalBandIndex = value;
+				onPropertyChanged("IntervalBandIndex");
+			}
+		}
+		
+		private int _RefreshBand = 0;
+		public int RefreshBand
+		{
+			get
+			{
+				return _RefreshBand;
+			}
+			set
+			{
+				_RefreshBand = value;
+				onPropertyChanged("RefreshBand");
+			}
+		}
+		
+		private int _RefreshBandIndex = 3;
+		public int RefreshBandIndex
+		{
+			get
+			{
+				return _RefreshBandIndex;
+			}
+			set
+			{
+				_RefreshBandIndex = value;
+				onPropertyChanged("RefreshBandIndex");
+			}
+		}
+		
+		# endregion
 	}
 }

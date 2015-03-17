@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace tRSS.Model
 {
-	[DataContract()]
+	[Serializable()]
 	public class Feed : ObjectBase
 	{
 		public Feed(){}
@@ -20,9 +20,8 @@ namespace tRSS.Model
 		public static readonly String DEFAULT_TITLE = "New Feed";
 		
 		# region Properties
-		
+
 		private string _URL = "";
-		[DataMember()]
 		public string URL
 		{
 			get
@@ -37,7 +36,6 @@ namespace tRSS.Model
 		}
 		
 		private string _Title = DEFAULT_TITLE;
-		[DataMember()]
 		public string Title
 		{
 			get
@@ -51,8 +49,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		[NonSerialized()]
 		private ObservableCollection<FeedItem> _Items = new ObservableCollection<FeedItem>();
-		[IgnoreDataMember()]
 		public ObservableCollection<FeedItem> Items
 		{
 			get
@@ -75,8 +73,8 @@ namespace tRSS.Model
 			Title = EditTitle.Trim();
 		}
 		
+		[NonSerialized()]
 		private string _EditURL = "";
-		[IgnoreDataMember()]
 		public string EditURL
 		{
 			get
@@ -90,8 +88,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		[NonSerialized()]
 		private string _EditTitle = "";
-		[IgnoreDataMember()]
 		public string EditTitle
 		{
 			get
@@ -107,14 +105,14 @@ namespace tRSS.Model
 		
 		# endregion
 		
-		public async Task<bool> Update()
+		public async Task<bool> Refresh()
 		{
 			try
 			{
 				WebRequest wr = WebRequest.Create(URL);
 				
 				using (WebResponse response = await wr.GetResponseAsync())
-				{					
+				{
 					XmlDocument feed = new XmlDocument();
 					feed.Load(response.GetResponseStream());
 					
@@ -169,6 +167,7 @@ namespace tRSS.Model
 		{
 			return String.Format("[Feed URL={0}, Title={1}]", _URL, _Title);
 		}
-		
+
+		// REMEMBER That equals and hashcode override can cause problems for selections
 	}
 }

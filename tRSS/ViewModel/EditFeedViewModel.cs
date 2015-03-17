@@ -2,14 +2,12 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using tRSS.Model;
 using tRSS.Utilities;
 
 namespace tRSS.ViewModel
 {
-	/// <summary>
-	/// Description of FeedEditViewModel.
-	/// </summary>
 	public class EditFeedViewModel : ObjectBase
 	{
 		public Feed Data { get; set; }
@@ -27,15 +25,12 @@ namespace tRSS.ViewModel
 		
 		public void Load()
 		{
-			string path;
-			
-			path = ObjectBase.SaveLocation(FILENAME);			
-			if(File.Exists(path))
+			if (File.Exists(ObjectBase.SaveLocation(FILENAME)))
 			{
-				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+				using (Stream stream = File.Open(ObjectBase.SaveLocation(FILENAME), FileMode.Open))
 				{
-					DataContractSerializer dcs = new DataContractSerializer(typeof(WindowSettings));
-					View = dcs.ReadObject(fs) as WindowSettings;
+					BinaryFormatter bFormatter = new BinaryFormatter();
+					View = bFormatter.Deserialize(stream) as WindowSettings;
 				}
 			}
 			else

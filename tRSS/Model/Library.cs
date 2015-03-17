@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml;
@@ -13,15 +15,22 @@ using tRSS.View;
 
 namespace tRSS.Model
 {
-	[DataContract()]
+	//[DataContract()]
+	[Serializable()]
 	public class Library : ObjectBase
 	{
 		public Library()
 		{
-			Feeds.Add(new Feed{ Title = "TV Shows", URL = "https://kickass.to/tv/?rss=1"} );
-			Feeds.Add(new Feed{ Title = "Movies", URL = "https://kickass.to/movies/?rss=1" });
-			Feeds.Add(new Feed{ Title = "Music", URL = "https://kickass.to/music/?rss=1" });
-			Filters.Add(new Filter{ IsActive = false, Title="All TV Shows", TitleFilter = "*", IgnoreCaps = true, Include = "720p;H.264", Exclude = "1080p;HDTV;", IsTV = false, SearchInFeedIndex = 0 });
+			Feed tvFeed = new Feed(){ Title = "TV Shows", URL = "https://kickass.to/tv/?rss=1"};
+			Feeds.Add(tvFeed);
+			Feeds.Add(new Feed(){ Title = "Movies", URL = "https://kickass.to/movies/?rss=1" });
+			Feeds.Add(new Feed(){ Title = "Music", URL = "https://kickass.to/music/?rss=1" });
+			
+			Filter tvFilter = new Filter(){ IsActive = false, Title="All TV Shows", SearchInFeed = tvFeed, TitleFilter = "*", IgnoreCaps = true, Include = "720p;H.264", Exclude = "1080p;HDTV;", IsTV = false };
+			Filters.Add(tvFilter);
+			
+			SelectedFeed = tvFeed;
+			SelectedFilter = tvFilter;
 			
 			TorrentDropDirectory = FOLDER;
 			if(!Directory.Exists(Path.GetDirectoryName(TorrentDropDirectory)))
@@ -32,8 +41,24 @@ namespace tRSS.Model
 		
 		public static readonly string FOLDER = @"Torrents\";
 		
+		private int _FeedIdCount = 0;
+		public int FeedIdCount
+		{
+			get
+			{
+				_FeedIdCount++;
+				return _FeedIdCount;
+			}
+			set
+			{
+				_FeedIdCount = value;
+				onPropertyChanged("FeedIdCount");
+			}
+		}
+		
 		# region Timer
 		
+		[NonSerializedAttribute()]
 		private DispatcherTimer timedRefresh;
 		
 		public void StartTimer()
@@ -57,12 +82,7 @@ namespace tRSS.Model
 			NextUpdate = DateTime.Now.AddMinutes(UpdateInterval);
 		}
 		
-		# endregion
-		
-		# region Properties
-		
 		private DateTime _LastUpdate;
-		[DataMember()]
 		public DateTime LastUpdate
 		{
 			get
@@ -76,8 +96,22 @@ namespace tRSS.Model
 			}
 		}
 		
+		private string _LastMatch = "None";
+		public string LastMatch
+		{
+			get
+			{
+				return _LastMatch;
+			}
+			set
+			{
+				_LastMatch = value;
+				onPropertyChanged("LastMatch");
+			}
+		}
+		
+		[NonSerialized()]
 		private DateTime _NextUpdate;
-		[IgnoreDataMember()]
 		public DateTime NextUpdate
 		{
 			get
@@ -91,8 +125,11 @@ namespace tRSS.Model
 			}
 		}
 		
+		# endregion
+		
+		# region Properties
+		
 		private ObservableCollection<Feed> _Feeds = new ObservableCollection<Feed>();
-		[DataMember()]
 		public ObservableCollection<Feed> Feeds
 		{
 			get
@@ -105,7 +142,19 @@ namespace tRSS.Model
 			}
 		}
 		
-		[IgnoreDataMember()]
+		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
+		public ObservableCollection<Filter> Filters
+		{
+			get
+			{
+				return _Filters;
+			}
+			set
+			{
+				_Filters = value;
+			}
+		}
+		
 		public List<FeedItem> DownloadedItems
 		{
 			get
@@ -119,97 +168,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
-		[DataMember()]
-		public ObservableCollection<Filter> Filters
-		{
-			get
-			{
-				return _Filters;
-			}
-			set
-			{
-				_Filters = value;
-			}
-		}
-		
-		private Feed _SelectedFeed;
-		[IgnoreDataMember()]
-		public Feed SelectedFeed
-		{
-			get
-			{
-				return _SelectedFeed;
-			}
-			set
-			{
-				_SelectedFeed = value;
-				onPropertyChanged("SelectedFeed");
-			}
-		}
-		
-		private int _SelectedFeedIndex;
-		[DataMember()]
-		public int SelectedFeedIndex
-		{
-			get
-			{
-				return _SelectedFeedIndex;
-			}
-			set
-			{
-				_SelectedFeedIndex = value;
-				onPropertyChanged("SelectedFeedIndex");
-			}
-		}
-		
-		private int _SelectedFilterIndex;
-		[DataMember()]
-		public int SelectedFilterIndex
-		{
-			get
-			{
-				return _SelectedFilterIndex;
-			}
-			set
-			{
-				_SelectedFilterIndex = value;
-				onPropertyChanged("SelectedFilterIndex");
-			}
-		}
-		
-		private Filter _SelectedFilter;
-		[IgnoreDataMember()]
-		public Filter SelectedFilter
-		{
-			get
-			{
-				return _SelectedFilter;
-			}
-			set
-			{
-				_SelectedFilter = value;
-				onPropertyChanged("SelectedFilter");
-			}
-		}
-		
-		private FeedItem _SelectedDownload;
-		[IgnoreDataMember()]
-		public FeedItem SelectedDownload
-		{
-			get
-			{
-				return _SelectedDownload;
-			}
-			set
-			{
-				_SelectedDownload = value;
-				onPropertyChanged("SelectedDownload");
-			}
-		}
-		
 		private string _TorrentDropDirectory;
-		[DataMember()]
 		public string TorrentDropDirectory
 		{
 			get
@@ -225,10 +184,59 @@ namespace tRSS.Model
 		
 		# endregion
 		
+		# region Selected
+				
+		private Feed _SelectedFeed;
+		public Feed SelectedFeed
+		{
+			get
+			{
+				return _SelectedFeed;
+			}
+			set
+			{
+				_SelectedFeed = value;
+				onPropertyChanged("SelectedFeed");
+			}
+		}
+		
+		private Filter _SelectedFilter;
+		public Filter SelectedFilter
+		{
+			get
+			{
+				return _SelectedFilter;
+			}
+			set
+			{
+				_SelectedFilter = value;
+				onPropertyChanged("SelectedFilter");
+			}
+		}
+		
+		[NonSerialized()]
+		private FeedItem _SelectedDownload;
+		public FeedItem SelectedDownload
+		{
+			get
+			{
+				return _SelectedDownload;
+			}
+			set
+			{
+				_SelectedDownload = value;
+				onPropertyChanged("SelectedDownload");
+			}
+		}
+		
+		# endregion
+		
+		
+		
 		# region Update interval
 		
-		private static readonly int[] UPDATE_INTERVALS = { 1, 2, 5, 15, 60 };
-		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "2 minutes", "5 minutes", "15 minutes", "1 hour" };
+		private static readonly int[] UPDATE_INTERVALS = { 1, 2, 3, 5, 15, 30, 60 };
+		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "2 minutes", "3 minutes", "5 minutes", "15 minutes", "30 minutes", "1 hour" };
 
 		public string[] UpdateOptions
 		{
@@ -238,8 +246,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private int _SelectedUpdateOption = 2;
-		[DataMember()]
+		private int _SelectedUpdateOption = 4;
 		public int SelectedUpdateOption
 		{
 			get
@@ -278,7 +285,6 @@ namespace tRSS.Model
 		public void ExecuteDeleteFeed(object parameter)
 		{
 			Feeds.Remove(SelectedFeed);
-			SelectedFeedIndex = 0;
 		}
 		
 		public bool CanDeleteFeed(object parameter)
@@ -306,7 +312,14 @@ namespace tRSS.Model
 		
 		public bool CanResetFilter(object parameter)
 		{
-			return SelectedFilter.DownloadedItems.Count > 0;
+			if (SelectedFilter == null)
+			{
+				return false;
+			}
+			else
+			{
+				return SelectedFilter.DownloadedItems.Count > 0;
+			}
 		}
 		
 		# endregion
@@ -324,7 +337,6 @@ namespace tRSS.Model
 		public void ExecuteDeleteFilter(object parameter)
 		{
 			Filters.Remove(SelectedFilter);
-			SelectedFilterIndex = 0;
 			onPropertyChanged("DownloadedItems");
 		}
 		
@@ -349,8 +361,9 @@ namespace tRSS.Model
 		{
 			Feed f = new Feed();
 			Feeds.Add(f);
-			SelectedFeed = f;
-			ExecuteEditFeed(parameter);
+			SelectedFeed = f;			
+			EditFeed edit = new EditFeed(f);
+			edit.Show();
 		}
 		
 		public bool CanNewFeed(object parameter)
@@ -395,15 +408,13 @@ namespace tRSS.Model
 		
 		public void ExecuteNewFilter(object parameter)
 		{
-			Filter f = new Filter{
-				TitleFilter = SelectedFilter.TitleFilter,
-				SearchInFeedIndex = SelectedFilter.SearchInFeedIndex,
+			Filter f = new Filter(){
+				TitleFilter = "",
+				SearchInFeed = SelectedFilter.SearchInFeed,
 				IgnoreCaps = SelectedFilter.IgnoreCaps,
+				MatchOnce = SelectedFilter.MatchOnce,
 				Include = SelectedFilter.Include,
 				Exclude = SelectedFilter.Exclude,
-				IsTV = SelectedFilter.IsTV,
-				Season = SelectedFilter.Season,
-				Episode = SelectedFilter.Episode
 			};
 			
 			Filters.Add(f);
@@ -510,7 +521,7 @@ namespace tRSS.Model
 		# endregion
 		
 		
-		# region Remove download
+		# region Filter selected
 		
 		public ICommand FilterSelected
 		{
@@ -527,7 +538,14 @@ namespace tRSS.Model
 		
 		public bool CanFilterSelected(object parameter)
 		{
-			return SelectedFilter.HasFeed;
+			if (SelectedFilter == null)
+			{
+				return false;
+			}
+			else
+			{
+				return SelectedFilter.HasFeed;
+			}
 		}
 		
 		# endregion
@@ -536,12 +554,12 @@ namespace tRSS.Model
 		
 		public async void Update()
 		{
-			// Update
+			// Refresh
 			foreach (Feed feed in Feeds)
 			{
 				if (!(String.IsNullOrEmpty(feed.URL)))
 				{
-					bool x = await feed.Update();
+					bool x = await feed.Refresh();
 				}
 			}
 			
@@ -559,13 +577,14 @@ namespace tRSS.Model
 		
 		public async void FilterFeed(Filter filter)
 		{
-			foreach (FeedItem item in Feeds[filter.SearchInFeedIndex].Items)
+			foreach (FeedItem item in filter.SearchInFeed.Items)
 			{
 				if (filter.ShouldDownload(item))
 				{
 					if (await item.Download(TorrentDropDirectory))
 					{
 						filter.DownloadedItems.Add(item);
+						LastMatch = item.Title;
 						
 						if (filter.MatchOnce && !filter.IsTV)
 						{

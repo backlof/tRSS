@@ -6,11 +6,10 @@ using tRSS.Utilities;
 
 namespace tRSS.Model
 {
-	[DataContract()]
+	[Serializable()]
 	public class WindowSettings : ObjectBase
 	{		
 		private ResizeMode _Resizable = ResizeMode.CanResize;
-		[DataMember()]
 		public ResizeMode Resizable
 		{
 			get
@@ -24,8 +23,21 @@ namespace tRSS.Model
 			}
 		}
 		
+		private WindowState _State = WindowState.Normal;
+		public WindowState State
+		{
+			get
+			{
+				return _State;
+			}
+			set
+			{
+				_State = value;
+				onPropertyChanged("State");
+			}
+		}
+		
 		private double _Width;
-		[DataMember()]
 		public double Width
 		{
 			get
@@ -40,7 +52,6 @@ namespace tRSS.Model
 		}
 		
 		private double _Height;
-		[DataMember()]
 		public double Height
 		{
 			get
@@ -55,7 +66,6 @@ namespace tRSS.Model
 		}
 		
 		private double _Top = 0;
-		[DataMember()]
 		public double Top
 		{
 			get
@@ -70,7 +80,6 @@ namespace tRSS.Model
 		}
 		
 		private double _Left = 0;
-		[DataMember()]
 		public double Left
 		{
 			get
@@ -81,23 +90,6 @@ namespace tRSS.Model
 			{
 				_Left = value;
 				onPropertyChanged("Left");
-			}
-		}
-		
-		
-		
-		private WindowState _State = WindowState.Normal;
-		[DataMember()]
-		public WindowState State
-		{
-			get
-			{
-				return _State;
-			}
-			set
-			{
-				_State = value;
-				onPropertyChanged("State");
 			}
 		}
 	}

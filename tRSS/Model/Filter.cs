@@ -13,10 +13,8 @@ using System.Xml;
 
 namespace tRSS.Model
 {
-	/// <summary>
-	/// Description of Filter.
-	/// </summary>
-	[DataContract()]
+
+	[Serializable()]
 	public class Filter : ObjectBase
 	{
 		public Filter(){}
@@ -28,7 +26,6 @@ namespace tRSS.Model
 		# region Properties
 		
 		private string _Title = "New Filter";
-		[DataMember()]
 		public string Title
 		{
 			get
@@ -43,7 +40,6 @@ namespace tRSS.Model
 		}
 		
 		private bool _IsActive = false;
-		[DataMember()]
 		public bool IsActive
 		{
 			get
@@ -58,7 +54,6 @@ namespace tRSS.Model
 		}
 		
 		private bool _IgnoreCaps = true;
-		[DataMember()]
 		public bool IgnoreCaps
 		{
 			get
@@ -73,7 +68,6 @@ namespace tRSS.Model
 		}
 		
 		private bool _MatchOnce = true;
-		[DataMember()]
 		public bool MatchOnce
 		{
 			get
@@ -87,33 +81,29 @@ namespace tRSS.Model
 			}
 		}
 		
-		private int _SearchInFeedIndex;
-		[DataMember()]
-		public int SearchInFeedIndex
+		private Feed _SearchInFeed;
+		public Feed SearchInFeed
 		{
 			get
 			{
-				return _SearchInFeedIndex;
+				return _SearchInFeed;
 			}
 			set
 			{
-				_SearchInFeedIndex = value;
-				onPropertyChanged("SearchInFeedIndex");
-				onPropertyChanged("HasFeed");
+				_SearchInFeed = value;
+				onPropertyChanged("SearchInFeed");
 			}
 		}
 		
-		[IgnoreDataMember()]
 		public bool HasFeed
 		{
 			get
 			{
-				return SearchInFeedIndex != -1;
+				return _SearchInFeed != null;
 			}
 		}
 		
 		private bool _IsTV = false;
-		[DataMember()]
 		public bool IsTV
 		{
 			get
@@ -128,7 +118,6 @@ namespace tRSS.Model
 		}
 		
 		private int _Season = 1;
-		[DataMember()]
 		public int Season
 		{
 			get
@@ -143,7 +132,6 @@ namespace tRSS.Model
 		}
 		
 		private int _Episode = 1;
-		[DataMember()]
 		public int Episode
 		{
 			get
@@ -158,7 +146,6 @@ namespace tRSS.Model
 		}
 		
 		private List<FeedItem> _DownloadedItems = new List<FeedItem>();
-		[DataMember()]
 		public List<FeedItem> DownloadedItems
 		{
 			get
@@ -178,7 +165,6 @@ namespace tRSS.Model
 		
 		private static readonly char[] INCLUDE_INTERPRET_SEPARATORS = {';', '|', '+'};
 		
-		[IgnoreDataMember()]
 		public List<string> IncludeList
 		{
 			get
@@ -188,9 +174,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		
 		private string _Include;
-		[DataMember()]
 		public string Include
 		{
 			get
@@ -204,8 +188,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		
-		[IgnoreDataMember()]
+
 		public List<string> ExcludeList
 		{
 			get
@@ -216,7 +199,6 @@ namespace tRSS.Model
 		}
 		
 		private string _Exclude = "";
-		[DataMember()]
 		public string Exclude
 		{
 			get
@@ -238,7 +220,6 @@ namespace tRSS.Model
 		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
 		
 		private string _TitleFilter = "";
-		[DataMember()]
 		public string TitleFilter
 		{
 			get
@@ -255,7 +236,6 @@ namespace tRSS.Model
 		}
 		
 		private string _RegexPattern = "";
-		[IgnoreDataMember()]
 		public string RegexPattern
 		{
 			get

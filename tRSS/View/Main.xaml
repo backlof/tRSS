@@ -5,6 +5,7 @@
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	Title="tRSS"
 	Closing="Window_Closing"
+	ContentRendered="Window_ContentRendered"
 	MinHeight="555"
 	MinWidth="550"
 	Height="{Binding Path=View.Height, Mode=TwoWay}"
@@ -14,14 +15,25 @@
 	WindowState="{Binding Path=View.State, Mode=TwoWay}">
 	
 	<Window.Resources>
-		<Style TargetType="{x:Type ListBoxItem}" x:Key="ListBoxItemDragDrop">
+		<Style TargetType="{x:Type ListBoxItem}" x:Key="GenericDragDrop">
 			<Setter Property="AllowDrop" Value="True" />
-			<EventSetter Event="PreviewMouseMove" Handler="ListBoxItem_PreviewMouseMoveEvent" />
-			<EventSetter Event="Drop" Handler="ListBoxItem_Drop" />
+			<EventSetter Event="PreviewMouseMove" Handler="MouseMove_DragDrop" />
+			<EventSetter Event="Drop" Handler="Generic_Drop" />
+		</Style>
+		
+		
+		<Style TargetType="{x:Type ListBoxItem}" x:Key="FeedDragDrop">
+			<Setter Property="AllowDrop" Value="True" />
+			<EventSetter Event="PreviewMouseMove" Handler="MouseMove_DragDrop" />
+			<EventSetter Event="Drop" Handler="Feed_Drop" />
+		</Style>
+		
+		<Style TargetType="TextBlock" x:Key="ListBoxTextBlock">
+			<Setter Property="TextTrimming" Value="CharacterEllipsis" />
+			<Setter Property="Margin" Value="2,0,0,0" />
 		</Style>
 		
 		<Style TargetType="ListBox">
-			<Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemDragDrop}" />
 			<Setter Property="BorderThickness" Value="1" />
 			<Setter Property="BorderBrush" Value="LightGray" />
 			<Setter Property="SelectionMode" Value="Single" />
@@ -44,30 +56,59 @@
 		<sys:Double x:Key="MinColumnWidth">50</sys:Double>
 	</Window.Resources>
 	
+	<!-- WINDOW CONTENT -->
+	
 	<DockPanel>
+		
+		
+		
+		<!-- BOTTOM STATUSBAR -->
+		
 		<StatusBar DockPanel.Dock="Bottom">
 			<StatusBar.Resources>
 				<Style TargetType="{x:Type StatusBarItem}">
-					<Setter Property="Margin" Value="6,0,6,0"/>
+					<Setter Property="Margin" Value="6,0,0,0"/>
+				</Style>
+				<Style TargetType="{x:Type TextBlock}">
+					<Setter Property="Margin" Value="0,0,6,0"/>
 				</Style>
 			</StatusBar.Resources>
+			
 			<StatusBarItem>
-				<WrapPanel>
-					<TextBlock Text="Last update " />
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Last update:" />
 					<TextBlock Text="{Binding Path=Data.LastUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
-				</WrapPanel>
+				</StackPanel>
 			</StatusBarItem>
+			
 			<Separator />
+			
 			<StatusBarItem>
-				<WrapPanel>
-					<TextBlock Text="Next update " />
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Next update:" />
 					<TextBlock Text="{Binding Path=Data.NextUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
-				</WrapPanel>
+				</StackPanel>
 			</StatusBarItem>
+			
+			<Separator />
+			
+			<StatusBarItem>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Last match:" />
+					<TextBlock Text="{Binding Path=Data.LastMatch}" />
+				</StackPanel>
+			</StatusBarItem>
+		
 		</StatusBar>
 		
-		<ToolBarTray DockPanel.Dock="Top" >
-			<ToolBar>
+		
+		
+		
+		
+		<!-- TOP TOOLBAR -->
+		
+		<ToolBarTray DockPanel.Dock="Top">
+			<ToolBar Band="{Binding Path=View.SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=View.SaveBandIndex, Mode=TwoWay}" >
 				<Button Command="{Binding Path=SaveCommand}">
 					<WrapPanel>
 						<Image Source="/Resources/FamFamFamSilk/Disk.png" UseLayoutRounding="True" />
@@ -76,7 +117,7 @@
 				</Button>
 			</ToolBar>
 			
-			<ToolBar ToolTip="Find the folder you want your torrent files to go.">
+			<ToolBar ToolTip="Find the folder you want your torrent files to go." Band="{Binding Path=View.BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=View.BrowseBandIndex, Mode=TwoWay}" >
 				<Button Command="{Binding Path=Data.ChooseDirectory}">
 					<WrapPanel>
 						<Image Source="/Resources/FamFamFamSilk/Folder.png" UseLayoutRounding="True" />
@@ -86,12 +127,12 @@
 				<TextBox Margin="5,0,0,0" Width="150" Text="{Binding Path=Data.TorrentDropDirectory}" IsEnabled="False" />
 			</ToolBar>
 			
-			<ToolBar>
+			<ToolBar Band="{Binding Path=View.IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=View.IntervalBandIndex, Mode=TwoWay}" >
 				<Label Content="Refresh every" />
 				<ComboBox Width="80" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged" />
 			</ToolBar>
 			
-			<ToolBar>
+			<ToolBar Band="{Binding Path=View.RefreshBand, Mode=TwoWay}" BandIndex="{Binding Path=View.RefreshBandIndex, Mode=TwoWay}"  >
 				<Button Command="{Binding Path=Data.Refresh}">
 					<WrapPanel>
 						<Image Source="/Resources/FamFamFamSilk/Table_Refresh.png" UseLayoutRounding="True" />
@@ -99,15 +140,21 @@
 					</WrapPanel>
 				</Button>
 			</ToolBar>
+		
 		</ToolBarTray>
 		
 		
-		<TabControl>
+		
+		
+		<!-- TABS -->
+		
+		<TabControl Margin="0,0,0,1" >
 			
 			
 			
 			
 			
+			<!-- FILTERS TAB -->
 			
 			<TabItem Header="Filters">
 				
@@ -120,10 +167,13 @@
 					
 					
 					
-					<ListBox Grid.Column="0" SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Filters}" >
+					<!-- FILTERS LISTBOX -->
+					<!-- SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" -->
+					
+					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Data.Filters}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemContainerStyle="{StaticResource GenericDragDrop}" >
 						<ListBox.ItemTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding Path=Title}" TextTrimming="WordEllipsis" Margin="4,0,0,0" />
+								<TextBlock Text="{Binding Path=Title}" Style="{StaticResource ListBoxTextBlock}" />
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
@@ -151,7 +201,7 @@
 					
 					
 					
-					
+					<!-- FILTER FORM -->
 					
 					<GroupBox Grid.Column="2" Margin="4">
 						<GroupBox.Header>
@@ -190,7 +240,8 @@
 							<TextBox Grid.Row="5" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.RegexPattern}" IsEnabled="False" />
 							
 							<Label Grid.Row="6" Grid.Column="0" Content="Feed" Style="{StaticResource FormLabel}" />
-							<ComboBox Grid.Row="7" Grid.Column="0" ItemsSource="{Binding Path=Data.Feeds}" SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" >
+							<!-- SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" -->
+							<ComboBox Grid.Row="7" Grid.Column="0"  x:Name="ChooseFeed" ItemsSource="{Binding Path=Data.Feeds}" SelectedItem="{Binding Path=Data.SelectedFilter.SearchInFeed, Mode=TwoWay}" >
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding Title}" />
@@ -234,7 +285,7 @@
 			
 			
 			
-			
+			<!-- FEEDS TAB -->
 			
 			<TabItem Header="Feeds">
 				<Grid>
@@ -245,10 +296,19 @@
 					</Grid.ColumnDefinitions>
 					
 					
-					<ListBox Grid.Column="0" SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}" ItemsSource="{Binding Path=Data.Feeds}" ItemContainerStyle="{StaticResource ListBoxItemDragDrop}" >
+					
+					
+					<!-- FEEDS LISTBOX -->
+					<!-- SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" -->
+					
+					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Data.Feeds}"
+					         IsSynchronizedWithCurrentItem="True"
+					         AllowDrop="True"
+					         SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}"
+					         ItemContainerStyle="{StaticResource FeedDragDrop}">
 						<ListBox.ItemTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding Path=Title}" />
+								<TextBlock Text="{Binding Path=Title}" Style="{StaticResource ListBoxTextBlock}" />
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
@@ -282,27 +342,22 @@
 					
 					
 					
+					<!-- FEED TABLE -->
+					
 					<TextBox x:Name="FeedReference" Visibility="Collapsed"
 					         MinWidth="{Binding Path=View.FeedWidthTitle, Mode=TwoWay}"
 					         Width="{Binding Path=View.FeedWidthPublished, Mode=TwoWay}"/>
 					
-					
-					
-					<GroupBox Grid.Column="2" Header="{Binding Path=Data.SelectedFeed.Title}" Margin="4">
-						<DataGrid Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=Data.SelectedFeed.Items}">
-							<DataGrid.Resources>
-								
-								<TextBlock x:Key="Published" MinWidth="{Binding Path=View.FeedWidthPublished, Mode=TwoWay}"/>
-							</DataGrid.Resources>
-							<DataGrid.Columns>
-								<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"
-									Width="{Binding MinWidth, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
-								<DataGridTextColumn Header="Published"
-									Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}"
-									Width="{Binding Width, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
-							</DataGrid.Columns>
-						</DataGrid>
-					</GroupBox>
+					<DataGrid Grid.Column="2" ItemsSource="{Binding Path=Data.SelectedFeed.Items, UpdateSourceTrigger=PropertyChanged}" >
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"
+								Width="{Binding MinWidth, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
+							<DataGridTextColumn Header="Published"
+								Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}"
+								Width="{Binding Width, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
+						</DataGrid.Columns>
+					</DataGrid>
+				
 				
 				
 				
@@ -321,17 +376,20 @@
 			
 			
 			
-			
-			
+			<!-- DOWNLOADED TAB -->
 			
 			<TabItem Header="Downloaded">
 				<Grid>
+					
+					<!-- DOWNLOADED TABLE -->
+					
 					<TextBox x:Name="FilterReference" Visibility="Collapsed"
 					         MaxWidth="{Binding Path=View.FilterWidthTitle, Mode=TwoWay}"
 					         MinWidth="{Binding Path=View.FilterWidthPublished, Mode=TwoWay}"
 					         Width="{Binding Path=View.FilterWidthDownloaded, Mode=TwoWay}"/>
 					
-					<DataGrid Margin="10" ItemsSource="{Binding Path=Data.DownloadedItems}" SelectedItem="{Binding Path=Data.SelectedDownload}" >
+					
+					<DataGrid ItemsSource="{Binding Path=Data.DownloadedItems}" SelectedItem="{Binding Path=Data.SelectedDownload}" >
 						<DataGrid.ContextMenu>
 							<ContextMenu >
 								<MenuItem Header="Remove" Command="{Binding Path=Data.RemoveDownload}" />
@@ -346,6 +404,7 @@
 								Width="{Binding Width, Source={x:Reference FilterReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
 						</DataGrid.Columns>
 					</DataGrid>
+				
 				</Grid>
 			
 			
