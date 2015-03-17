@@ -185,7 +185,7 @@ namespace tRSS.Model
 		# endregion
 		
 		# region Selected
-				
+		
 		private Feed _SelectedFeed;
 		public Feed SelectedFeed
 		{
@@ -361,7 +361,7 @@ namespace tRSS.Model
 		{
 			Feed f = new Feed();
 			Feeds.Add(f);
-			SelectedFeed = f;			
+			SelectedFeed = f;
 			EditFeed edit = new EditFeed(f);
 			edit.Show();
 		}
@@ -585,6 +585,13 @@ namespace tRSS.Model
 					{
 						filter.DownloadedItems.Add(item);
 						LastMatch = item.Title;
+						
+						using(StreamWriter sw = File.AppendText(@"Download.log"))
+						{
+							sw.WriteLine(String.Format("[{0}]", DateTime.Now.ToString("g")));
+							sw.WriteLine(item.ToString());
+							sw.WriteLine(filter.ToString() + Environment.NewLine);
+						}
 						
 						if (filter.MatchOnce && !filter.IsTV)
 						{

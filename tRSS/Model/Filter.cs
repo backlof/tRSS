@@ -235,6 +235,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		// TODO Make function that sets season and episode as highest or latest
+		
 		private string _RegexPattern = "";
 		public string RegexPattern
 		{

@@ -56,9 +56,17 @@ namespace tRSS
 			int TargetIndex = container.Items.IndexOf(Target);
 			
 			System.Collections.IList list = (System.Collections.IList)container.ItemsSource;
-					
-			list[RemoveIndex] = Target;
-			list[TargetIndex] = Dropped;
+			
+			if (RemoveIndex < TargetIndex)
+			{
+				list.Insert(TargetIndex + 1, Dropped);
+				list.RemoveAt(RemoveIndex);
+			}
+			else if (list.Count > RemoveIndex)
+			{
+				list.Insert(TargetIndex, Dropped);
+				list.RemoveAt(RemoveIndex + 1);
+			}
 			
 			container.SelectedItem = Dropped;
 		}
@@ -67,7 +75,7 @@ namespace tRSS
 		/// Helper function that makes sure all Filter.SearchInFeed properties aren't reset to null by the ComboBox when Feeds are changed
 		/// </summary>
 		void Feed_Drop(object sender, DragEventArgs e)
-		{		
+		{
 			Feed Target = ((ListBoxItem)(sender)).DataContext as Feed;
 			Feed Dropped = e.Data.GetData(Target.GetType()) as Feed;
 			
@@ -92,9 +100,17 @@ namespace tRSS
 					HasSelectedDropped.Add(f);
 				}
 			}
-						
-			list[RemoveIndex] = Target;
-			list[TargetIndex] = Dropped;
+			
+			if (RemoveIndex < TargetIndex)
+			{
+				list.Insert(TargetIndex + 1, Dropped);
+				list.RemoveAt(RemoveIndex);
+			}
+			else if (list.Count > RemoveIndex)
+			{
+				list.Insert(TargetIndex, Dropped);
+				list.RemoveAt(RemoveIndex + 1);
+			}
 			
 			foreach (Filter f in HasSelectedTarget)
 			{

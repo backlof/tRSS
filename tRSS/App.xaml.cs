@@ -14,12 +14,13 @@ namespace tRSS
 	{
 		void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
 		{
-			using(StreamWriter sw = File.AppendText(@"log.txt"))
+			using(StreamWriter sw = File.AppendText(@"Error.log"))
 			{
-				sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now.ToString("g"), e.ToString()));
-				sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now.ToString("g"), e.Exception.ToString()));
-				sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now.ToString("g"), e.Dispatcher.ToString()));
-				sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now.ToString("g"), sender.ToString()));
+				sw.WriteLine(String.Format("[{0}]", DateTime.Now.ToString("g")));
+				sw.WriteLine(String.Format("[{EventArgs}] {0}", e.ToString()));
+				sw.WriteLine(String.Format("[{Exception}] {0}", e.Exception.ToString()));
+				sw.WriteLine(String.Format("[{Dispatcher}] {0}", e.Dispatcher.ToString()));
+				sw.WriteLine(String.Format("[{Sender}] {0}", sender.ToString()) + Environment.NewLine);
 			}
 		}
 	}
