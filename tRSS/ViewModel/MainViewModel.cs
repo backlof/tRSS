@@ -31,7 +31,7 @@ namespace tRSS.ViewModel
 			Feeds.Add(new Feed(){ Title = "Movies", URL = "https://kickass.to/movies/?rss=1" });
 			Feeds.Add(new Feed(){ Title = "Music", URL = "https://kickass.to/music/?rss=1" });
 			
-			Filter tvFilter = new Filter(){ Enabled = false, Title="All TV Shows", SearchInFeed = tvFeed, TitleFilter = "*", IgnoreCaps = true, Include = "720p;H.264", Exclude = "1080p;HDTV;", IsTV = false };
+			Filter tvFilter = new Filter(){ Enabled = false, Title="All TV Shows", SearchInFeed = tvFeed, TitleFilter = "*", IgnoreCaps = true, Include = "720p", Exclude = "1080p;HDTV;", IsTV = false };
 			Filters.Add(tvFilter);
 			
 			SelectedFeed = tvFeed;
