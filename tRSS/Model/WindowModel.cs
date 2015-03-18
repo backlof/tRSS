@@ -7,7 +7,7 @@ using tRSS.Utilities;
 namespace tRSS.Model
 {
 	[Serializable()]
-	public class WindowSettings : ObjectBase
+	public class WindowModel : ObjectBase
 	{		
 		private ResizeMode _Resizable = ResizeMode.CanResize;
 		public ResizeMode Resizable
@@ -37,7 +37,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private double _Width;
+		private double _Width = 0;
 		public double Width
 		{
 			get
@@ -51,7 +51,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private double _Height;
+		private double _Height = 0;
 		public double Height
 		{
 			get

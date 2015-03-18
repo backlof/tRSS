@@ -20,7 +20,7 @@ namespace tRSS.Model
 		
 		public static readonly String DEFAULT_TITLE = "New Feed";
 		
-		# region Properties
+		#region Properties
 		
 		
 		
@@ -69,9 +69,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		# endregion
+		#endregion
 		
-		# region Edit functionality
+		#region Edit functionality
 		
 		public void FinalizeEdit()
 		{
@@ -111,7 +111,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		# endregion
+		#endregion
 		
 		public async Task<bool> Refresh()
 		{

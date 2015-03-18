@@ -8,40 +8,39 @@ using tRSS.Utilities;
 
 namespace tRSS.ViewModel
 {
+	[Serializable]
 	public class EditFeedViewModel : ObjectBase
 	{
-		public Feed Data { get; set; }
-		public WindowSettings View { get; set; }
 		
-		private static readonly string FILENAME = "Window-EditFeed";
+		public EditFeedViewModel(){}
 		
-		public EditFeedViewModel(Feed feed)
+		[NonSerialized]
+		private Feed _Feed;
+		public Feed Feed
 		{
-			Data = feed;
-			Data.EditURL = Data.URL;
-			Data.EditTitle = Data.Title;
-			this.Load();
-		}
-		
-		public void Load()
-		{
-			if (File.Exists(ObjectBase.SaveLocation(FILENAME)))
+			get
 			{
-				using (Stream stream = File.Open(ObjectBase.SaveLocation(FILENAME), FileMode.Open))
-				{
-					BinaryFormatter bFormatter = new BinaryFormatter();
-					View = bFormatter.Deserialize(stream) as WindowSettings;
-				}
+				return _Feed;
 			}
-			else
+			set
 			{
-				View = new WindowSettings();
+				_Feed = value;
+				onPropertyChanged("Feed");
 			}
 		}
 		
-		public void SaveData()
+		private WindowModel _Window = new WindowModel(){ Width = 250 };
+		public WindowModel Window
 		{
-			View.Save(FILENAME);
+			get
+			{
+				return _Window;
+			}
+			set
+			{
+				_Window = value;
+				onPropertyChanged("Window");
+			}
 		}
 	}
 }

@@ -10,14 +10,14 @@
 	ContentRendered="Window_ContentRendered"
 	MinHeight="572"
 	MinWidth="550"
-	Height="{Binding Path=View.Height, Mode=TwoWay}"
-	Width="{Binding Path=View.Width, Mode=TwoWay}"
-	Top="{Binding Path=View.Top, Mode=TwoWay}"
-	Left="{Binding Path=View.Left, Mode=TwoWay}"
-	WindowState="{Binding Path=View.State, Mode=TwoWay}">
+	Height="{Binding Path=Window.Height, Mode=TwoWay}"
+	Width="{Binding Path=Window.Width, Mode=TwoWay}"
+	Top="{Binding Path=Window.Top, Mode=TwoWay}"
+	Left="{Binding Path=Window.Left, Mode=TwoWay}"
+	WindowState="{Binding Path=Window.State, Mode=TwoWay}">
 	
 	<Window.TaskbarItemInfo>
-		<TaskbarItemInfo ProgressState="{Binding Path=Data.NotificationState, Mode=OneWay}" ProgressValue="100" />
+		<TaskbarItemInfo ProgressState="{Binding Path=NotificationState, Mode=OneWay}" ProgressValue="100" />
 	</Window.TaskbarItemInfo>
 	
 	<Window.Resources>
@@ -26,8 +26,6 @@
 			<EventSetter Event="PreviewMouseMove" Handler="MouseMove_DragDrop" />
 			<EventSetter Event="Drop" Handler="Generic_Drop" />
 		</Style>
-		
-		<CheckBox x:Key="Current" IsChecked="{Binding Path=Data.Notify.State.IsActive, Source={x:Static Application.Current}}" />
 		
 		<Style TargetType="{x:Type ListBoxItem}" x:Key="FeedDragDrop">
 			<Setter Property="AllowDrop" Value="True" />
@@ -84,7 +82,7 @@
 			<StatusBarItem>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Last update:" />
-					<TextBlock Text="{Binding Path=Data.LastUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
+					<TextBlock Text="{Binding Path=LastUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
 				</StackPanel>
 			</StatusBarItem>
 			
@@ -93,7 +91,7 @@
 			<StatusBarItem>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Next update:" />
-					<TextBlock Text="{Binding Path=Data.NextUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
+					<TextBlock Text="{Binding Path=NextUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
 				</StackPanel>
 			</StatusBarItem>
 			
@@ -102,7 +100,7 @@
 			<StatusBarItem>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Last match:" />
-					<TextBlock Text="{Binding Path=Data.LastMatch}" />
+					<TextBlock Text="{Binding Path=LastMatch}" />
 				</StackPanel>
 			</StatusBarItem>
 		
@@ -117,8 +115,8 @@
 		<StackPanel DockPanel.Dock="Top">
 			<Menu BorderBrush="LightGray" BorderThickness="1">
 				<MenuItem Header="_File">
-					<MenuItem Header="_Backup" Command="{Binding Path=Data.SaveBackup}" />
-					<MenuItem Header="_Restore" Command="{Binding Path=Data.Restore}" />
+					<MenuItem Header="_Backup" Command="{Binding Path=SaveBackup}" />
+					<MenuItem Header="_Restore" Command="{Binding Path=Restore}" />
 					<Separator />
 					<MenuItem Header="_Exit" Click="Exit_Click" />
 				</MenuItem>
@@ -138,8 +136,8 @@
 			<!-- TOP TOOLBAR -->
 			
 			<ToolBarTray>
-				<ToolBar Band="{Binding Path=View.SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=View.SaveBandIndex, Mode=TwoWay}" >
-					<Button Command="{Binding Path=SaveCommand}">
+				<ToolBar Band="{Binding Path=SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=SaveBandIndex, Mode=TwoWay}" >
+					<Button Click="Save_Click">
 						<WrapPanel>
 							<Image Source="/Resources/FamFamFamSilk/Disk.png" UseLayoutRounding="True" />
 							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Save" />
@@ -147,23 +145,23 @@
 					</Button>
 				</ToolBar>
 				
-				<ToolBar ToolTip="Find the folder you want your torrent files to go." Band="{Binding Path=View.BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=View.BrowseBandIndex, Mode=TwoWay}" >
-					<Button Command="{Binding Path=Data.ChooseDirectory}">
+				<ToolBar ToolTip="Find the folder you want your torrent files to go." Band="{Binding Path=BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=BrowseBandIndex, Mode=TwoWay}" >
+					<Button Command="{Binding Path=ChooseDirectory}">
 						<WrapPanel>
 							<Image Source="/Resources/FamFamFamSilk/Folder.png" UseLayoutRounding="True" />
 							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Browse" />
 						</WrapPanel>
 					</Button>
-					<TextBox Margin="5,0,0,0" Width="150" Text="{Binding Path=Data.TorrentDropDirectory}" IsEnabled="False" />
+					<TextBox Margin="5,0,0,0" Width="150" Text="{Binding Path=TorrentDropDirectory}" IsEnabled="False" />
 				</ToolBar>
 				
-				<ToolBar Band="{Binding Path=View.IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=View.IntervalBandIndex, Mode=TwoWay}" >
+				<ToolBar Band="{Binding Path=IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=IntervalBandIndex, Mode=TwoWay}" >
 					<Label Content="Refresh every" />
-					<ComboBox Width="80" ItemsSource="{Binding Path=Data.UpdateOptions}" SelectedIndex="{Binding Path=Data.SelectedUpdateOption, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged" />
+					<ComboBox Width="80" ItemsSource="{Binding Path=UpdateOptions}" SelectedIndex="{Binding Path=SelectedUpdateOption, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged" />
 				</ToolBar>
 				
-				<ToolBar Band="{Binding Path=View.RefreshBand, Mode=TwoWay}" BandIndex="{Binding Path=View.RefreshBandIndex, Mode=TwoWay}"  >
-					<Button Command="{Binding Path=Data.Refresh}">
+				<ToolBar Band="{Binding Path=RefreshBand, Mode=TwoWay}" BandIndex="{Binding Path=RefreshBandIndex, Mode=TwoWay}"  >
+					<Button Command="{Binding Path=Refresh}">
 						<WrapPanel>
 							<Image Source="/Resources/FamFamFamSilk/Table_Refresh.png" UseLayoutRounding="True" />
 							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Refresh" />
@@ -193,7 +191,7 @@
 				
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition MinWidth="{StaticResource MinColumnWidth}" Width="{Binding Path=View.FilterSplitterPosition, Converter={StaticResource GridLengthConverter}, Mode=TwoWay}" />
+						<ColumnDefinition MinWidth="{StaticResource MinColumnWidth}" Width="{Binding Path=FilterSplitterPosition, Converter={StaticResource GridLengthConverter}, Mode=TwoWay}" />
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
@@ -203,7 +201,7 @@
 					<!-- FILTERS LISTBOX -->
 					<!-- SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" -->
 					
-					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Data.Filters}" SelectedItem="{Binding Path=Data.SelectedFilter, Mode=TwoWay}" ItemContainerStyle="{StaticResource GenericDragDrop}" >
+					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=SelectedFilter, Mode=TwoWay}" ItemContainerStyle="{StaticResource GenericDragDrop}" >
 						<ListBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Path=Title}" Style="{StaticResource ListBoxTextBlock}" />
@@ -211,12 +209,12 @@
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
 							<ContextMenu>
-								<MenuItem Header="New" Command="{Binding Path=Data.NewFilter}" >
+								<MenuItem Header="New" Command="{Binding Path=NewFilter}" >
 									<MenuItem.Icon>
 										<Image Source="/Resources/FamFamFamSilk/Layout_Add.png" UseLayoutRounding="True" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFilter}" >
+								<MenuItem Header="Delete" Command="{Binding Path=DeleteFilter}" >
 									<MenuItem.Icon>
 										<Image Source="/Resources/FamFamFamSilk/Layout_Delete.png" UseLayoutRounding="True" />
 									</MenuItem.Icon>
@@ -224,7 +222,7 @@
 							</ContextMenu>
 						</ListBox.ContextMenu>
 						<ListBox.InputBindings>
-							<KeyBinding Key="Delete" Command="{Binding Path=Data.DeleteFilter}" />
+							<KeyBinding Key="Delete" Command="{Binding Path=DeleteFilter}" />
 						</ListBox.InputBindings>
 					</ListBox>
 					
@@ -238,7 +236,7 @@
 					
 					<GroupBox Grid.Column="2" Margin="4" Padding="8,8,8,0">
 						<GroupBox.Header>
-							<CheckBox Content="Active" IsChecked="{Binding Path=Data.SelectedFilter.IsActive, Mode=TwoWay}" />
+							<CheckBox Content="Enabled" IsChecked="{Binding Path=SelectedFilter.Enabled, Mode=TwoWay}" />
 						</GroupBox.Header>
 						
 						
@@ -265,16 +263,16 @@
 							</Grid.RowDefinitions>
 							
 							<Label Grid.Row="0" Grid.Column="0" Content="Name" Style="{StaticResource FormLabel}" />
-							<TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=SelectedFilter.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 							
 							<Label Grid.Row="2" Grid.Column="0" Content="Filter" Style="{StaticResource FormLabel}" />
-							<TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.TitleFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=SelectedFilter.TitleFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 							<Label Grid.Row="4" Grid.Column="0" Content="Regex" Style="{StaticResource FormLabel}" />
-							<TextBox Grid.Row="5" Grid.Column="0" Text="{Binding Path=Data.SelectedFilter.RegexPattern}" IsEnabled="False" />
+							<TextBox Grid.Row="5" Grid.Column="0" Text="{Binding Path=SelectedFilter.RegexPattern}" IsEnabled="False" />
 							
 							<Label Grid.Row="6" Grid.Column="0" Content="Feed" Style="{StaticResource FormLabel}" />
 							<!-- SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" -->
-							<ComboBox Grid.Row="7" Grid.Column="0"  x:Name="ChooseFeed" ItemsSource="{Binding Path=Data.Feeds}" SelectedItem="{Binding Path=Data.SelectedFilter.SearchInFeed, Mode=TwoWay}" >
+							<ComboBox Grid.Row="7" Grid.Column="0"  x:Name="ChooseFeed" ItemsSource="{Binding Path=Feeds}" SelectedItem="{Binding Path=SelectedFilter.SearchInFeed, Mode=TwoWay}" >
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding Title}" />
@@ -285,28 +283,28 @@
 							
 							<GroupBox Header="Options" Grid.Column="1" Grid.Row="0" Grid.RowSpan="8" VerticalAlignment="Center" Margin="8,0,0,0">
 								<StackPanel>
-									<CheckBox Margin="0,0,0,8" Content="Match once" IsChecked="{Binding Path=Data.SelectedFilter.MatchOnce, Mode=TwoWay}" />
-									<CheckBox Content="Ignore caps" IsChecked="{Binding Path=Data.SelectedFilter.IgnoreCaps, Mode=TwoWay}" />
-									<Button Content="Filter" Padding="2" Margin="0,8,0,0" Command="{Binding Path=Data.FilterSelected}" />
-									<Button Content="Reset" Padding="2" Margin="0,8,0,0" Command="{Binding Path=Data.ResetFilter}" />
+									<CheckBox Margin="0,0,0,8" Content="Match once" IsChecked="{Binding Path=SelectedFilter.MatchOnce, Mode=TwoWay}" />
+									<CheckBox Content="Ignore caps" IsChecked="{Binding Path=SelectedFilter.IgnoreCaps, Mode=TwoWay}" />
+									<Button Content="Filter" Padding="2" Margin="0,8,0,0" Command="{Binding Path=FilterSelected}" />
+									<Button Content="Reset" Padding="2" Margin="0,8,0,0" Command="{Binding Path=ResetFilter}" />
 								</StackPanel>
 							</GroupBox>
 							
 							
 							<Label Grid.Row="8" Grid.ColumnSpan="2" Content="Include" Style="{StaticResource FormLabel}" />
-							<TextBox Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Include, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<TextBox Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding Path=SelectedFilter.Include, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 							<Label Grid.Row="10" Grid.ColumnSpan="2" Content="Exclude" Style="{StaticResource FormLabel}" />
-							<TextBox Grid.Row="11" Grid.ColumnSpan="2" Text="{Binding Path=Data.SelectedFilter.Exclude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+							<TextBox Grid.Row="11" Grid.ColumnSpan="2" Text="{Binding Path=SelectedFilter.Exclude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="55" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 							
 							<GroupBox Padding="8" Grid.Row="12" Grid.ColumnSpan="2" HorizontalAlignment="Left">
 								<GroupBox.Header>
-									<CheckBox IsChecked="{Binding Path=Data.SelectedFilter.IsTV, Mode=TwoWay}" Content="TV Show" Margin="0,12,0,0" />
+									<CheckBox IsChecked="{Binding Path=SelectedFilter.IsTV, Mode=TwoWay}" Content="TV Show" Margin="0,12,0,0" />
 								</GroupBox.Header>
-								<StackPanel IsEnabled="{Binding Path=Data.SelectedFilter.IsTV}" Orientation="Horizontal">
+								<StackPanel IsEnabled="{Binding Path=SelectedFilter.IsTV}" Orientation="Horizontal">
 									<Label Content="Season" />
-									<wpfTool:IntegerUpDown Value="{Binding Path=Data.SelectedFilter.Season, Mode=TwoWay}" Minimum="1" />
+									<wpfTool:IntegerUpDown Value="{Binding Path=SelectedFilter.Season, Mode=TwoWay}" Minimum="1" />
 									<Label Content="Episode" />
-									<wpfTool:IntegerUpDown Value="{Binding Path=Data.SelectedFilter.Episode, Mode=TwoWay}" Minimum="1" />
+									<wpfTool:IntegerUpDown Value="{Binding Path=SelectedFilter.Episode, Mode=TwoWay}" Minimum="1" />
 								</StackPanel>
 							</GroupBox>
 						</Grid>
@@ -323,7 +321,7 @@
 			<TabItem Header="Feeds">
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition MinWidth="{StaticResource MinColumnWidth}" Width="{Binding Path=View.FeedSplitterPosition, Converter={StaticResource GridLengthConverter}, Mode=TwoWay}" />
+						<ColumnDefinition MinWidth="{StaticResource MinColumnWidth}" Width="{Binding Path=FeedSplitterPosition, Converter={StaticResource GridLengthConverter}, Mode=TwoWay}" />
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
@@ -334,10 +332,10 @@
 					<!-- FEEDS LISTBOX -->
 					<!-- SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" -->
 					
-					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Data.Feeds}"
+					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Feeds}"
 					         IsSynchronizedWithCurrentItem="True"
 					         AllowDrop="True"
-					         SelectedItem="{Binding Path=Data.SelectedFeed, Mode=TwoWay}"
+					         SelectedItem="{Binding Path=SelectedFeed, Mode=TwoWay}"
 					         ItemContainerStyle="{StaticResource FeedDragDrop}">
 						<ListBox.ItemTemplate>
 							<DataTemplate>
@@ -346,17 +344,17 @@
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
 							<ContextMenu>
-								<MenuItem Header="New" Command="{Binding Path=Data.NewFeed}" >
+								<MenuItem Header="New" Command="{Binding Path=NewFeed}" >
 									<MenuItem.Icon>
 										<Image Source="/Resources/FamFamFamSilk/Feed_Add.png" UseLayoutRounding="True" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Header="Edit" Command="{Binding Path=Data.EditFeed}" >
+								<MenuItem Header="Edit" Command="{Binding Path=EditFeed}" >
 									<MenuItem.Icon>
 										<Image Source="/Resources/FamFamFamSilk/Feed_Edit.png" UseLayoutRounding="True" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Header="Delete" Command="{Binding Path=Data.DeleteFeed}" >
+								<MenuItem Header="Delete" Command="{Binding Path=DeleteFeed}" >
 									<MenuItem.Icon>
 										<Image Source="/Resources/FamFamFamSilk/Feed_Delete.png" UseLayoutRounding="True" />
 									</MenuItem.Icon>
@@ -364,7 +362,7 @@
 							</ContextMenu>
 						</ListBox.ContextMenu>
 						<ListBox.InputBindings>
-							<KeyBinding Key="Delete" Command="{Binding Path=Data.DeleteFeed}" />
+							<KeyBinding Key="Delete" Command="{Binding Path=DeleteFeed}" />
 						</ListBox.InputBindings>
 					</ListBox>
 					
@@ -378,10 +376,10 @@
 					<!-- FEED TABLE -->
 					
 					<TextBox x:Name="FeedReference" Visibility="Collapsed"
-					         MinWidth="{Binding Path=View.FeedWidthTitle, Mode=TwoWay}"
-					         Width="{Binding Path=View.FeedWidthPublished, Mode=TwoWay}"/>
+					         MinWidth="{Binding Path=FeedWidthTitle, Mode=TwoWay}"
+					         Width="{Binding Path=FeedWidthPublished, Mode=TwoWay}"/>
 					
-					<DataGrid Grid.Column="2" ItemsSource="{Binding Path=Data.SelectedFeed.Items, UpdateSourceTrigger=PropertyChanged}" >
+					<DataGrid Grid.Column="2" ItemsSource="{Binding Path=SelectedFeed.Items, UpdateSourceTrigger=PropertyChanged}" >
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"
 								Width="{Binding MinWidth, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
@@ -417,15 +415,15 @@
 					<!-- DOWNLOADED TABLE -->
 					
 					<TextBox x:Name="FilterReference" Visibility="Collapsed"
-					         MaxWidth="{Binding Path=View.FilterWidthTitle, Mode=TwoWay}"
-					         MinWidth="{Binding Path=View.FilterWidthPublished, Mode=TwoWay}"
-					         Width="{Binding Path=View.FilterWidthDownloaded, Mode=TwoWay}"/>
+					         MaxWidth="{Binding Path=FilterWidthTitle, Mode=TwoWay}"
+					         MinWidth="{Binding Path=FilterWidthPublished, Mode=TwoWay}"
+					         Width="{Binding Path=FilterWidthDownloaded, Mode=TwoWay}"/>
 					
 					
-					<DataGrid ItemsSource="{Binding Path=Data.DownloadedItems}" SelectedItem="{Binding Path=Data.SelectedDownload}" >
+					<DataGrid ItemsSource="{Binding Path=DownloadedItems}" SelectedItem="{Binding Path=SelectedDownload}" >
 						<DataGrid.ContextMenu>
 							<ContextMenu >
-								<MenuItem Header="Remove" Command="{Binding Path=Data.RemoveDownload}" />
+								<MenuItem Header="Remove" Command="{Binding Path=RemoveDownload}" />
 							</ContextMenu>
 						</DataGrid.ContextMenu>
 						<DataGrid.Columns>

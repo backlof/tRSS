@@ -23,7 +23,7 @@ namespace tRSS.Model
 		// They're only initialized when the class object is
 		// Not during deserialization
 		
-		# region Properties
+		#region Properties
 		
 		private string _Title = "New Filter";
 		[DataMember(Name="Title", IsRequired=false)]
@@ -40,18 +40,18 @@ namespace tRSS.Model
 			}
 		}
 		
-		private bool _IsActive = false;
+		private bool _Enabled = false;
 		[DataMember(Name="Enabled", IsRequired=false)]
-		public bool IsActive
+		public bool Enabled
 		{
 			get
 			{
-				return _IsActive;
+				return _Enabled;
 			}
 			set
 			{
-				_IsActive = value;
-				onPropertyChanged("IsActive");
+				_Enabled = value;
+				onPropertyChanged("Enabled");
 			}
 		}
 		
@@ -169,9 +169,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		# endregion
+		#endregion
 		
-		# region Include / Exclude
+		#region Include / Exclude
 		
 		private static readonly char[] INCLUDE_INTERPRET_SEPARATORS = {';', '|', '+'};
 		
@@ -225,9 +225,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		# endregion
+		#endregion
 		
-		# region Regex filter
+		#region Regex filter
 		
 		// REGEX OPERATORS *.$^{[(|)]}+?\
 		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
@@ -307,15 +307,13 @@ namespace tRSS.Model
 			}
 		}
 		
-		# endregion
-		
-		# region Filter functionality
+		#endregion
 		
 		public bool ShouldDownload(FeedItem item)
 		{
 			if (!DownloadedItems.Contains(item))
 			{
-				if (IsActive)
+				if (Enabled)
 				{
 					string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
 					RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
@@ -373,12 +371,9 @@ namespace tRSS.Model
 			else { return false; }
 		}
 		
-		# endregion
-		
-		
 		public override string ToString()
 		{
-			return string.Format("[Filter Title={0}, IsActive={1}, IgnoreCaps={2}, TitleFilter={3}, RegexPattern={4}, Include={5}, Exclude={6}, FilterEpisode={7}, Season={8}, Episode={9}]", _Title, _IsActive, _IgnoreCaps, _TitleFilter, _RegexPattern, Include, Exclude, _IsTV, _Season, _Episode);
+			return string.Format("[Filter Title={0}, Enabled={1}, IgnoreCaps={2}, MatchOnce={3}, IsTV={4}, Season={5}, Include={6}, Exclude={7}, TitleFilter={8}, Episode={9}]", _Title, _Enabled, _IgnoreCaps, _MatchOnce, _IsTV, _Season, _Include, _Exclude, _TitleFilter, _Episode);
 		}
 	}
 }

@@ -12,21 +12,37 @@ using System.Xml.Serialization;
 using tRSS.Model;
 using tRSS.ViewModel;
 using tRSS.Utilities;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace tRSS
 {
 	public partial class Main : Window
 	{
-		public MainViewModel VM { get; set; }
+		public MainViewModel VM { get; set; }		
+		public static readonly string FILENAME = "MainView";
 		
 		public Main()
 		{
-			VM = new MainViewModel();
+			if (File.Exists(Utilities.ObjectBase.SaveLocation(FILENAME)))
+			{
+				using (Stream stream = File.Open(Utilities.ObjectBase.SaveLocation(FILENAME), FileMode.Open))
+				{
+					BinaryFormatter bFormatter = new BinaryFormatter();
+					VM = bFormatter.Deserialize(stream) as MainViewModel;
+				}
+			}
+			else
+			{
+				VM = new MainViewModel();
+			}
+			
 			DataContext = VM;
-			VM.Data.StartTimer();
+			VM.StartTimer();
 			
 			InitializeComponent();
 		}
+		
+		#region EVENTS
 		
 		void Window_ContentRendered(object sender, EventArgs e)
 		{
@@ -35,13 +51,47 @@ namespace tRSS
 		
 		void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			VM.Data.ResetTimer();
+			VM.ResetTimer();
 		}
 		
 		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			VM.SaveData();
+			VM.Save(FILENAME);
 		}
+		
+		void Window_Activated(object sender, EventArgs e)
+		{
+			if (VM.IsNotifying)
+			{
+				VM.NotifyDeactivate();
+			}
+			
+			MainViewModel.WindowIsActive = true;
+		}
+		
+		void Window_Deactivated(object sender, EventArgs e)
+		{
+			MainViewModel.WindowIsActive = false;
+		}
+		
+		void GitHub_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("http://github.com/backlof/tRSS/blob/master/README.md");
+		}
+		
+		void Exit_Click(object sender, RoutedEventArgs e)
+		{
+			Application.Current.Shutdown();
+		}
+		
+		void Save_Click(object sender, RoutedEventArgs e)
+		{
+			VM.Save(FILENAME);
+		}
+		
+		#endregion
+		
+		#region LISTBOX DRAG DROP
 		
 		void Generic_Drop(object sender, DragEventArgs e)
 		{
@@ -89,7 +139,7 @@ namespace tRSS
 			System.Collections.Generic.List<Filter> HasSelectedTarget = new System.Collections.Generic.List<Filter>();
 			System.Collections.Generic.List<Filter> HasSelectedDropped = new System.Collections.Generic.List<Filter>();
 			
-			foreach (Filter f in VM.Data.Filters)
+			foreach (Filter f in VM.Filters)
 			{
 				if (f.SearchInFeed == Target)
 				{
@@ -134,29 +184,6 @@ namespace tRSS
 			}
 		}
 		
-		void Window_Activated(object sender, EventArgs e)
-		{
-			if (VM.Data.IsNotifying)
-			{
-				VM.Data.NotifyDeactivate();
-			}
-			
-			Library.WindowIsActive = true;
-		}
-		
-		void Window_Deactivated(object sender, EventArgs e)
-		{
-			Library.WindowIsActive = false;
-		}
-		
-		void GitHub_Click(object sender, RoutedEventArgs e)
-		{
-			System.Diagnostics.Process.Start("http://github.com/backlof/tRSS/blob/master/README.md");
-		}
-		
-		void Exit_Click(object sender, RoutedEventArgs e)
-		{
-			Application.Current.Shutdown();
-		}
+		#endregion
 	}
 }

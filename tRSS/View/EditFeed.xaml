@@ -5,11 +5,11 @@
 	Closing="Window_Closing"
 	MinHeight="250"
 	MinWidth="240"
-	Height="{Binding Path=View.Height, Mode=TwoWay}"
-	Width="{Binding Path=View.Width, Mode=TwoWay}"
-	Top="{Binding Path=View.Top, Mode=TwoWay}"
-	Left="{Binding Path=View.Left, Mode=TwoWay}"
-	WindowState="{Binding Path=View.State, Mode=TwoWay}">
+	Height="{Binding Path=Window.Height, Mode=TwoWay}"
+	Width="{Binding Path=Window.Width, Mode=TwoWay}"
+	Top="{Binding Path=Window.Top, Mode=TwoWay}"
+	Left="{Binding Path=Window.Left, Mode=TwoWay}"
+	WindowState="{Binding Path=Window.State, Mode=TwoWay}">
 	<Grid
 		Margin="10">
 		<GroupBox Header="Feed">
@@ -23,10 +23,10 @@
 				</Grid.RowDefinitions>
 				
 				<Label Grid.Row="0" Content="Name" Style="{StaticResource FormLabel}" />
-				<TextBox Grid.Row="1" Text="{Binding Path=Data.EditTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				<TextBox Grid.Row="1" Text="{Binding Path=Feed.EditTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				
 				<Label Grid.Row="2" Content="URL" Style="{StaticResource FormLabel}" />
-				<TextBox Grid.Row="3" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Text="{Binding Path=Data.EditURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				<TextBox Grid.Row="3" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Text="{Binding Path=Feed.EditURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				
 				<WrapPanel Grid.Row="4" HorizontalAlignment="Right" Margin="0,12,0,0">
 					<WrapPanel.Resources>
