@@ -13,8 +13,8 @@ Download torrent files from RSS Feeds to a watched folder in your torrent client
 * Filter is `Active`
 * Feed is selected for the filter
 * The beginning of the torrent title matches `Filter` (see below)
-* Torrent title contains all terms in `Include` (separated by `;`)
-* Torrent contains no terms in `Exclude` (separated by `;`)
+* Torrent title contains all terms in `Include` (see below)
+* Torrent title contains no terms in `Exclude` (see below)
 
 Also, you can
 
@@ -23,8 +23,8 @@ Also, you can
 
 For TV shows
 
-* Torrent episode is equal or higher
-* With `Match once` each episode will only download once
+* Torrent episode is equal or higher (only supports format S[00]E[00])
+* With `Match once`, each episode will only download once
 
 ### Filter
 #### Symbols
@@ -51,8 +51,8 @@ For TV shows
 ### Include and Exclude
 
 - Both are optional
-- Separate each term by `;` - empty once are removed
-- Use `Ignore caps` if caps vary
+- Separate each term by `;` - empty ones are discarded
+- Use `Ignore caps` if cases vary
 
 #### Examples
 
