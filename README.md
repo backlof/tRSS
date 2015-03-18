@@ -47,3 +47,18 @@ For TV shows
 |`Bob's.TV.Show`	|`Bob's TV Show S01E02 720P`	|Yes		|
 |`Bob's.TV.Show`	|`Bob's.TV.Show.S01E02.720P`	|Yes		|
 |`Bob's.TV.Show`	|`Bob's_TV_Show_S01E02_720P`	|Yes		|
+
+### Include and Exclude
+
+- Both are optional
+- Separate each term by `;` - empty once are removed
+- Use `Ignore caps` if caps vary
+
+#### Examples
+
+|Include			|Exclude	|Torrent											|Match	|
+|--------------|--------|--------------------------------------|:------:|
+|` `				|`720p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|Yes		|
+|` `				|`1080p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
+|`1080p;DD5.1`	|` `		|`TV Show S01E07 1080p WEBRip DD5.1 `	|Yes		|
+|`HDTV;`			|`1080p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
