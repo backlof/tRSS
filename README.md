@@ -61,4 +61,5 @@ For TV shows
 |` `				|`720p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|Yes		|
 |` `				|`1080p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
 |`1080p;DD5.1`	|` `		|`TV Show S01E07 1080p WEBRip DD5.1 `	|Yes		|
-|`HDTV;`			|`1080p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
+|`WEB;`			|`1080p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
+|`HDTV;1080p`	|`720p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
