@@ -183,6 +183,42 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		#region FILTER FILTER
+		
+		public ICommand LoadHighestEpisode
+		{
+			get
+			{
+				return new RelayCommand(ExecuteLoadHighestEpisode, CanLoadHighestEpisode);
+			}
+		}
+		
+		public void ExecuteLoadHighestEpisode(object parameter)
+		{
+			SelectedFilter.LoadHighest();
+		}
+		
+		public bool CanLoadHighestEpisode(object parameter)
+		{
+			if (SelectedFilter == null)
+			{
+				return false;
+			}
+			else 
+			{
+				if (SelectedFilter.DownloadedItems.Count > 0 && SelectedFilter.HasDownloadedSinceHighest)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		
+		#endregion
+		
 		#endregion
 		
 		#region FEEDS
@@ -929,6 +965,7 @@ namespace tRSS.ViewModel
 						{
 							filter.DownloadedItems.Add(item);
 							
+							filter.HasDownloadedSinceHighest = true;
 							LastMatch = item.Title;
 							
 							LogDownload(filter, item);
@@ -940,7 +977,8 @@ namespace tRSS.ViewModel
 							}
 							
 							onPropertyChanged("DownloadedItems");
-							onPropertyChanged("CanResetFilter");
+							onPropertyChanged("LoadHighestEpisode");
+							onPropertyChanged("ResetFilter");
 						}
 					}
 				}

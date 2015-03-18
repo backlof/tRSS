@@ -301,10 +301,13 @@
 									<CheckBox IsChecked="{Binding Path=SelectedFilter.IsTV, Mode=TwoWay}" Content="TV Show" Margin="0,12,0,0" />
 								</GroupBox.Header>
 								<StackPanel IsEnabled="{Binding Path=SelectedFilter.IsTV}" Orientation="Horizontal">
+									
+									
 									<Label Content="Season" />
 									<wpfTool:IntegerUpDown Value="{Binding Path=SelectedFilter.Season, Mode=TwoWay}" Minimum="1" />
 									<Label Content="Episode" />
 									<wpfTool:IntegerUpDown Value="{Binding Path=SelectedFilter.Episode, Mode=TwoWay}" Minimum="1" />
+								<Button Content="Load highest" Margin="10,0,0,0" Padding="4" Command="{Binding Path=LoadHighestEpisode}" />
 								</StackPanel>
 							</GroupBox>
 						</Grid>

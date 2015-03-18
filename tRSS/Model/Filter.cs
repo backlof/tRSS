@@ -249,8 +249,6 @@ namespace tRSS.Model
 			}
 		}
 		
-		// TODO Make function that sets season and episode as highest or latest
-		
 		private string _RegexPattern = "";
 		[IgnoreDataMember]
 		public string RegexPattern
@@ -305,6 +303,50 @@ namespace tRSS.Model
 				_RegexPattern = @sb.ToString();
 				onPropertyChanged("RegexPattern");
 			}
+		}
+		
+		#endregion
+		
+		#region HIGHEST
+		
+		private bool _HasDownloadedSinceHighest = false;
+		[IgnoreDataMember]
+		public bool HasDownloadedSinceHighest
+		{
+			get
+			{
+				return _HasDownloadedSinceHighest;
+			}
+			set
+			{
+				_HasDownloadedSinceHighest = value;
+				onPropertyChanged("HasDownloadedSinceHighest");
+			}
+		}
+		
+		public void LoadHighest()
+		{
+			if (DownloadedItems.Count > 0)
+			{
+				FeedItem highest = DownloadedItems[0];
+				
+				
+				foreach (FeedItem downloaded in DownloadedItems)
+				{
+					if (downloaded.IsTV)
+					{
+						if (downloaded.Season > highest.Season || (downloaded.Season == highest.Season && downloaded.Episode > highest.Episode))
+						{
+							highest = downloaded;
+						}
+					}
+				}
+				
+				Season = highest.Season;
+				Episode = highest.Episode + 1;
+			}
+			
+			HasDownloadedSinceHighest = false;
 		}
 		
 		#endregion
