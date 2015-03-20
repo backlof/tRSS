@@ -32,7 +32,7 @@ For TV shows
 |Symbol	|Meaning											|Regex		|
 |:------:|--------------------------------------|:---------:|
 |`*`		|Wildcard; zero or more characters.		|`.*`       |
-|`.`		|1 whitespace characters					|`[\s._-]`	|
+|`.`		|1 whitespace character 					|`[\s._-]`	|
 |`?`		|0 or 1 character of any type.			|`.?`     	|
 
 #### Examples
@@ -63,3 +63,21 @@ For TV shows
 |`1080p;DD5.1`	|` `		|`TV Show S01E07 1080p WEBRip DD5.1 `	|Yes		|
 |`WEB;`			|`1080p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
 |`HDTV;1080p`	|`720p`	|`TV Show S01E07 1080p WEBRip DD5.1 `	|No		|
+
+## How to update
+
+Before you update to a new version, you should take a backup of your filters and feeds
+
+- Click `File` / `Backup`
+- Close application
+- Extract the .zip containing update
+- Copy files into your excisting application (overwrite)
+- Run application
+
+If the application crashes
+
+- Delete `Data` folder
+- Run application
+- Click `File` / `Restore`
+
+This will restore your feed and filters
