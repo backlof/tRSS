@@ -51,7 +51,7 @@ For TV shows
 ### Include and Exclude
 
 - Both are optional
-- Separate each term by `;` - empty ones are discarded
+- Separate each term by `;` (empty ones are discarded)
 - Use `Ignore caps` if cases vary
 
 #### Examples
