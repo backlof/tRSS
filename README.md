@@ -23,7 +23,7 @@ Also, you can
 
 For TV shows
 
-* Torrent episode is equal or higher (only supports format S[00]E[00])
+* Torrent episode is equal or higher (only supports format `S{00}E{00}`)
 * With `Match once`, each episode will only download once
 
 ### Filter
