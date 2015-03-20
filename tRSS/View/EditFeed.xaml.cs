@@ -18,14 +18,13 @@ namespace tRSS.View
 	public partial class EditFeed : Window
 	{		
 		public EditFeedViewModel VM { get; set; }		
-		public static readonly string FILENAME = "EditFeed";
 		
 		public EditFeed(Feed feed)
 		{
 			
-			if (File.Exists(Utilities.ObjectBase.SaveLocation(FILENAME)))
+			if (File.Exists(EditFeedViewModel.SaveLocation(EditFeedViewModel.FILENAME)))
 			{
-				using (Stream stream = File.Open(Utilities.ObjectBase.SaveLocation(FILENAME), FileMode.Open))
+				using (Stream stream = File.Open(EditFeedViewModel.SaveLocation(EditFeedViewModel.FILENAME), FileMode.Open))
 				{
 					BinaryFormatter bFormatter = new BinaryFormatter();
 					VM = bFormatter.Deserialize(stream) as EditFeedViewModel;
@@ -48,22 +47,22 @@ namespace tRSS.View
 		
 		#region EVENTS
 		
-		void Save(object sender, RoutedEventArgs e)
+		void Save_Button(object sender, RoutedEventArgs e)
 		{
 			VM.Feed.FinalizeEdit();
-			VM.Save(FILENAME);
+			VM.Save(EditFeedViewModel.FILENAME);
 			this.Close();
 		}
 		
-		void Cancel(object sender, RoutedEventArgs e)
+		void Cancel_Button(object sender, RoutedEventArgs e)
 		{
-			VM.Save(FILENAME);
+			VM.Save(EditFeedViewModel.FILENAME);
 			this.Close();
 		}
 		
 		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			VM.Save(FILENAME);
+			VM.Save(EditFeedViewModel.FILENAME);
 		}
 		
 		#endregion

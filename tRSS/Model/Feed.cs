@@ -55,9 +55,9 @@ namespace tRSS.Model
 		}
 		
 		[NonSerialized]
-		private ObservableCollection<FeedItem> _Items = new ObservableCollection<FeedItem>();
+		private ObservableCollection<Torrent> _Items = new ObservableCollection<Torrent>();
 		[IgnoreDataMember]
-		public ObservableCollection<FeedItem> Items
+		public ObservableCollection<Torrent> Items
 		{
 			get
 			{
@@ -113,7 +113,7 @@ namespace tRSS.Model
 		
 		#endregion
 		
-		public async Task<bool> Refresh()
+		public async Task<bool> Update()
 		{
 			try
 			{
@@ -133,13 +133,13 @@ namespace tRSS.Model
 					
 					XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
 					
-					Items = new ObservableCollection<FeedItem>();
+					Items = new ObservableCollection<Torrent>();
 					
 					foreach (XmlNode itemNode in itemNodes)
 					{
 						// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
 						
-						FeedItem item = new FeedItem();
+						Torrent item = new Torrent();
 						item.Title = itemNode.SelectSingleNode("title").InnerText.Trim();
 						item.GUID = itemNode.SelectSingleNode("guid").InnerText.Trim();
 						item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText.Trim());

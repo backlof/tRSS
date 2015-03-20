@@ -19,13 +19,12 @@ namespace tRSS
 	public partial class Main : Window
 	{
 		public MainViewModel VM { get; set; }		
-		public static readonly string FILENAME = "MainView";
 		
 		public Main()
 		{
-			if (File.Exists(Utilities.ObjectBase.SaveLocation(FILENAME)))
+			if (File.Exists(MainViewModel.SaveLocation(MainViewModel.FILENAME)))
 			{
-				using (Stream stream = File.Open(Utilities.ObjectBase.SaveLocation(FILENAME), FileMode.Open))
+				using (Stream stream = File.Open(MainViewModel.SaveLocation(MainViewModel.FILENAME), FileMode.Open))
 				{
 					BinaryFormatter bFormatter = new BinaryFormatter();
 					VM = bFormatter.Deserialize(stream) as MainViewModel;
@@ -56,7 +55,7 @@ namespace tRSS
 		
 		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			VM.Save(FILENAME);
+			VM.Save();
 		}
 		
 		void Window_Activated(object sender, EventArgs e)
@@ -86,7 +85,7 @@ namespace tRSS
 		
 		void Save_Click(object sender, RoutedEventArgs e)
 		{
-			VM.Save(FILENAME);
+			VM.Save();
 		}
 		
 		#endregion

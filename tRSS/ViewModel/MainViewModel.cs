@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shell;
@@ -17,7 +19,9 @@ namespace tRSS.ViewModel
 {
 	[Serializable]
 	public class MainViewModel : ObjectBase
-	{	
+	{
+		public static readonly string FILENAME = "MainView";
+		
 		public MainViewModel()
 		{
 			TorrentDropDirectory = FOLDER;
@@ -37,8 +41,6 @@ namespace tRSS.ViewModel
 			SelectedFeed = tvFeed;
 			SelectedFilter = tvFilter;
 		}
-		
-
 		
 		#region FILTERS
 		
@@ -81,7 +83,7 @@ namespace tRSS.ViewModel
 		
 		public void ExecuteResetFilter(object parameter)
 		{
-			SelectedFilter.DownloadedItems = new List<FeedItem>();
+			SelectedFilter.DownloadedItems = new List<Torrent>();
 			onPropertyChanged("DownloadedItems");
 		}
 		
@@ -99,23 +101,27 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
-		#region DELETE FILTER
+		#region REMOVE FILTER
 		
-		public ICommand DeleteFilter
+		public ICommand RemoveFilter
 		{
 			get
 			{
-				return new RelayCommand(ExecuteDeleteFilter, CanDeleteFilter);
+				return new RelayCommand(ExecuteRemoveFilter, CanRemoveFilter);
 			}
 		}
 		
-		public void ExecuteDeleteFilter(object parameter)
+		public void ExecuteRemoveFilter(object parameter)
 		{
+			int index = Filters.IndexOf(SelectedFilter);
+			
 			Filters.Remove(SelectedFilter);
+			
+			SelectedFilter = index > 0? Filters[index - 1] : Filters[0];
 			onPropertyChanged("DownloadedItems");
 		}
 		
-		public bool CanDeleteFilter(object parameter)
+		public bool CanRemoveFilter(object parameter)
 		{
 			return Filters.Count > 1;
 		}
@@ -164,9 +170,16 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		public void ExecuteFilterSelected(object parameter)
+		public async void ExecuteFilterSelected(object parameter)
 		{
-			FilterFeed(SelectedFilter);
+			if (await FilterFeed(SelectedFilter))
+			{
+				NotifyNow();
+			}
+			else
+			{
+				NotifyDeactivate();
+			}
 		}
 		
 		public bool CanFilterSelected(object parameter)
@@ -177,13 +190,13 @@ namespace tRSS.ViewModel
 			}
 			else
 			{
-				return SelectedFilter.HasFeed;
+				return SelectedFilter.HasFeed && SelectedFilter.Enabled;
 			}
 		}
 		
 		#endregion
 		
-		#region FILTER FILTER
+		#region LOAD HIGHEST EPISODE
 		
 		public ICommand LoadHighestEpisode
 		{
@@ -204,7 +217,7 @@ namespace tRSS.ViewModel
 			{
 				return false;
 			}
-			else 
+			else
 			{
 				if (SelectedFilter.DownloadedItems.Count > 0 && SelectedFilter.HasDownloadedSinceHighest)
 				{
@@ -250,22 +263,26 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		#region DELETE FEED
+		#region REMOVE FEED
 		
-		public ICommand DeleteFeed
+		public ICommand RemoveFeed
 		{
 			get
 			{
-				return new RelayCommand(ExecuteDeleteFeed, CanDeleteFeed);
+				return new RelayCommand(ExecuteRemoveFeed, CanRemoveFeed);
 			}
 		}
 		
-		public void ExecuteDeleteFeed(object parameter)
+		public void ExecuteRemoveFeed(object parameter)
 		{
+			int index = Feeds.IndexOf(SelectedFeed);
+			
 			Feeds.Remove(SelectedFeed);
+			
+			SelectedFeed = index > 0? Feeds[index - 1] : Feeds[0];			
 		}
 		
-		public bool CanDeleteFeed(object parameter)
+		public bool CanRemoveFeed(object parameter)
 		{
 			return Feeds.Count > 1;
 		}
@@ -321,23 +338,23 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
-		#region REFRESH FEEDS
+		#region UPDATE FEEDS
 		
-		public ICommand Refresh
+		public ICommand UpdateFeeds
 		{
 			get
 			{
-				return new RelayCommand(ExecuteRefresh, CanRefresh);
+				return new RelayCommand(ExecuteUpdateFeeds, CanUpdateFeeds);
 			}
 		}
 		
-		public void ExecuteRefresh(object parameter)
+		public void ExecuteUpdateFeeds(object parameter)
 		{
 			Update();
 			ResetTimer();
 		}
 		
-		public bool CanRefresh(object parameter)
+		public bool CanUpdateFeeds(object parameter)
 		{
 			return true;
 		}
@@ -349,22 +366,22 @@ namespace tRSS.ViewModel
 		
 		#region DOWNLOADS
 		
-		public List<FeedItem> DownloadedItems
+		public List<Torrent> DownloadedItems
 		{
 			get
 			{
-				List<FeedItem> items = new List<FeedItem>();
+				List<Torrent> items = new List<Torrent>();
 				foreach (Filter f in Filters)
 				{
 					items.AddRange(f.DownloadedItems);
-				}
-				return items;
+				}				
+				return items.OrderByDescending(o=>o.Downloaded).ToList();
 			}
 		}
 		
 		[NonSerialized()]
-		private FeedItem _SelectedDownload;
-		public FeedItem SelectedDownload
+		private Torrent _SelectedDownload;
+		public Torrent SelectedDownload
 		{
 			get
 			{
@@ -376,6 +393,37 @@ namespace tRSS.ViewModel
 				onPropertyChanged("SelectedDownload");
 			}
 		}
+		
+		
+		
+		#region REMOVE DOWNLOAD
+		
+		public ICommand RemoveDownload
+		{
+			get
+			{
+				return new RelayCommand(ExecuteRemoveDownload, CanRemoveDownload);
+			}
+		}
+		
+		public void ExecuteRemoveDownload(object parameter)
+		{
+			foreach (Filter filter in Filters)
+			{
+				if (filter.DownloadedItems.Contains(SelectedDownload))
+				{
+					filter.DownloadedItems.Remove(SelectedDownload);
+					onPropertyChanged("DownloadedItems");
+				}
+			}
+		}
+		
+		public bool CanRemoveDownload(object parameter)
+		{
+			return SelectedDownload != null;
+		}
+		
+		#endregion
 		
 		#endregion
 		
@@ -394,6 +442,62 @@ namespace tRSS.ViewModel
 				onPropertyChanged("Window");
 			}
 		}
+		
+		#region INFORMATION
+		
+		private string _LastMatch = "None";
+		public string LastMatch
+		{
+			get
+			{
+				return _LastMatch;
+			}
+			set
+			{
+				_LastMatch = value;
+				onPropertyChanged("LastMatch");
+			}
+		}
+		
+		private int _CountUpdates = 0;
+		public int CountUpdates
+		{
+			get
+			{
+				return _CountUpdates;
+			}
+			set
+			{
+				_CountUpdates = value;
+				onPropertyChanged("CountUpdates");
+			}
+		}
+		
+		public string CountDownloads
+		{ 
+			get
+			{
+				return "" + DownloadedItems.Count;
+			}
+		}
+		
+		public string CountFilters
+		{
+			get
+			{
+				return "" + Filters.Count;
+			}
+		}
+		
+		public string CountFeeds
+		{
+			get
+			{
+				return "" + Feeds.Count;
+			}
+		}
+		
+		#endregion
 		
 		#region TOOLBAR
 		
@@ -481,31 +585,31 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		private int _RefreshBand = 0;
-		public int RefreshBand
+		private int _UpdateBand = 0;
+		public int UpdateBand
 		{
 			get
 			{
-				return _RefreshBand;
+				return _UpdateBand;
 			}
 			set
 			{
-				_RefreshBand = value;
-				onPropertyChanged("RefreshBand");
+				_UpdateBand = value;
+				onPropertyChanged("UpdateBand");
 			}
 		}
 		
-		private int _RefreshBandIndex = 3;
-		public int RefreshBandIndex
+		private int _UpdateBandIndex = 3;
+		public int UpdateBandIndex
 		{
 			get
 			{
-				return _RefreshBandIndex;
+				return _UpdateBandIndex;
 			}
 			set
 			{
-				_RefreshBandIndex = value;
-				onPropertyChanged("RefreshBandIndex");
+				_UpdateBandIndex = value;
+				onPropertyChanged("UpdateBandIndex");
 			}
 		}
 		
@@ -613,7 +717,7 @@ namespace tRSS.ViewModel
 				_FilterWidthDownloaded = value;
 				onPropertyChanged("FilterWidthDownloaded");
 			}
-		
+			
 		}
 		#endregion
 		
@@ -622,20 +726,20 @@ namespace tRSS.ViewModel
 		#region TIMER
 		
 		[NonSerialized]
-		private DispatcherTimer timedRefresh;
+		private DispatcherTimer timedUpdate;
 		
 		public void StartTimer()
 		{
-			timedRefresh = new DispatcherTimer();
-			timedRefresh.Tick += new EventHandler(timer_Tick);
-			timedRefresh.Interval = new TimeSpan(0,UpdateInterval,0); // Hour, minute, second
-			timedRefresh.Start();
+			timedUpdate = new DispatcherTimer();
+			timedUpdate.Tick += new EventHandler(timer_Tick);
+			timedUpdate.Interval = new TimeSpan(0,UpdateInterval,0); // Hour, minute, second
+			timedUpdate.Start();
 			NextUpdate = DateTime.Now.AddMinutes(UpdateInterval);
 		}
 		
 		public void ResetTimer()
 		{
-			timedRefresh.Stop();
+			timedUpdate.Stop();
 			StartTimer();
 		}
 		
@@ -659,19 +763,7 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		private string _LastMatch = "None";
-		public string LastMatch
-		{
-			get
-			{
-				return _LastMatch;
-			}
-			set
-			{
-				_LastMatch = value;
-				onPropertyChanged("LastMatch");
-			}
-		}
+		
 		
 		[NonSerialized()]
 		private DateTime _NextUpdate;
@@ -925,39 +1017,85 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		#region SAVE
+		
+		public void Save()
+		{
+			Save(FILENAME);
+		}
+		
+		#region SAVE COMMAND
+		
+		public ICommand SaveCommand
+		{
+			get
+			{
+				return new RelayCommand(ExecuteSaveCommand, CanSaveCommand);
+			}
+		}
+		
+		public void ExecuteSaveCommand(object parameter)
+		{
+			Save();
+		}
+		
+		public bool CanSaveCommand(object parameter)
+		{
+			return true;
+		}
+		
+		#endregion
+		
+		#endregion
 		
 		public async void Update()
 		{
 			NotifyLoading();
 			
-			// Refresh
 			foreach (Feed feed in Feeds)
 			{
 				if (!(String.IsNullOrEmpty(feed.URL)))
 				{
-					bool x = await feed.Refresh();
-				}
-			}
-			
-			NotifyDeactivate();
-			
-			// Filter
-			foreach (Filter filter in Filters)
-			{
-				if (filter.Enabled)
-				{
-					FilterFeed(filter);
+					bool x = await feed.Update();
 				}
 			}
 			
 			LastUpdate = DateTime.Now;
+			
+			
+			bool downloaded = false; // at least one was downladed
+			
+			foreach (Filter filter in Filters)
+			{
+				if (filter.Enabled)
+				{
+					if (await FilterFeed(filter))
+					{
+						downloaded = true;
+					}
+				}
+			}
+			
+			if (downloaded)
+			{
+				Save();
+				NotifyNow();
+			}
+			else
+			{
+				NotifyDeactivate();
+			}
+			
+			CountUpdates++;
 		}
 		
-		public async void FilterFeed(Filter filter)
+		public async Task<bool> FilterFeed(Filter filter)
 		{
+			NotifyLoading();
+			
 			if (filter.HasFeed)
 			{
-				foreach (FeedItem item in filter.SearchInFeed.Items)
+				foreach (Torrent item in filter.SearchInFeed.Items)
 				{
 					if (filter.ShouldDownload(item))
 					{
@@ -969,7 +1107,6 @@ namespace tRSS.ViewModel
 							LastMatch = item.Title;
 							
 							LogDownload(filter, item);
-							NotifyNow();
 							
 							if (filter.MatchOnce && !filter.IsTV)
 							{
@@ -979,13 +1116,18 @@ namespace tRSS.ViewModel
 							onPropertyChanged("DownloadedItems");
 							onPropertyChanged("LoadHighestEpisode");
 							onPropertyChanged("ResetFilter");
+							onPropertyChanged("FilterSelected");
+							
+							return true;
 						}
 					}
 				}
 			}
+			
+			return false;
 		}
 		
-		public void LogDownload(Filter filter, FeedItem item)
+		public void LogDownload(Filter filter, Torrent item)
 		{
 			using(StreamWriter sw = File.AppendText(@"Download.log"))
 			{

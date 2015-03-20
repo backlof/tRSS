@@ -35,8 +35,8 @@
 						</Style>
 					</WrapPanel.Resources>
 					
-					<Button Content="Save" Margin="8,0,0,0" Padding="2" Click="Save" />
-					<Button Content="Cancel" Margin="8,0,0,0" Padding="2" Click="Cancel" />
+					<Button Content="Save" Margin="8,0,0,0" Padding="2" Click="Save_Button" />
+					<Button Content="Cancel" Margin="8,0,0,0" Padding="2" Click="Cancel_Button" />
 				</WrapPanel>
 			</Grid>
 		</GroupBox>

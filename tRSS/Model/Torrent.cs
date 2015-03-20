@@ -16,7 +16,7 @@ namespace tRSS.Model
 {
 	[DataContract(Name="Torrent")]
 	[Serializable()]
-	public class FeedItem : ObjectBase
+	public class Torrent : ObjectBase
 	{
 		private string _GUID;
 		[DataMember(Name="GUID", IsRequired=false)]
@@ -111,7 +111,8 @@ namespace tRSS.Model
 			{
 				if(_EpisodeMatch == null)
 				{
-					Regex regExp = new Regex(@"S(?<season>\d{1,2})E(?<episode>\d{1,2})", RegexOptions.IgnoreCase);
+					// TODO Test if this new three character episode and season works
+					Regex regExp = new Regex(@"S(?<season>\d{1,3})E(?<episode>\d{1,3})", RegexOptions.IgnoreCase);
 					_EpisodeMatch = regExp.Match(Title);
 				}
 				return _EpisodeMatch;
@@ -223,7 +224,7 @@ namespace tRSS.Model
 		#region Equals and GetHashCode implementation
 		public override bool Equals(object obj)
 		{
-			FeedItem other = obj as FeedItem;
+			Torrent other = obj as Torrent;
 			if (other == null)
 				return false;
 			return this._GUID == other._GUID && this._Title == other._Title && this.URL == other.URL;
@@ -247,7 +248,7 @@ namespace tRSS.Model
 			return hashCode;
 		}
 		
-		public static bool operator ==(FeedItem lhs, FeedItem rhs)
+		public static bool operator ==(Torrent lhs, Torrent rhs)
 		{
 			if (ReferenceEquals(lhs, rhs))
 				return true;
@@ -256,7 +257,7 @@ namespace tRSS.Model
 			return lhs.Equals(rhs);
 		}
 		
-		public static bool operator !=(FeedItem lhs, FeedItem rhs)
+		public static bool operator !=(Torrent lhs, Torrent rhs)
 		{
 			return !(lhs == rhs);
 		}

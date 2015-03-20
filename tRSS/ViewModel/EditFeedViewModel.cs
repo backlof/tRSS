@@ -11,6 +11,7 @@ namespace tRSS.ViewModel
 	[Serializable]
 	public class EditFeedViewModel : ObjectBase
 	{
+		public static readonly string FILENAME = "EditFeed";
 		
 		public EditFeedViewModel(){}
 		

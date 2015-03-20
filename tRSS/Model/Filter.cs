@@ -154,9 +154,9 @@ namespace tRSS.Model
 			}
 		}
 		
-		private List<FeedItem> _DownloadedItems = new List<FeedItem>();
+		private List<Torrent> _DownloadedItems = new List<Torrent>();
 		[DataMember(Name="Downloads", IsRequired=false)]
-		public List<FeedItem> DownloadedItems
+		public List<Torrent> DownloadedItems
 		{
 			get
 			{
@@ -328,10 +328,10 @@ namespace tRSS.Model
 		{
 			if (DownloadedItems.Count > 0)
 			{
-				FeedItem highest = DownloadedItems[0];
+				Torrent highest = DownloadedItems[0];
 				
 				
-				foreach (FeedItem downloaded in DownloadedItems)
+				foreach (Torrent downloaded in DownloadedItems)
 				{
 					if (downloaded.IsTV)
 					{
@@ -351,7 +351,7 @@ namespace tRSS.Model
 		
 		#endregion
 		
-		public bool ShouldDownload(FeedItem item)
+		public bool ShouldDownload(Torrent item)
 		{
 			if (!DownloadedItems.Contains(item))
 			{
@@ -389,13 +389,13 @@ namespace tRSS.Model
 			return false;
 		}
 		
-		public bool IsEpisodeToDownload(FeedItem item)
+		public bool IsEpisodeToDownload(Torrent item)
 		{
 			if (item.Season > Season || (item.Season == Season && item.Episode >= Episode))
 			{
 				if (MatchOnce)
 				{
-					foreach (FeedItem downloaded in DownloadedItems)
+					foreach (Torrent downloaded in DownloadedItems)
 					{
 						if (downloaded.IsTV) // In case filter used to be NotTV
 						{

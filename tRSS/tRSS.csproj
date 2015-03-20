@@ -93,7 +93,7 @@
     </Compile>
     <Compile Include="Model\Feed.cs" />
     <Compile Include="Model\Filter.cs" />
-    <Compile Include="Model\FeedItem.cs" />
+    <Compile Include="Model\Torrent.cs" />
     <Compile Include="Model\WindowModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\WPFAssemblyInfo.cs" />
@@ -127,6 +127,8 @@
     <Folder Include="Resources\FamFamFamSilk" />
     <Folder Include="Resources\LongShadowMedia" />
     <Folder Include="Resources\ModernWeb" />
+    <Folder Include="Resources\Fugue" />
+    <Folder Include="Resources\Diagona" />
     <Folder Include="Resources\Windows8Metro" />
     <Folder Include="Utilities" />
     <Folder Include="View" />
@@ -139,18 +141,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\FamFamFamSilk\Feed_Delete.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FamFamFamSilk\Folder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FamFamFamSilk\Layout_Add.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FamFamFamSilk\Layout_Delete.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FamFamFamSilk\Table_Refresh.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\100Flat2\License.txt" />
@@ -170,6 +160,45 @@
     <Content Include="Resources\FamFamFamSilk\Feed_Edit.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\FamFamFamSilk\Date_Next.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Folder_Magnify.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Feed.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Drive_Web.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Table.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Table_Add.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Table_Delete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\World_Delete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Diagona\193.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Diagona\License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Date_Previous.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FamFamFamSilk\Arrow_Refresh_Small.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\Fugue\License.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\LongShadowMedia\License.txt" />
     <None Include="Resources\LongShadowMedia\RSS.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

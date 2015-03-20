@@ -8,6 +8,7 @@
 	Deactivated="Window_Deactivated"
 	Closing="Window_Closing"
 	ContentRendered="Window_ContentRendered"
+	UseLayoutRounding="True"
 	MinHeight="572"
 	MinWidth="550"
 	Height="{Binding Path=Window.Height, Mode=TwoWay}"
@@ -58,6 +59,11 @@
 			<Setter Property="HorizontalAlignment" Value="Stretch" />
 		</Style>
 		
+		<Style TargetType="{x:Type Image}">
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+		</Style>
+		
 		<sys:Double x:Key="MinColumnWidth">50</sys:Double>
 	</Window.Resources>
 	
@@ -72,34 +78,63 @@
 		<StatusBar DockPanel.Dock="Bottom">
 			<StatusBar.Resources>
 				<Style TargetType="{x:Type StatusBarItem}">
-					<Setter Property="Margin" Value="6,0,0,0"/>
+					<Setter Property="Margin" Value="7,0,0,0"/>
 				</Style>
-				<Style TargetType="{x:Type TextBlock}">
-					<Setter Property="Margin" Value="0,0,6,0"/>
+				<Style TargetType="{x:Type Image}">
+					<Setter Property="Width" Value="16" />
+					<Setter Property="Height" Value="16" />
+					<Setter Property="Margin" Value="0,0,5,0" />
+				</Style>
+				<Style TargetType="{x:Type StackPanel}">
+					<Setter Property="Orientation" Value="Horizontal" />
 				</Style>
 			</StatusBar.Resources>
 			
-			<StatusBarItem>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="Last update:" />
+			<StatusBarItem ToolTip="Last update">
+				<StackPanel>
+					<Image Source="/Resources/FamFamFamSilk/Date_Previous.png" />
 					<TextBlock Text="{Binding Path=LastUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
 				</StackPanel>
 			</StatusBarItem>
 			
-			<Separator />
-			
-			<StatusBarItem>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="Next update:" />
+			<StatusBarItem ToolTip="Next update">
+				<StackPanel>
+					<Image Source="/Resources/FamFamFamSilk/Date_Next.png" />
 					<TextBlock Text="{Binding Path=NextUpdate, Converter={StaticResource DateConverter}, ConverterParameter=T}" />
 				</StackPanel>
 			</StatusBarItem>
 			
-			<Separator />
+			<StatusBarItem ToolTip="Total updates">
+				<StackPanel>
+					<Image Source="/Resources/FamFamFamSilk/Arrow_Refresh_Small.png" />
+					<TextBlock Text="{Binding Path=CountUpdates}" />
+				</StackPanel>
+			</StatusBarItem>
 			
-			<StatusBarItem>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="Last match:" />
+			<StatusBarItem ToolTip="Filters">
+				<StackPanel>
+					<Image Source="/Resources/FamFamFamSilk/Table.png" />
+					<TextBlock Text="{Binding Path=CountFilters}" />
+				</StackPanel>
+			</StatusBarItem>
+			
+			<StatusBarItem ToolTip="Feeds">
+				<StackPanel>
+					<Image Source="/Resources/FamFamFamSilk/Feed.png" />
+					<TextBlock Text="{Binding Path=CountFeeds}" />
+				</StackPanel>
+			</StatusBarItem>
+			
+			<StatusBarItem ToolTip="Downloads">
+				<StackPanel>
+					<Image Source="/Resources/FamFamFamSilk/Drive_Web.png" />
+					<TextBlock Text="{Binding Path=CountDownloads}" />
+				</StackPanel>
+			</StatusBarItem>
+			
+			<StatusBarItem ToolTip="Last download">
+				<StackPanel>
+					<Image Source="/Resources/Diagona/193.png" />
 					<TextBlock Text="{Binding Path=LastMatch}" />
 				</StackPanel>
 			</StatusBarItem>
@@ -130,41 +165,42 @@
 			
 			
 			
-			
-			
-			
 			<!-- TOP TOOLBAR -->
 			
 			<ToolBarTray>
-				<ToolBar Band="{Binding Path=SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=SaveBandIndex, Mode=TwoWay}" >
-					<Button Click="Save_Click">
+				<ToolBarTray.Resources>
+				
+				</ToolBarTray.Resources>
+				
+				<ToolBar Band="{Binding Path=SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=SaveBandIndex, Mode=TwoWay}" ToolTip="Save your settings now" >
+					<Button Command="{Binding Path=SaveCommand}">
 						<WrapPanel>
-							<Image Source="/Resources/FamFamFamSilk/Disk.png" UseLayoutRounding="True" />
+							<Image Source="/Resources/FamFamFamSilk/Disk.png" />
 							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Save" />
 						</WrapPanel>
 					</Button>
 				</ToolBar>
 				
-				<ToolBar ToolTip="Find the folder you want your torrent files to go." Band="{Binding Path=BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=BrowseBandIndex, Mode=TwoWay}" >
+				<ToolBar Band="{Binding Path=BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=BrowseBandIndex, Mode=TwoWay}" ToolTip="Find folder to drop torrent files in" >
 					<Button Command="{Binding Path=ChooseDirectory}">
 						<WrapPanel>
-							<Image Source="/Resources/FamFamFamSilk/Folder.png" UseLayoutRounding="True" />
+							<Image Source="/Resources/FamFamFamSilk/Folder_Magnify.png" />
 							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Browse" />
 						</WrapPanel>
 					</Button>
 					<TextBox Margin="5,0,0,0" Width="150" Text="{Binding Path=TorrentDropDirectory}" IsEnabled="False" />
 				</ToolBar>
 				
-				<ToolBar Band="{Binding Path=IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=IntervalBandIndex, Mode=TwoWay}" >
-					<Label Content="Refresh every" />
+				<ToolBar Band="{Binding Path=IntervalBand, Mode=TwoWay}" BandIndex="{Binding Path=IntervalBandIndex, Mode=TwoWay}" ToolTip="How often feeds update" >
+					<Label Content="Update every" />
 					<ComboBox Width="80" ItemsSource="{Binding Path=UpdateOptions}" SelectedIndex="{Binding Path=SelectedUpdateOption, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged" />
 				</ToolBar>
 				
-				<ToolBar Band="{Binding Path=RefreshBand, Mode=TwoWay}" BandIndex="{Binding Path=RefreshBandIndex, Mode=TwoWay}"  >
-					<Button Command="{Binding Path=Refresh}">
+				<ToolBar Band="{Binding Path=UpdateBand, Mode=TwoWay}" BandIndex="{Binding Path=UpdateBandIndex, Mode=TwoWay}" ToolTip="Update now"  >
+					<Button Command="{Binding Path=UpdateFeeds}">
 						<WrapPanel>
-							<Image Source="/Resources/FamFamFamSilk/Table_Refresh.png" UseLayoutRounding="True" />
-							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Refresh" />
+							<Image Source="/Resources/FamFamFamSilk/Arrow_Refresh_Small.png" />
+							<TextBlock Style="{StaticResource ImageButtonTextBlock}" Text="Update" />
 						</WrapPanel>
 					</Button>
 				</ToolBar>
@@ -211,18 +247,18 @@
 							<ContextMenu>
 								<MenuItem Header="New" Command="{Binding Path=NewFilter}" >
 									<MenuItem.Icon>
-										<Image Source="/Resources/FamFamFamSilk/Layout_Add.png" UseLayoutRounding="True" />
+										<Image Source="/Resources/FamFamFamSilk/Table_Add.png" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Header="Delete" Command="{Binding Path=DeleteFilter}" >
+								<MenuItem Header="Remove" Command="{Binding Path=RemoveFilter}" >
 									<MenuItem.Icon>
-										<Image Source="/Resources/FamFamFamSilk/Layout_Delete.png" UseLayoutRounding="True" />
+										<Image Source="/Resources/FamFamFamSilk/Table_Delete.png" />
 									</MenuItem.Icon>
 								</MenuItem>
 							</ContextMenu>
 						</ListBox.ContextMenu>
 						<ListBox.InputBindings>
-							<KeyBinding Key="Delete" Command="{Binding Path=DeleteFilter}" />
+							<KeyBinding Key="Delete" Command="{Binding Path=RemoveFilter}" />
 						</ListBox.InputBindings>
 					</ListBox>
 					
@@ -271,7 +307,7 @@
 							<TextBox Grid.Row="5" Grid.Column="0" Text="{Binding Path=SelectedFilter.RegexPattern}" IsEnabled="False" />
 							
 							<Label Grid.Row="6" Grid.Column="0" Content="Feed" Style="{StaticResource FormLabel}" />
-							<!-- SelectedIndex="{Binding Path=Data.SelectedFilter.SearchInFeedIndex, Mode=TwoWay}" -->
+							
 							<ComboBox Grid.Row="7" Grid.Column="0"  x:Name="ChooseFeed" ItemsSource="{Binding Path=Feeds}" SelectedItem="{Binding Path=SelectedFilter.SearchInFeed, Mode=TwoWay}" >
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
@@ -307,7 +343,8 @@
 									<wpfTool:IntegerUpDown Value="{Binding Path=SelectedFilter.Season, Mode=TwoWay}" Minimum="1" />
 									<Label Content="Episode" />
 									<wpfTool:IntegerUpDown Value="{Binding Path=SelectedFilter.Episode, Mode=TwoWay}" Minimum="1" />
-								<Button Content="Load highest" Margin="10,0,0,0" Padding="4" Command="{Binding Path=LoadHighestEpisode}" />
+									
+									<Button Content="Get highest" Margin="10,0,0,0" Padding="4" Command="{Binding Path=LoadHighestEpisode}" />
 								</StackPanel>
 							</GroupBox>
 						</Grid>
@@ -349,23 +386,23 @@
 							<ContextMenu>
 								<MenuItem Header="New" Command="{Binding Path=NewFeed}" >
 									<MenuItem.Icon>
-										<Image Source="/Resources/FamFamFamSilk/Feed_Add.png" UseLayoutRounding="True" />
+										<Image Source="/Resources/FamFamFamSilk/Feed_Add.png" />
 									</MenuItem.Icon>
 								</MenuItem>
 								<MenuItem Header="Edit" Command="{Binding Path=EditFeed}" >
 									<MenuItem.Icon>
-										<Image Source="/Resources/FamFamFamSilk/Feed_Edit.png" UseLayoutRounding="True" />
+										<Image Source="/Resources/FamFamFamSilk/Feed_Edit.png" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Header="Delete" Command="{Binding Path=DeleteFeed}" >
+								<MenuItem Header="Remove" Command="{Binding Path=RemoveFeed}" >
 									<MenuItem.Icon>
-										<Image Source="/Resources/FamFamFamSilk/Feed_Delete.png" UseLayoutRounding="True" />
+										<Image Source="/Resources/FamFamFamSilk/Feed_Delete.png" />
 									</MenuItem.Icon>
 								</MenuItem>
 							</ContextMenu>
 						</ListBox.ContextMenu>
 						<ListBox.InputBindings>
-							<KeyBinding Key="Delete" Command="{Binding Path=DeleteFeed}" />
+							<KeyBinding Key="Delete" Command="{Binding Path=RemoveFeed}" />
 						</ListBox.InputBindings>
 					</ListBox>
 					
@@ -388,7 +425,7 @@
 								Width="{Binding MinWidth, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
 							<DataGridTextColumn Header="Published"
 								Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}"
-								Width="{Binding Width, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
+								Width="{Binding Width, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" SortDirection="Descending" />
 						</DataGrid.Columns>
 					</DataGrid>
 				
@@ -426,7 +463,11 @@
 					<DataGrid ItemsSource="{Binding Path=DownloadedItems}" SelectedItem="{Binding Path=SelectedDownload}" >
 						<DataGrid.ContextMenu>
 							<ContextMenu >
-								<MenuItem Header="Remove" Command="{Binding Path=RemoveDownload}" />
+								<MenuItem Header="Remove" Command="{Binding Path=RemoveDownload}">
+									<MenuItem.Icon>
+										<Image Source="/Resources/FamFamFamSilk/World_Delete.png" />
+									</MenuItem.Icon>
+								</MenuItem>
 							</ContextMenu>
 						</DataGrid.ContextMenu>
 						<DataGrid.Columns>
@@ -435,7 +476,7 @@
 							<DataGridTextColumn Header="Published" Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}"
 								Width="{Binding MinWidth, Source={x:Reference FilterReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
 							<DataGridTextColumn Header="Downloaded" Binding="{Binding Path=Downloaded, Converter={StaticResource DateConverter}, ConverterParameter=g}"
-								Width="{Binding Width, Source={x:Reference FilterReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
+								Width="{Binding Width, Source={x:Reference FilterReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" SortDirection="Descending" />
 						</DataGrid.Columns>
 					</DataGrid>
 				

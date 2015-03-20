@@ -13,8 +13,6 @@ namespace tRSS.Utilities
 		[field:NonSerialized]
 		public event PropertyChangedEventHandler PropertyChanged;
 		
-		private static readonly string SAVE_IN_FOLDER = "Data";
-
 		protected internal void onPropertyChanged(string propertyName)
 		{
 			if (this.PropertyChanged != null)
@@ -22,6 +20,8 @@ namespace tRSS.Utilities
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+		
+		private static readonly string SAVE_IN_FOLDER = "Data";
 		
 		public static string SaveLocation(string filename)
 		{
@@ -38,7 +38,7 @@ namespace tRSS.Utilities
 			{
 				BinaryFormatter bFormatter = new BinaryFormatter();
 				bFormatter.Serialize(stream, this);
-			}			
+			}
 		}
 	}
 }
