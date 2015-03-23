@@ -35,7 +35,7 @@ namespace tRSS.ViewModel
 			Feeds.Add(new Feed(){ Title = "Movies", URL = "https://kickass.to/movies/?rss=1" });
 			Feeds.Add(new Feed(){ Title = "Music", URL = "https://kickass.to/music/?rss=1" });
 			
-			Filter tvFilter = new Filter(){ Enabled = false, Title="All TV Shows", SearchInFeed = tvFeed, TitleFilter = "*", IgnoreCaps = true, Include = "720p", Exclude = "1080p;HDTV;", IsTV = false };
+			Filter tvFilter = new Filter(){ Enabled = false, SearchInFeed = tvFeed, TitleFilter = "*", IgnoreCaps = true, Include = "", Exclude = "1080p;HDTV;", IsTV = false };
 			Filters.Add(tvFilter);
 			
 			SelectedFeed = tvFeed;
@@ -83,7 +83,7 @@ namespace tRSS.ViewModel
 		
 		public void ExecuteResetFilter(object parameter)
 		{
-			SelectedFilter.DownloadedItems = new List<Torrent>();
+			SelectedFilter.DownloadedTorrents = new List<Torrent>();
 			onPropertyChanged("DownloadedItems");
 		}
 		
@@ -95,7 +95,7 @@ namespace tRSS.ViewModel
 			}
 			else
 			{
-				return SelectedFilter.DownloadedItems.Count > 0;
+				return SelectedFilter.DownloadedTorrents.Count > 0;
 			}
 		}
 		
@@ -119,6 +119,7 @@ namespace tRSS.ViewModel
 			
 			SelectedFilter = index > 0? Filters[index - 1] : Filters[0];
 			onPropertyChanged("DownloadedItems");
+			onPropertyChanged("CountFilters");
 		}
 		
 		public bool CanRemoveFilter(object parameter)
@@ -151,6 +152,7 @@ namespace tRSS.ViewModel
 			
 			Filters.Add(f);
 			SelectedFilter = f;
+			onPropertyChanged("CountFilters");
 		}
 		
 		public bool CanNewFilter(object parameter)
@@ -172,6 +174,8 @@ namespace tRSS.ViewModel
 		
 		public async void ExecuteFilterSelected(object parameter)
 		{
+			NotifyLoading();
+			
 			if (await FilterFeed(SelectedFilter))
 			{
 				NotifyNow();
@@ -219,7 +223,7 @@ namespace tRSS.ViewModel
 			}
 			else
 			{
-				if (SelectedFilter.DownloadedItems.Count > 0 && SelectedFilter.HasDownloadedSinceHighest)
+				if (SelectedFilter.DownloadedTorrents.Count > 0 && SelectedFilter.HasDownloadedSinceHighest)
 				{
 					return true;
 				}
@@ -279,7 +283,8 @@ namespace tRSS.ViewModel
 			
 			Feeds.Remove(SelectedFeed);
 			
-			SelectedFeed = index > 0? Feeds[index - 1] : Feeds[0];			
+			SelectedFeed = index > 0? Feeds[index - 1] : Feeds[0];
+			onPropertyChanged("CountFeeds");
 		}
 		
 		public bool CanRemoveFeed(object parameter)
@@ -306,6 +311,7 @@ namespace tRSS.ViewModel
 			SelectedFeed = f;
 			tRSS.View.EditFeed edit = new tRSS.View.EditFeed(f);
 			edit.Show();
+			onPropertyChanged("CountFeeds");
 		}
 		
 		public bool CanNewFeed(object parameter)
@@ -366,20 +372,37 @@ namespace tRSS.ViewModel
 		
 		#region DOWNLOADS
 		
-		public List<Torrent> DownloadedItems
+		// Gather all downloads and order
+		// Set to null when new torrent has been downloaded
+		[NonSerialized]
+		private List<Torrent> _AllDownloads = null;
+		public List<Torrent> AllDownloads
 		{
 			get
 			{
-				List<Torrent> items = new List<Torrent>();
-				foreach (Filter f in Filters)
+				if (_AllDownloads == null)
 				{
-					items.AddRange(f.DownloadedItems);
-				}				
-				return items.OrderByDescending(o=>o.Downloaded).ToList();
+					List<Torrent> items = new List<Torrent>();
+					foreach (Filter f in Filters)
+					{
+						items.AddRange(f.DownloadedTorrents);
+					}
+					
+					items.AddRange(ManuallyDownloadedTorrents);
+					
+					_AllDownloads = items.OrderByDescending(o=>o.Downloaded).ToList();
+				}
+				
+				return _AllDownloads;
+			}
+			set
+			{
+				_AllDownloads = value;
+				onPropertyChanged("AllDownloads");
 			}
 		}
 		
-		[NonSerialized()]
+		[NonSerialized]
 		private Torrent _SelectedDownload;
 		public Torrent SelectedDownload
 		{
@@ -394,7 +417,73 @@ namespace tRSS.ViewModel
 			}
 		}
 		
+		[NonSerialized]
+		private Torrent _SelectedTorrent;
+		public Torrent SelectedTorrent
+		{
+			get
+			{
+				return _SelectedTorrent;
+			}
+			set
+			{
+				_SelectedTorrent = value;
+				onPropertyChanged("SelectedTorrent");
+			}
+		}
 		
+		// Manual downloads by user from feeds
+		private List<Torrent> _ManuallyDownloadedTorrents = new List<Torrent>();
+		public List<Torrent> ManuallyDownloadedTorrents
+		{
+			get
+			{
+				return _ManuallyDownloadedTorrents;
+			}
+			set
+			{
+				_ManuallyDownloadedTorrents = value;
+				onPropertyChanged("ManuallyDownloadedTorrents");
+			}
+		}		
+		
+		
+		#region DOWNLOAD TORRENT
+		
+		public ICommand DownloadTorrent
+		{
+			get
+			{
+				return new RelayCommand(ExecuteDownloadTorrent, CanDownloadTorrent);
+			}
+		}
+		
+		public async void ExecuteDownloadTorrent(object parameter)
+		{
+			Torrent t = SelectedTorrent;
+			
+			if (await t.Download(TorrentDropDirectory))
+			{
+				ManuallyDownloadedTorrents.Add(t);
+				
+				AllDownloads = null; // Load AllDownloads again
+				onPropertyChanged("CountDownloads");
+			}
+		}
+		
+		public bool CanDownloadTorrent(object parameter)
+		{
+			if (SelectedTorrent == null)
+			{
+				return false;
+			}
+			else
+			{
+				return !ManuallyDownloadedTorrents.Contains(SelectedTorrent);
+			}
+		}
+		
+		#endregion
 		
 		#region REMOVE DOWNLOAD
 		
@@ -408,14 +497,23 @@ namespace tRSS.ViewModel
 		
 		public void ExecuteRemoveDownload(object parameter)
 		{
-			foreach (Filter filter in Filters)
+			if (ManuallyDownloadedTorrents.Contains(SelectedDownload))
 			{
-				if (filter.DownloadedItems.Contains(SelectedDownload))
+				ManuallyDownloadedTorrents.Remove(SelectedDownload);
+			}
+			else
+			{
+				foreach (Filter filter in Filters)
 				{
-					filter.DownloadedItems.Remove(SelectedDownload);
-					onPropertyChanged("DownloadedItems");
+					if (filter.DownloadedTorrents.Contains(SelectedDownload))
+					{
+						filter.DownloadedTorrents.Remove(SelectedDownload);
+					}
 				}
 			}
+			
+			AllDownloads = null;
+			onPropertyChanged("CountDownloads");
 		}
 		
 		public bool CanRemoveDownload(object parameter)
@@ -474,10 +572,10 @@ namespace tRSS.ViewModel
 		}
 		
 		public string CountDownloads
-		{ 
+		{
 			get
 			{
-				return "" + DownloadedItems.Count;
+				return "" + AllDownloads.Count;
 			}
 		}
 		
@@ -804,7 +902,7 @@ namespace tRSS.ViewModel
 		{
 			get
 			{
-				return NotificationState != TaskbarItemProgressState.None;
+				return NotificationState == TaskbarItemProgressState.Normal; // Not affecting loading
 			}
 		}
 		
@@ -825,7 +923,7 @@ namespace tRSS.ViewModel
 		
 		private async void NotifyTimedDeactive(int millisecs)
 		{
-			await System.Threading.Tasks.Task.Delay(1000);
+			await System.Threading.Tasks.Task.Delay(1500);
 			NotifyDeactivate();
 		}
 		
@@ -836,7 +934,7 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
-		#region SAVE RECOVERY
+		#region RECOVERY
 		
 		public static readonly string BACKUP_DIR = "Backup";
 		
@@ -881,6 +979,19 @@ namespace tRSS.ViewModel
 				dcs.WriteObject(xw, Feeds);
 			}
 			
+			// Saves the index of SearchInFeed so that the feed can be loaded on Restore
+			foreach (Filter f in Filters)
+			{
+				if (f.HasFeed)
+				{
+					f.SearchInFeedIndex = Feeds.IndexOf(f.SearchInFeed);
+				}
+				else
+				{
+					f.SearchInFeedIndex = -1;
+				}
+			}
+			
 			dcs = new DataContractSerializer(Filters.GetType());
 			using (XmlWriter xw = XmlWriter.Create(FiltersPath, xws))
 			{
@@ -906,7 +1017,7 @@ namespace tRSS.ViewModel
 		}
 		
 		public void ExecuteRestore(object parameter)
-		{
+		{			
 			using (FileStream fs = new FileStream(FeedsPath, FileMode.Open, FileAccess.Read))
 			{
 				DataContractSerializer dcs = new DataContractSerializer(Feeds.GetType());
@@ -917,9 +1028,19 @@ namespace tRSS.ViewModel
 			{
 				DataContractSerializer dcs = new DataContractSerializer(Filters.GetType());
 				Filters = dcs.ReadObject(fs) as ObservableCollection<Filter>;
+			}			
+			
+			// Uses saved indexes to load Feeds
+			foreach (Filter f in Filters)
+			{
+				if (f.SearchInFeedIndex >= 0 && f.SearchInFeedIndex < Filters.Count)
+				{
+					f.SearchInFeed = Feeds[f.SearchInFeedIndex];
+				}
 			}
-			SelectedFilter = Filters[0];
+			
 			SelectedFeed = Feeds[0];
+			SelectedFilter = Filters[0];
 			
 			System.Windows.Application.Current.Shutdown();
 		}
@@ -1052,48 +1173,52 @@ namespace tRSS.ViewModel
 		{
 			NotifyLoading();
 			
+			bool updated = false;
+			
 			foreach (Feed feed in Feeds)
 			{
-				if (!(String.IsNullOrEmpty(feed.URL)))
+				if (await feed.Update())
 				{
-					bool x = await feed.Update();
+					updated = true; // At least one feed was updated
 				}
 			}
 			
-			LastUpdate = DateTime.Now;
-			
-			
-			bool downloaded = false; // at least one was downladed
-			
-			foreach (Filter filter in Filters)
+			if (updated)
 			{
-				if (filter.Enabled)
+				LastUpdate = DateTime.Now;
+				CountUpdates++;
+				
+				bool downloaded = false;
+				
+				foreach (Filter filter in Filters)
 				{
 					if (await FilterFeed(filter))
 					{
-						downloaded = true;
+						downloaded = true; // At least one feed was downloaded
 					}
 				}
-			}
-			
-			if (downloaded)
-			{
-				Save();
-				NotifyNow();
+				
+				if (downloaded)
+				{
+					Save();
+					NotifyNow();
+				}
+				else
+				{
+					NotifyDeactivate();
+				}
 			}
 			else
 			{
 				NotifyDeactivate();
 			}
-			
-			CountUpdates++;
 		}
 		
 		public async Task<bool> FilterFeed(Filter filter)
 		{
-			NotifyLoading();
+			bool downloaded = false;
 			
-			if (filter.HasFeed)
+			if (filter.Enabled && filter.HasFeed)
 			{
 				foreach (Torrent item in filter.SearchInFeed.Items)
 				{
@@ -1101,30 +1226,37 @@ namespace tRSS.ViewModel
 					{
 						if (await item.Download(TorrentDropDirectory))
 						{
-							filter.DownloadedItems.Add(item);
+							filter.DownloadedTorrents.Add(item);
 							
 							filter.HasDownloadedSinceHighest = true;
 							LastMatch = item.Title;
 							
 							LogDownload(filter, item);
 							
-							if (filter.MatchOnce && !filter.IsTV)
-							{
-								filter.Enabled = false;
-							}
 							
-							onPropertyChanged("DownloadedItems");
+							//onPropertyChanged("DownloadedItems");
+							
+							AllDownloads = null; // Load AllDownloads again
+							onPropertyChanged("CountDownloads");
+							
 							onPropertyChanged("LoadHighestEpisode");
 							onPropertyChanged("ResetFilter");
 							onPropertyChanged("FilterSelected");
 							
-							return true;
+							
+							if (filter.MatchOnce && !filter.IsTV)
+							{
+								filter.Enabled = false;
+								return true; // No need to continue
+							}
+							
+							downloaded = true;
 						}
 					}
 				}
 			}
 			
-			return false;
+			return downloaded;
 		}
 		
 		public void LogDownload(Filter filter, Torrent item)
@@ -1136,7 +1268,5 @@ namespace tRSS.ViewModel
 				sw.WriteLine(filter.ToString() + Environment.NewLine);
 			}
 		}
-		
-		
 	}
 }

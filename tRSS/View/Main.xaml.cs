@@ -59,7 +59,7 @@ namespace tRSS
 		}
 		
 		void Window_Activated(object sender, EventArgs e)
-		{
+		{			
 			if (VM.IsNotifying)
 			{
 				VM.NotifyDeactivate();

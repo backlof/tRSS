@@ -196,6 +196,9 @@
     <Content Include="Resources\FamFamFamSilk\Arrow_Refresh_Small.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\FamFamFamSilk\World_Add.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\Fugue\License.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>

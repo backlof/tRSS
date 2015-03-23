@@ -132,7 +132,7 @@
 				</StackPanel>
 			</StatusBarItem>
 			
-			<StatusBarItem ToolTip="Last download">
+			<StatusBarItem ToolTip="Last match">
 				<StackPanel>
 					<Image Source="/Resources/Diagona/193.png" />
 					<TextBlock Text="{Binding Path=LastMatch}" />
@@ -148,7 +148,7 @@
 		
 		
 		<StackPanel DockPanel.Dock="Top">
-			<Menu BorderBrush="LightGray" BorderThickness="1">
+			<Menu BorderBrush="LightGray" BorderThickness="0,0,0,1">
 				<MenuItem Header="_File">
 					<MenuItem Header="_Backup" Command="{Binding Path=SaveBackup}" />
 					<MenuItem Header="_Restore" Command="{Binding Path=Restore}" />
@@ -168,10 +168,6 @@
 			<!-- TOP TOOLBAR -->
 			
 			<ToolBarTray>
-				<ToolBarTray.Resources>
-				
-				</ToolBarTray.Resources>
-				
 				<ToolBar Band="{Binding Path=SaveBand, Mode=TwoWay}" BandIndex="{Binding Path=SaveBandIndex, Mode=TwoWay}" ToolTip="Save your settings now" >
 					<Button Command="{Binding Path=SaveCommand}">
 						<WrapPanel>
@@ -224,7 +220,6 @@
 			<!-- FILTERS TAB -->
 			
 			<TabItem Header="Filters">
-				
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition MinWidth="{StaticResource MinColumnWidth}" Width="{Binding Path=FilterSplitterPosition, Converter={StaticResource GridLengthConverter}, Mode=TwoWay}" />
@@ -235,7 +230,6 @@
 					
 					
 					<!-- FILTERS LISTBOX -->
-					<!-- SelectedIndex="{Binding Path=Data.SelectedFilterIndex, Mode=TwoWay}" -->
 					
 					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=SelectedFilter, Mode=TwoWay}" ItemContainerStyle="{StaticResource GenericDragDrop}" >
 						<ListBox.ItemTemplate>
@@ -370,7 +364,6 @@
 					
 					
 					<!-- FEEDS LISTBOX -->
-					<!-- SelectedIndex="{Binding Path=Data.SelectedFeedIndex, Mode=TwoWay}" -->
 					
 					<ListBox Grid.Column="0" ItemsSource="{Binding Path=Feeds}"
 					         IsSynchronizedWithCurrentItem="True"
@@ -419,7 +412,7 @@
 					         MinWidth="{Binding Path=FeedWidthTitle, Mode=TwoWay}"
 					         Width="{Binding Path=FeedWidthPublished, Mode=TwoWay}"/>
 					
-					<DataGrid Grid.Column="2" ItemsSource="{Binding Path=SelectedFeed.Items, UpdateSourceTrigger=PropertyChanged}" >
+					<DataGrid Grid.Column="2" ItemsSource="{Binding Path=SelectedFeed.Items, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Path=SelectedTorrent, Mode=TwoWay}" CanUserResizeRows="False" >
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"
 								Width="{Binding MinWidth, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" />
@@ -427,6 +420,15 @@
 								Binding="{Binding Path=Published, Converter={StaticResource DateConverter}, ConverterParameter=g}"
 								Width="{Binding Width, Source={x:Reference FeedReference}, Converter={StaticResource DataGridWidthConverter}, Mode=TwoWay}" SortDirection="Descending" />
 						</DataGrid.Columns>
+						<DataGrid.ContextMenu>
+							<ContextMenu >
+								<MenuItem Header="Download" Command="{Binding Path=DownloadTorrent}">
+									<MenuItem.Icon>
+										<Image Source="/Resources/FamFamFamSilk/World_Add.png" />
+									</MenuItem.Icon>
+								</MenuItem>
+							</ContextMenu>
+						</DataGrid.ContextMenu>
 					</DataGrid>
 				
 				
@@ -460,7 +462,7 @@
 					         Width="{Binding Path=FilterWidthDownloaded, Mode=TwoWay}"/>
 					
 					
-					<DataGrid ItemsSource="{Binding Path=DownloadedItems}" SelectedItem="{Binding Path=SelectedDownload}" >
+					<DataGrid ItemsSource="{Binding Path=AllDownloads}" SelectedItem="{Binding Path=SelectedDownload}" CanUserResizeRows="False" >
 						<DataGrid.ContextMenu>
 							<ContextMenu >
 								<MenuItem Header="Remove" Command="{Binding Path=RemoveDownload}">

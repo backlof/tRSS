@@ -18,6 +18,8 @@ namespace tRSS.Model
 	[Serializable()]
 	public class Torrent : ObjectBase
 	{
+		#region PROPERTIES
+		
 		private string _GUID;
 		[DataMember(Name="GUID", IsRequired=false)]
 		public string GUID
@@ -150,6 +152,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		#endregion
+		
 		public async Task<bool> Download(string toLocation)
 		{
 			// http://stackoverflow.com/questions/18207730/how-to-make-ordinary-webrequest-async-and-awaitable
@@ -165,7 +169,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		public async Task<bool> GetTorrent(string toLocation)
+		private async Task<bool> GetTorrent(string toLocation)
 		{
 			// http://stackoverflow.com/questions/9857709/downloading-a-torrent-file-with-webclient-results-in-corrupt-file
 			
@@ -221,7 +225,8 @@ namespace tRSS.Model
 			return string.Format("[FeedItem GUID={0}, Title={1}, Published={2}, Season={3}, Episode={4}]", _GUID, _Title, _Published, _Season, _Episode);
 		}
 		
-		#region Equals and GetHashCode implementation
+		#region EQUALS & GETHASHCODE
+		
 		public override bool Equals(object obj)
 		{
 			Torrent other = obj as Torrent;
@@ -261,6 +266,7 @@ namespace tRSS.Model
 		{
 			return !(lhs == rhs);
 		}
+		
 		#endregion
 	}
 }

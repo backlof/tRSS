@@ -23,7 +23,7 @@ namespace tRSS.Model
 		// They're only initialized when the class object is
 		// Not during deserialization
 		
-		#region Properties
+		#region PROPERTIES
 		
 		private string _Title = "New Filter";
 		[DataMember(Name="Title", IsRequired=false)]
@@ -100,6 +100,22 @@ namespace tRSS.Model
 			}
 		}
 		
+		[NonSerialized]
+		private int _SearchInFeedIndex;
+		[DataMember(Name="Feed", IsRequired=false)]
+		public int SearchInFeedIndex
+		{
+			get
+			{
+				return _SearchInFeedIndex;
+			}
+			set
+			{
+				_SearchInFeedIndex = value;
+				//onPropertyChanged("SearchInFeedIndex"); //Never used
+			}
+		}
+		
 		[IgnoreDataMember]
 		public bool HasFeed
 		{
@@ -154,24 +170,24 @@ namespace tRSS.Model
 			}
 		}
 		
-		private List<Torrent> _DownloadedItems = new List<Torrent>();
+		private List<Torrent> _DownloadedTorrents = new List<Torrent>();
 		[DataMember(Name="Downloads", IsRequired=false)]
-		public List<Torrent> DownloadedItems
+		public List<Torrent> DownloadedTorrents
 		{
 			get
 			{
-				return _DownloadedItems;
+				return _DownloadedTorrents;
 			}
 			set
 			{
-				_DownloadedItems = value;
-				onPropertyChanged("DownloadedItems");
+				_DownloadedTorrents = value;
+				onPropertyChanged("DownloadedTorrents");
 			}
 		}
 		
 		#endregion
 		
-		#region Include / Exclude
+		#region INCLUDE & EXCLUDE
 		
 		private static readonly char[] INCLUDE_INTERPRET_SEPARATORS = {';', '|', '+'};
 		
@@ -227,7 +243,7 @@ namespace tRSS.Model
 		
 		#endregion
 		
-		#region Regex filter
+		#region REGEX FILTER
 		
 		// REGEX OPERATORS *.$^{[(|)]}+?\
 		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
@@ -326,12 +342,12 @@ namespace tRSS.Model
 		
 		public void LoadHighest()
 		{
-			if (DownloadedItems.Count > 0)
+			if (DownloadedTorrents.Count > 0)
 			{
-				Torrent highest = DownloadedItems[0];
+				Torrent highest = DownloadedTorrents[0];
 				
 				
-				foreach (Torrent downloaded in DownloadedItems)
+				foreach (Torrent downloaded in DownloadedTorrents)
 				{
 					if (downloaded.IsTV)
 					{
@@ -353,9 +369,9 @@ namespace tRSS.Model
 		
 		public bool ShouldDownload(Torrent item)
 		{
-			if (!DownloadedItems.Contains(item))
+			if (Enabled)
 			{
-				if (Enabled)
+				if (!DownloadedTorrents.Contains(item))
 				{
 					string title = Utils.RemoveDiacritics(IgnoreCaps ? item.Title.ToLower() : item.Title);
 					RegexOptions option = IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
@@ -395,9 +411,9 @@ namespace tRSS.Model
 			{
 				if (MatchOnce)
 				{
-					foreach (Torrent downloaded in DownloadedItems)
+					foreach (Torrent downloaded in DownloadedTorrents)
 					{
-						if (downloaded.IsTV) // In case filter used to be NotTV
+						if (downloaded.IsTV) // In case filter wasn't always TV
 						{
 							if (item.Season == downloaded.Season && item.Episode == downloaded.Episode)
 							{

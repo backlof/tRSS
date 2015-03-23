@@ -20,9 +20,7 @@ namespace tRSS.Model
 		
 		public static readonly String DEFAULT_TITLE = "New Feed";
 		
-		#region Properties
-		
-		
+		#region PROPERTIES
 		
 		private string _URL = "";
 		[DataMember(Name="URL", IsRequired=false)]
@@ -34,7 +32,7 @@ namespace tRSS.Model
 			}
 			set
 			{
-				_URL = value;
+				_URL = value.Trim();
 				onPropertyChanged("URL");
 			}
 		}
@@ -49,7 +47,7 @@ namespace tRSS.Model
 			}
 			set
 			{
-				_Title = value;
+				_Title = value.Trim();
 				onPropertyChanged("Title");
 			}
 		}
@@ -71,7 +69,7 @@ namespace tRSS.Model
 		
 		#endregion
 		
-		#region Edit functionality
+		#region EDIT
 		
 		public void FinalizeEdit()
 		{
@@ -115,58 +113,65 @@ namespace tRSS.Model
 		
 		public async Task<bool> Update()
 		{
-			try
+			if (!String.IsNullOrEmpty(URL))
 			{
-				WebRequest wr = WebRequest.Create(URL);
-				
-				using (WebResponse response = await wr.GetResponseAsync())
+				try
 				{
-					XmlDocument feed = new XmlDocument();
-					feed.Load(response.GetResponseStream());
+					WebRequest wr = WebRequest.Create(URL);
 					
-					XmlNode channelNode = feed.SelectSingleNode("rss/channel");
-					
-					if (String.IsNullOrEmpty(Title) || Title == DEFAULT_TITLE)
+					using (WebResponse response = await wr.GetResponseAsync())
 					{
-						Title = channelNode.SelectSingleNode("title").InnerText.Trim();
-					}
-					
-					XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
-					
-					Items = new ObservableCollection<Torrent>();
-					
-					foreach (XmlNode itemNode in itemNodes)
-					{
-						// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
+						XmlDocument feed = new XmlDocument();
+						feed.Load(response.GetResponseStream());
 						
-						Torrent item = new Torrent();
-						item.Title = itemNode.SelectSingleNode("title").InnerText.Trim();
-						item.GUID = itemNode.SelectSingleNode("guid").InnerText.Trim();
-						item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText.Trim());
-						item.URL = itemNode.SelectSingleNode("enclosure") != null
-							? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText.Trim()
-							: itemNode.SelectSingleNode("link").InnerText.Trim();
+						XmlNode channelNode = feed.SelectSingleNode("rss/channel");
 						
-						Items.Add(item);
+						if (String.IsNullOrEmpty(Title) || Title == DEFAULT_TITLE)
+						{
+							Title = channelNode.SelectSingleNode("title").InnerText.Trim();
+						}
+						
+						XmlNodeList itemNodes = feed.SelectNodes("rss/channel/item");
+						
+						Items = new ObservableCollection<Torrent>();
+						
+						foreach (XmlNode itemNode in itemNodes)
+						{
+							// RFC822 Format : Wed, 29 Oct 2008 14:14:48 +0000
+							
+							Torrent item = new Torrent();
+							item.Title = itemNode.SelectSingleNode("title").InnerText.Trim();
+							item.GUID = itemNode.SelectSingleNode("guid").InnerText.Trim();
+							item.Published = DateTime.Parse(itemNode.SelectSingleNode("pubDate").InnerText.Trim());
+							item.URL = itemNode.SelectSingleNode("enclosure") != null
+								? itemNode.SelectSingleNode("enclosure").Attributes["url"].InnerText.Trim()
+								: itemNode.SelectSingleNode("link").InnerText.Trim();
+							
+							Items.Add(item);
+						}
+						
+						onPropertyChanged("Items");
+						return true;
 					}
-					
-					onPropertyChanged("Items");
-					return true;
+				}
+				catch (FileNotFoundException fnfe)
+				{
+					Utils.PrintError("RSS feed not found.", this, fnfe);
+					return false;
+				}
+				catch (NullReferenceException nre)
+				{
+					Utils.PrintError("Not able to parse RSS feed.", this, nre);
+					return false;
+				}
+				catch (WebException we)
+				{
+					Utils.PrintError("Connection timed out while loading feed.", this, we);
+					return false;
 				}
 			}
-			catch (FileNotFoundException fnfe)
+			else
 			{
-				Utils.PrintError("RSS feed not found.", this, fnfe);
-				return false;
-			}
-			catch (NullReferenceException nre)
-			{
-				Utils.PrintError("Not able to parse RSS feed.", this, nre);
-				return false;
-			}
-			catch (WebException we)
-			{
-				Utils.PrintError("Connection timed out while loading feed.", this, we);
 				return false;
 			}
 		}
@@ -176,6 +181,6 @@ namespace tRSS.Model
 			return String.Format("[Feed URL={0}, Title={1}]", _URL, _Title);
 		}
 
-		// REMEMBER That equals and hashcode override can cause problems for selections
+		// REMEMBER That equals and hashcode override can cause problems for selections or bindings
 	}
 }
