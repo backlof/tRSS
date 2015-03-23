@@ -10,7 +10,7 @@ Download torrent files from RSS Feeds to a watched folder in your torrent client
 
 ## How to get a match
 
-* Filter is `Active`
+* Filter is `Enabled`
 * Feed is selected for the filter
 * The beginning of the torrent title matches `Filter` (see below)
 * Torrent title contains all terms in `Include` (see below)
