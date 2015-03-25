@@ -185,6 +185,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		#region INCLUDE & EXCLUDE
@@ -241,11 +243,14 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		#region REGEX FILTER
 		
 		// REGEX OPERATORS *.$^{[(|)]}+?\
+		
 		private static readonly string REJECT_CHARS =  @"$^{[(|)]}+\";
 		
 		private string _TitleFilter = "";
@@ -321,6 +326,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		#region HIGHEST
@@ -364,6 +371,8 @@ namespace tRSS.Model
 			
 			HasDownloadedSinceHighest = false;
 		}
+		
+		
 		
 		#endregion
 		

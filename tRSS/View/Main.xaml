@@ -422,7 +422,7 @@
 						</DataGrid.Columns>
 						<DataGrid.ContextMenu>
 							<ContextMenu >
-								<MenuItem Header="Download" Command="{Binding Path=DownloadTorrent}">
+								<MenuItem Header="Download" Command="{Binding Path=ManualDownload}">
 									<MenuItem.Icon>
 										<Image Source="/Resources/FamFamFamSilk/World_Add.png" />
 									</MenuItem.Icon>

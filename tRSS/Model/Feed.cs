@@ -16,6 +16,8 @@ namespace tRSS.Model
 	[Serializable]
 	public class Feed : ObjectBase
 	{
+		public static readonly int WEB_TIMEOUT = 10000; // millisecs
+		
 		public Feed(){}
 		
 		public static readonly String DEFAULT_TITLE = "New Feed";
@@ -67,6 +69,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		#region EDIT
@@ -109,6 +113,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		public async Task<bool> Update()
@@ -118,6 +124,7 @@ namespace tRSS.Model
 				try
 				{
 					WebRequest wr = WebRequest.Create(URL);
+					wr.Timeout = WEB_TIMEOUT;
 					
 					using (WebResponse response = await wr.GetResponseAsync())
 					{

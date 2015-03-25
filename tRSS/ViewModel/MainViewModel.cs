@@ -43,7 +43,6 @@ namespace tRSS.ViewModel
 		}
 		
 		#region FILTERS
-		
 		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
 		public ObservableCollection<Filter> Filters
 		{
@@ -72,7 +71,6 @@ namespace tRSS.ViewModel
 		}
 		
 		#region RESET FILTER
-		
 		public ICommand ResetFilter
 		{
 			get
@@ -84,7 +82,7 @@ namespace tRSS.ViewModel
 		public void ExecuteResetFilter(object parameter)
 		{
 			SelectedFilter.DownloadedTorrents = new List<Torrent>();
-			onPropertyChanged("DownloadedItems");
+			RefreshAllDownloads();
 		}
 		
 		public bool CanResetFilter(object parameter)
@@ -102,7 +100,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region REMOVE FILTER
-		
 		public ICommand RemoveFilter
 		{
 			get
@@ -118,7 +115,9 @@ namespace tRSS.ViewModel
 			Filters.Remove(SelectedFilter);
 			
 			SelectedFilter = index > 0? Filters[index - 1] : Filters[0];
-			onPropertyChanged("DownloadedItems");
+			
+			RefreshAllDownloads();
+			
 			onPropertyChanged("CountFilters");
 		}
 		
@@ -130,7 +129,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region NEW FILTER
-		
 		public ICommand NewFilter
 		{
 			get
@@ -162,8 +160,7 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
-		#region FILTER FILTER
-		
+		#region FILTER SELECTED FILTER
 		public ICommand FilterSelected
 		{
 			get
@@ -176,7 +173,7 @@ namespace tRSS.ViewModel
 		{
 			NotifyLoading();
 			
-			if (await FilterFeed(SelectedFilter))
+			if (await Filter(SelectedFilter))
 			{
 				NotifyNow();
 			}
@@ -201,7 +198,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region LOAD HIGHEST EPISODE
-		
 		public ICommand LoadHighestEpisode
 		{
 			get
@@ -236,10 +232,11 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		
+		
 		#endregion
 		
 		#region FEEDS
-		
 		private ObservableCollection<Feed> _Feeds = new ObservableCollection<Feed>();
 		public ObservableCollection<Feed> Feeds
 		{
@@ -268,7 +265,6 @@ namespace tRSS.ViewModel
 		}
 		
 		#region REMOVE FEED
-		
 		public ICommand RemoveFeed
 		{
 			get
@@ -292,10 +288,10 @@ namespace tRSS.ViewModel
 			return Feeds.Count > 1;
 		}
 		
+		
 		#endregion
 		
 		#region NEW FEED
-		
 		public ICommand NewFeed
 		{
 			get
@@ -322,7 +318,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region EDIT FEED
-		
 		public ICommand EditFeed
 		{
 			get
@@ -345,7 +340,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region UPDATE FEEDS
-		
 		public ICommand UpdateFeeds
 		{
 			get
@@ -368,12 +362,11 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		
+		
 		#endregion
 		
 		#region DOWNLOADS
-		
-		// Gather all downloads and order
-		// Set to null when new torrent has been downloaded
 		[NonSerialized]
 		private List<Torrent> _AllDownloads = null;
 		public List<Torrent> AllDownloads
@@ -445,20 +438,24 @@ namespace tRSS.ViewModel
 				_ManuallyDownloadedTorrents = value;
 				onPropertyChanged("ManuallyDownloadedTorrents");
 			}
-		}		
+		}
 		
+		public void RefreshAllDownloads()
+		{
+			AllDownloads = null;
+			onPropertyChanged("CountDownloads");
+		}
 		
 		#region DOWNLOAD TORRENT
-		
-		public ICommand DownloadTorrent
+		public ICommand ManualDownload
 		{
 			get
 			{
-				return new RelayCommand(ExecuteDownloadTorrent, CanDownloadTorrent);
+				return new RelayCommand(ExecuteManualDownload, CanManualDownload);
 			}
 		}
 		
-		public async void ExecuteDownloadTorrent(object parameter)
+		public async void ExecuteManualDownload(object parameter)
 		{
 			Torrent t = SelectedTorrent;
 			
@@ -466,12 +463,11 @@ namespace tRSS.ViewModel
 			{
 				ManuallyDownloadedTorrents.Add(t);
 				
-				AllDownloads = null; // Load AllDownloads again
-				onPropertyChanged("CountDownloads");
+				RefreshAllDownloads();
 			}
 		}
 		
-		public bool CanDownloadTorrent(object parameter)
+		public bool CanManualDownload(object parameter)
 		{
 			if (SelectedTorrent == null)
 			{
@@ -486,7 +482,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region REMOVE DOWNLOAD
-		
 		public ICommand RemoveDownload
 		{
 			get
@@ -512,8 +507,7 @@ namespace tRSS.ViewModel
 				}
 			}
 			
-			AllDownloads = null;
-			onPropertyChanged("CountDownloads");
+			RefreshAllDownloads();
 		}
 		
 		public bool CanRemoveDownload(object parameter)
@@ -523,10 +517,11 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		
+		
 		#endregion
 		
 		#region WINDOW
-		
 		private WindowModel _Window = new WindowModel();
 		public WindowModel Window
 		{
@@ -542,7 +537,6 @@ namespace tRSS.ViewModel
 		}
 		
 		#region INFORMATION
-		
 		private string _LastMatch = "None";
 		public string LastMatch
 		{
@@ -598,7 +592,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region TOOLBAR
-		
 		private int _SaveBand = 0;
 		public int SaveBand
 		{
@@ -714,7 +707,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region GRIDSPLITTERS
-		
 		private double _FilterSplitterPosition = 100;
 		public double FilterSplitterPosition
 		{
@@ -746,7 +738,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region DATAGRID COLUMNS
-		
 		private double _FeedWidthTitle = 250;
 		public double FeedWidthTitle
 		{
@@ -819,10 +810,11 @@ namespace tRSS.ViewModel
 		}
 		#endregion
 		
+		
+		
 		#endregion
 		
 		#region TIMER
-		
 		[NonSerialized]
 		private DispatcherTimer timedUpdate;
 		
@@ -861,8 +853,6 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		
-		
 		[NonSerialized()]
 		private DateTime _NextUpdate;
 		public DateTime NextUpdate
@@ -878,10 +868,11 @@ namespace tRSS.ViewModel
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		#region NOTIFICATION
-		
 		private TaskbarItemProgressState _NotificationState = TaskbarItemProgressState.None;
 		public TaskbarItemProgressState NotificationState
 		{
@@ -923,7 +914,7 @@ namespace tRSS.ViewModel
 		
 		private async void NotifyTimedDeactive(int millisecs)
 		{
-			await System.Threading.Tasks.Task.Delay(1500);
+			await System.Threading.Tasks.Task.Delay(millisecs);
 			NotifyDeactivate();
 		}
 		
@@ -932,10 +923,11 @@ namespace tRSS.ViewModel
 			NotificationState = TaskbarItemProgressState.None;
 		}
 		
+		
+		
 		#endregion
 		
 		#region RECOVERY
-		
 		public static readonly string BACKUP_DIR = "Backup";
 		
 		public string FiltersPath
@@ -955,7 +947,6 @@ namespace tRSS.ViewModel
 		}
 		
 		#region SAVE BACKUP
-		
 		public ICommand SaveBackup
 		{
 			get
@@ -1007,7 +998,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region RESTORE
-		
 		public ICommand Restore
 		{
 			get
@@ -1017,7 +1007,7 @@ namespace tRSS.ViewModel
 		}
 		
 		public void ExecuteRestore(object parameter)
-		{			
+		{
 			using (FileStream fs = new FileStream(FeedsPath, FileMode.Open, FileAccess.Read))
 			{
 				DataContractSerializer dcs = new DataContractSerializer(Feeds.GetType());
@@ -1028,7 +1018,7 @@ namespace tRSS.ViewModel
 			{
 				DataContractSerializer dcs = new DataContractSerializer(Filters.GetType());
 				Filters = dcs.ReadObject(fs) as ObservableCollection<Filter>;
-			}			
+			}
 			
 			// Uses saved indexes to load Feeds
 			foreach (Filter f in Filters)
@@ -1050,12 +1040,13 @@ namespace tRSS.ViewModel
 			return File.Exists(FeedsPath) && File.Exists(FiltersPath);
 		}
 		
+		
 		#endregion
+		
 		
 		#endregion
 		
 		#region UPDATE INTERVAL
-		
 		private static readonly int[] UPDATE_INTERVALS = { 1, 2, 3, 5, 15, 30, 60 };
 		private static readonly string[] UPDATE_OPTIONS = { "1 minute", "2 minutes", "3 minutes", "5 minutes", "15 minutes", "30 minutes", "1 hour" };
 
@@ -1080,7 +1071,6 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region DOWNLOAD DIRECTORY
-		
 		public static readonly string FOLDER = @"Torrents\";
 		
 		private string _TorrentDropDirectory;
@@ -1098,7 +1088,6 @@ namespace tRSS.ViewModel
 		}
 		
 		#region CHOOSE DIRECTORY
-		
 		public ICommand ChooseDirectory
 		{
 			get
@@ -1136,17 +1125,17 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		
+		
 		#endregion
 		
 		#region SAVE
-		
 		public void Save()
 		{
 			Save(FILENAME);
 		}
 		
 		#region SAVE COMMAND
-		
 		public ICommand SaveCommand
 		{
 			get
@@ -1167,38 +1156,21 @@ namespace tRSS.ViewModel
 		
 		#endregion
 		
+		
+		
 		#endregion
 		
+		#region FUNCTIONALITY
 		public async void Update()
 		{
 			NotifyLoading();
 			
-			bool updated = false;
-			
-			foreach (Feed feed in Feeds)
-			{
-				if (await feed.Update())
-				{
-					updated = true; // At least one feed was updated
-				}
-			}
-			
-			if (updated)
+			if (await UpdateAllFeeds())
 			{
 				LastUpdate = DateTime.Now;
 				CountUpdates++;
 				
-				bool downloaded = false;
-				
-				foreach (Filter filter in Filters)
-				{
-					if (await FilterFeed(filter))
-					{
-						downloaded = true; // At least one feed was downloaded
-					}
-				}
-				
-				if (downloaded)
+				if (await FilterAll())
 				{
 					Save();
 					NotifyNow();
@@ -1214,49 +1186,94 @@ namespace tRSS.ViewModel
 			}
 		}
 		
-		public async Task<bool> FilterFeed(Filter filter)
+		public async Task<bool> UpdateAllFeeds()
 		{
-			bool downloaded = false;
+			List<Task<bool>> tasks = new List<Task<bool>>();
 			
-			if (filter.Enabled && filter.HasFeed)
+			foreach (Feed feed in Feeds)
 			{
-				foreach (Torrent item in filter.SearchInFeed.Items)
+				tasks.Add(feed.Update());
+			}
+
+			await Task.WhenAll(tasks);
+			
+			return (from t in tasks where t.Result select t).Any();
+		}
+		
+		public async Task<bool> FilterAll()
+		{
+			List<Task<bool>> tasks = new List<Task<bool>>();
+			
+			foreach (Filter filter in Filters)
+			{
+				if (filter.HasFeed && filter.Enabled)
 				{
-					if (filter.ShouldDownload(item))
+					tasks.Add(Filter(filter));
+				}
+			}
+
+			await Task.WhenAll(tasks);
+			
+			return (from t in tasks where t.Result select t).Any();
+		}
+		
+		public async Task<bool> Filter(Filter filter)
+		{
+			// REMEMBER I add torrent to downloadeditems prematurely so that ShouldDownload can filter
+			
+			List<Task<bool>> tasks = new List<Task<bool>>();
+			
+			foreach (Torrent torrent in filter.SearchInFeed.Items)
+			{
+				if (filter.ShouldDownload(torrent))
+				{
+					filter.DownloadedTorrents.Add(torrent);
+					tasks.Add(DownloadTorrent(filter, torrent));
+					
+					if (filter.MatchOnce && !filter.IsTV)
 					{
-						if (await item.Download(TorrentDropDirectory))
-						{
-							filter.DownloadedTorrents.Add(item);
-							
-							filter.HasDownloadedSinceHighest = true;
-							LastMatch = item.Title;
-							
-							LogDownload(filter, item);
-							
-							
-							//onPropertyChanged("DownloadedItems");
-							
-							AllDownloads = null; // Load AllDownloads again
-							onPropertyChanged("CountDownloads");
-							
-							onPropertyChanged("LoadHighestEpisode");
-							onPropertyChanged("ResetFilter");
-							onPropertyChanged("FilterSelected");
-							
-							
-							if (filter.MatchOnce && !filter.IsTV)
-							{
-								filter.Enabled = false;
-								return true; // No need to continue
-							}
-							
-							downloaded = true;
-						}
+						break; // Get out of foreach
 					}
 				}
 			}
 			
-			return downloaded;
+			await Task.WhenAll(tasks);
+			
+			return (from t in tasks where t.Result select t).Any();
+		}
+		
+		public async Task<bool> DownloadTorrent(Filter filter, Torrent torrent)
+		{
+			if (await torrent.Download(TorrentDropDirectory))
+			{
+				filter.HasDownloadedSinceHighest = true;
+				LastMatch = torrent.Title;
+				
+				LogDownload(filter, torrent);
+				
+				RefreshAllDownloads();
+				
+				onPropertyChanged("LoadHighestEpisode");
+				onPropertyChanged("ResetFilter");
+				onPropertyChanged("FilterSelected");
+				
+				
+				if (filter.MatchOnce && !filter.IsTV)
+				{
+					filter.Enabled = false;
+				}
+				
+				return true;
+			}
+			else
+			{
+				if (filter.DownloadedTorrents.Contains(torrent))
+				{
+					filter.DownloadedTorrents.Remove(torrent);
+				}
+				
+				return false;
+			}
 		}
 		
 		public void LogDownload(Filter filter, Torrent item)
@@ -1268,5 +1285,7 @@ namespace tRSS.ViewModel
 				sw.WriteLine(filter.ToString() + Environment.NewLine);
 			}
 		}
+		
+		#endregion
 	}
 }

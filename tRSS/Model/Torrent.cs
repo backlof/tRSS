@@ -18,6 +18,8 @@ namespace tRSS.Model
 	[Serializable()]
 	public class Torrent : ObjectBase
 	{
+		public static readonly int WEB_TIMEOUT = 15000; // millisecs
+		
 		#region PROPERTIES
 		
 		private string _GUID;
@@ -95,6 +97,12 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
+		#endregion
+		
+		#region TV SHOW
+		
 		[IgnoreDataMember]
 		public bool IsTV
 		{
@@ -113,7 +121,6 @@ namespace tRSS.Model
 			{
 				if(_EpisodeMatch == null)
 				{
-					// TODO Test if this new three character episode and season works
 					Regex regExp = new Regex(@"S(?<season>\d{1,3})E(?<episode>\d{1,3})", RegexOptions.IgnoreCase);
 					_EpisodeMatch = regExp.Match(Title);
 				}
@@ -152,6 +159,8 @@ namespace tRSS.Model
 			}
 		}
 		
+		
+		
 		#endregion
 		
 		public async Task<bool> Download(string toLocation)
@@ -180,6 +189,7 @@ namespace tRSS.Model
 
 				WebRequest wr = WebRequest.Create(URL);
 				wr.ContentType = "application/x-bittorrent";
+				wr.Timeout = WEB_TIMEOUT;
 				
 				if (!Directory.Exists(toLocation))
 				{
