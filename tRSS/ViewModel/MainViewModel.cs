@@ -24,7 +24,8 @@ namespace tRSS.ViewModel
 		
 		public MainViewModel()
 		{
-			TorrentDropDirectory = FOLDER;
+			TorrentDropDirectory = DROP_FOLDER;
+			
 			if(!Directory.Exists(Path.GetDirectoryName(TorrentDropDirectory)))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(TorrentDropDirectory));
@@ -40,7 +41,7 @@ namespace tRSS.ViewModel
 			
 			SelectedFeed = tvFeed;
 			SelectedFilter = tvFilter;
-		}
+		}		
 		
 		#region FILTERS
 		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
@@ -114,7 +115,8 @@ namespace tRSS.ViewModel
 			
 			Filters.Remove(SelectedFilter);
 			
-			SelectedFilter = index > 0? Filters[index - 1] : Filters[0];
+			//SelectedFilter = index > 0? Filters[index - 1] : Filters[0];
+			SelectedFilter = null;
 			
 			RefreshAllDownloads();
 			
@@ -279,7 +281,8 @@ namespace tRSS.ViewModel
 			
 			Feeds.Remove(SelectedFeed);
 			
-			SelectedFeed = index > 0? Feeds[index - 1] : Feeds[0];
+			//SelectedFeed = index > 0? Feeds[index - 1] : Feeds[0];
+			SelectedFeed = null;
 			onPropertyChanged("CountFeeds");
 		}
 		
@@ -1071,7 +1074,7 @@ namespace tRSS.ViewModel
 		#endregion
 		
 		#region DOWNLOAD DIRECTORY
-		public static readonly string FOLDER = @"Torrents\";
+		public static readonly string DROP_FOLDER = @"Torrents\";
 		
 		private string _TorrentDropDirectory;
 		public string TorrentDropDirectory
@@ -1107,10 +1110,11 @@ namespace tRSS.ViewModel
 				}
 				catch(ArgumentException)
 				{
-					dialog.SelectedPath = FOLDER;
+					dialog.SelectedPath = DROP_FOLDER;
 				}
 				
 				System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+				
 				if (result == System.Windows.Forms.DialogResult.OK)
 				{
 					TorrentDropDirectory = Paths.MakeRelativeDirectory(dialog.SelectedPath);
@@ -1188,6 +1192,8 @@ namespace tRSS.ViewModel
 		
 		public async Task<bool> UpdateAllFeeds()
 		{
+			// bool[] results = await Task.WhenAll(feeds.Select(feed => feed.Update()));
+			
 			List<Task<bool>> tasks = new List<Task<bool>>();
 			
 			foreach (Feed feed in Feeds)
@@ -1278,7 +1284,7 @@ namespace tRSS.ViewModel
 		
 		public void LogDownload(Filter filter, Torrent item)
 		{
-			using(StreamWriter sw = File.AppendText(@"Download.log"))
+			using(StreamWriter sw = File.AppendText(@"Matches.log"))
 			{
 				sw.WriteLine(String.Format("[{0}]", DateTime.Now.ToString("g")));
 				sw.WriteLine(item.ToString());

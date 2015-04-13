@@ -57,7 +57,7 @@ namespace tRSS.Utilities
 		
 		public static void PrintError(string message, object sender, Exception e)
 		{
-			System.Diagnostics.Debug.WriteLine(message);
+			System.Diagnostics.Debug.WriteLine(message + ".");
 			System.Diagnostics.Debug.WriteLine(sender.ToString());
 			System.Diagnostics.Debug.WriteLine(e.ToString() + Environment.NewLine);
 		}

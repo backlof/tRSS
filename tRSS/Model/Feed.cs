@@ -16,7 +16,7 @@ namespace tRSS.Model
 	[Serializable]
 	public class Feed : ObjectBase
 	{
-		public static readonly int WEB_TIMEOUT = 10000; // millisecs
+		public static readonly int WEB_TIMEOUT = 15000; // millisecs
 		
 		public Feed(){}
 		
@@ -163,17 +163,27 @@ namespace tRSS.Model
 				}
 				catch (FileNotFoundException fnfe)
 				{
-					Utils.PrintError("RSS feed not found.", this, fnfe);
+					Utils.PrintError("RSS feed not found", this, fnfe);
 					return false;
 				}
 				catch (NullReferenceException nre)
 				{
-					Utils.PrintError("Not able to parse RSS feed.", this, nre);
+					Utils.PrintError("Not able to parse RSS feed", this, nre);
+					return false;
+				}
+				catch (XmlException xe)
+				{
+					Utils.PrintError("RSS feed is broken", this, xe);
 					return false;
 				}
 				catch (WebException we)
 				{
-					Utils.PrintError("Connection timed out while loading feed.", this, we);
+					Utils.PrintError("Connection timed out while loading feed", this, we);
+					return false;
+				}
+				catch (Exception e)
+				{
+					Utils.PrintError("Generic exception", this, e);
 					return false;
 				}
 			}

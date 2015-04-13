@@ -308,7 +308,7 @@ namespace tRSS.Model
 						}
 						else if (letter == '.')
 						{
-							sb.Append(@"[\s._-]");
+							sb.Append(@"[\s\._-]");
 						}
 						else
 						{

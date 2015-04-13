@@ -10,9 +10,8 @@
 	Top="{Binding Path=Window.Top, Mode=TwoWay}"
 	Left="{Binding Path=Window.Left, Mode=TwoWay}"
 	WindowState="{Binding Path=Window.State, Mode=TwoWay}">
-	<Grid
-		Margin="10">
-		<GroupBox Header="Feed">
+	<Grid>
+		<GroupBox Header="Feed" Margin="8">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
@@ -32,11 +31,12 @@
 					<WrapPanel.Resources>
 						<Style TargetType="{x:Type Button}">
 							<Setter Property="Margin" Value="3,0,3,0" />
+							<Setter Property="Padding" Value="5,3,5,3" />
 						</Style>
 					</WrapPanel.Resources>
 					
-					<Button Content="Save" Margin="8,0,0,0" Padding="2" Click="Save_Button" />
-					<Button Content="Cancel" Margin="8,0,0,0" Padding="2" Click="Cancel_Button" />
+					<Button Content="Save" Click="Save_Button" />
+					<Button Content="Cancel" Click="Cancel_Button" />
 				</WrapPanel>
 			</Grid>
 		</GroupBox>

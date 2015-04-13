@@ -18,7 +18,7 @@ namespace tRSS.Model
 	[Serializable()]
 	public class Torrent : ObjectBase
 	{
-		public static readonly int WEB_TIMEOUT = 15000; // millisecs
+		public static readonly int WEB_TIMEOUT = 20000; // millisecs
 		
 		#region PROPERTIES
 		
@@ -225,7 +225,12 @@ namespace tRSS.Model
 			}
 			catch (WebException we)
 			{
-				Utils.PrintError("Connection timed out while downloading torrent.", this, we);
+				Utils.PrintError("Connection timed out while downloading torrent", this, we);
+				return false;
+			}
+			catch (Exception e)
+			{
+				Utils.PrintError("Generic exception", this, e);
 				return false;
 			}
 		}
