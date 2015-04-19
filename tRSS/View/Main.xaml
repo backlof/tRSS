@@ -135,10 +135,10 @@
 				</StackPanel>
 			</StatusBarItem>
 			
-			<StatusBarItem ToolTip="Last match">
+			<StatusBarItem ToolTip="Latest download">
 				<StackPanel>
 					<Image Source="/Resources/Diagona/193.png" />
-					<TextBlock Text="{Binding Path=LastMatch}" />
+					<TextBlock Text="{Binding Path=LatestDownload}" />
 				</StackPanel>
 			</StatusBarItem>
 		

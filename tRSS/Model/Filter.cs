@@ -270,7 +270,7 @@ namespace tRSS.Model
 			}
 		}
 		
-		private string _RegexPattern = "";
+		private string _RegexPattern;
 		[IgnoreDataMember]
 		public string RegexPattern
 		{
@@ -308,7 +308,7 @@ namespace tRSS.Model
 						}
 						else if (letter == '.')
 						{
-							sb.Append(@"[\s\._-]");
+							sb.Append(@"[\s\.\_\-]");
 						}
 						else
 						{

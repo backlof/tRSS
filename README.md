@@ -29,11 +29,11 @@ For TV shows
 ### Filter
 #### Symbols
 
-|Symbol	|Meaning											|Regex		|
-|:------:|--------------------------------------|:---------:|
-|`*`		|Wildcard; zero or more characters.		|`.*`       |
-|`.`		|1 whitespace character 					|`[\s._-]`	|
-|`?`		|0 or 1 character of any type.			|`.?`     	|
+|Symbol	|Meaning											|Regex			|
+|:------:|--------------------------------------|:------------:|
+|`*`		|Wildcard; zero or more characters.		|`.*`       	|
+|`.`		|1 whitespace character 					|`[\s\.\_\-]`	|
+|`?`		|0 or 1 character of any type.			|`.?`     		|
 
 #### Examples
 

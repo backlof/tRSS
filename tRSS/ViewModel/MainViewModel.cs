@@ -447,6 +447,7 @@ namespace tRSS.ViewModel
 		{
 			AllDownloads = null;
 			onPropertyChanged("CountDownloads");
+			onPropertyChanged("LatestDownload");
 		}
 		
 		#region DOWNLOAD TORRENT
@@ -540,17 +541,18 @@ namespace tRSS.ViewModel
 		}
 		
 		#region INFORMATION
-		private string _LastMatch = "None";
-		public string LastMatch
+		public string LatestDownload
 		{
 			get
 			{
-				return _LastMatch;
-			}
-			set
-			{
-				_LastMatch = value;
-				onPropertyChanged("LastMatch");
+				if (AllDownloads.Count > 0)
+				{
+					return AllDownloads[0].Title;
+				}
+				else
+				{
+					return "None";
+				}
 			}
 		}
 		
@@ -1253,7 +1255,6 @@ namespace tRSS.ViewModel
 			if (await torrent.Download(TorrentDropDirectory))
 			{
 				filter.HasDownloadedSinceHighest = true;
-				LastMatch = torrent.Title;
 				
 				LogDownload(filter, torrent);
 				
