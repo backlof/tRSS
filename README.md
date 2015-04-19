@@ -23,7 +23,7 @@ Also, you can
 
 For TV shows
 
-* Torrent episode is equal or higher (only supports format `S{00}E{00}`)
+* Torrent episode is equal or higher (only supports format `S{000}E{000}`)
 * With `Match once`, each episode will only download once
 
 ### Filter
@@ -32,7 +32,7 @@ For TV shows
 |Symbol	|Meaning											|Regex			|
 |:------:|--------------------------------------|:------------:|
 |`*`		|Wildcard; zero or more characters.		|`.*`       	|
-|`.`		|1 whitespace character 					|`[\s\.\_\-]`	|
+|`.`		|1 whitespace character 					|`[\s\.\-_]`	|
 |`?`		|0 or 1 character of any type.			|`.?`     		|
 
 #### Examples

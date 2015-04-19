@@ -180,7 +180,7 @@
 					</Button>
 				</ToolBar>
 				
-				<ToolBar Band="{Binding Path=BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=BrowseBandIndex, Mode=TwoWay}" ToolTip="Find folder to drop torrent files in" >
+				<ToolBar Band="{Binding Path=BrowseBand, Mode=TwoWay}" BandIndex="{Binding Path=BrowseBandIndex, Mode=TwoWay}" ToolTip="Folder to drop torrents in" >
 					<Button Command="{Binding Path=ChooseDirectory}">
 						<WrapPanel>
 							<Image Source="/Resources/FamFamFamSilk/Folder_Magnify.png" />
