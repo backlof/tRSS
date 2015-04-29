@@ -41,7 +41,7 @@ namespace tRSS.ViewModel
 			
 			SelectedFeed = tvFeed;
 			SelectedFilter = tvFilter;
-		}		
+		}
 		
 		#region FILTERS
 		private ObservableCollection<Filter> _Filters = new ObservableCollection<Filter>();
@@ -951,6 +951,15 @@ namespace tRSS.ViewModel
 			}
 		}
 		
+		public string ManuallyDownloadedTorrentsPath
+		{
+			get
+			{
+				return Path.Combine(BACKUP_DIR, "Manual_Downloads.xml");
+			}
+		}
+		
+		
 		#region SAVE BACKUP
 		public ICommand SaveBackup
 		{
@@ -968,8 +977,10 @@ namespace tRSS.ViewModel
 			}
 			
 			XmlWriterSettings xws = new XmlWriterSettings(){ Indent = true };
+			DataContractSerializer dcs;
 			
-			DataContractSerializer dcs = new DataContractSerializer(Feeds.GetType());
+			// Feeds
+			dcs = new DataContractSerializer(Feeds.GetType());
 			using (XmlWriter xw = XmlWriter.Create(FeedsPath, xws))
 			{
 				dcs.WriteObject(xw, Feeds);
@@ -988,10 +999,18 @@ namespace tRSS.ViewModel
 				}
 			}
 			
+			// Filters
 			dcs = new DataContractSerializer(Filters.GetType());
 			using (XmlWriter xw = XmlWriter.Create(FiltersPath, xws))
 			{
 				dcs.WriteObject(xw, Filters);
+			}
+			
+			// Downloads
+			dcs = new DataContractSerializer(ManuallyDownloadedTorrents.GetType());
+			using (XmlWriter xw = XmlWriter.Create(ManuallyDownloadedTorrentsPath, xws))
+			{
+				dcs.WriteObject(xw, ManuallyDownloadedTorrents);
 			}
 		}
 		
@@ -1013,6 +1032,8 @@ namespace tRSS.ViewModel
 		
 		public void ExecuteRestore(object parameter)
 		{
+			// TODO Implement backup of manual downloads
+			
 			using (FileStream fs = new FileStream(FeedsPath, FileMode.Open, FileAccess.Read))
 			{
 				DataContractSerializer dcs = new DataContractSerializer(Feeds.GetType());
@@ -1023,6 +1044,12 @@ namespace tRSS.ViewModel
 			{
 				DataContractSerializer dcs = new DataContractSerializer(Filters.GetType());
 				Filters = dcs.ReadObject(fs) as ObservableCollection<Filter>;
+			}
+			
+			using (FileStream fs = new FileStream(ManuallyDownloadedTorrentsPath, FileMode.Open, FileAccess.Read))
+			{
+				DataContractSerializer dcs = new DataContractSerializer(ManuallyDownloadedTorrents.GetType());
+				ManuallyDownloadedTorrents = dcs.ReadObject(fs) as List<Torrent>;
 			}
 			
 			// Uses saved indexes to load Feeds
@@ -1042,7 +1069,7 @@ namespace tRSS.ViewModel
 		
 		public bool CanRestore(object parameter)
 		{
-			return File.Exists(FeedsPath) && File.Exists(FiltersPath);
+			return File.Exists(FeedsPath) && File.Exists(FiltersPath) && File.Exists(ManuallyDownloadedTorrentsPath);
 		}
 		
 		
